@@ -1,0 +1,33 @@
+<launch>
+  <!-- multi_goal_loop_carrot2 -->
+  <node pkg="dashgo_tools" name="multi_goal_loop_carrot" type="multi_goal_loop_carrot" output="screen">
+    <param name="map_frame" type="string" value= '/map' />
+    <rosparam param= "goal_list">
+    <!--x, y, z, w-->
+    [
+     5.616, 0.024, 0.0, 1.0,
+     5.616, 0.024, -0.707, 0.707,
+     5.827, 3.467, -0.707, 0.707,
+     5.616, 0.024, -0.707, 0.707,
+     5.616, 0.024, 0.0, 1.0,
+     8.438,-0.176,0.0,1.0,
+     8.438,-0.176,1.0,0.0,
+     2.992,0.0,1.0,0.0,
+     2.992,0.0,0.0,1.0
+    ]
+    <!--
+    deg    = z, w
+    0deg   = 0, 1
+    90deg  = 0.707, 0.707
+    180deg = 1, 0
+    270deg = 0.707, -0.707
+
+    [-0.5,-0.442,0.0,-1.0,
+     0.5,-0.53,0.0,-1.0,
+     -0.5,-0.4427,0.0,-1.0
+    ]
+
+    -->
+    </rosparam>
+  </node>
+</launch>

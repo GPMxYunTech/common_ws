@@ -1,0 +1,68 @@
+<launch>
+  <!-- multi_goal_loop -->
+  <node pkg="dashgo_tools" name="auto_goal_path" type="auto_goal_path" output="screen">
+    <rosparam param= "waypoint">
+    <!--x, y, z, w-->
+    [
+     0.0,0.0,0.0,0.0,
+     9.477,  1.721,   0.707,   0.707,
+     9.477,  1.721,   0.0  ,   1.000,
+    12.371,  1.941,   0.0  ,   1.000,
+    12.371,  1.941,   0.707,   0.707,
+    12.371,  1.941,   -1.0 ,    0.0 ,
+    12.395,  0.847,   0.707,   0.707,
+    14.816,  2.117,   0.0  ,   1.000,
+    14.816,  2.117,   0.707,   0.707,
+    14.816,  2.117,   -1.0 ,    0.0 ,
+    14.874,  1.147,   0.707,   0.707
+    ]
+</rosparam>
+
+  </node>
+
+
+  <node pkg="dashgo_tools" name="auto_path" type="auto_path" output="screen">
+
+<!--start_node & end_node-->
+    <!--param name="start_node" value="5" /-->
+    <!--am name="end_node" value="7" /-->
+<!--map param set-->
+    <param name="nodenum" value="11" />
+    <param name="linenum" value="21" />
+    <rosparam param= "p">
+    [
+     0, 1, 2, 3, 3, 3, 4, 4, 4, 5, 5, 6, 7, 7, 8, 8, 8, 9, 9,10
+    ]
+</rosparam>
+    <rosparam param= "q">
+    [
+     0, 2, 3, 4, 7, 5, 6, 3, 5, 4, 3, 4, 8, 9, 7, 9,10, 5, 8, 8
+    ]
+</rosparam>
+    <rosparam param= "len">
+    [
+     0, 1, 1, 3, 1, 6, 4, 3, 3, 3, 6, 1, 3, 6, 3, 3, 4, 1, 3, 1
+    ]
+</rosparam>
+<!-- 1,forword;3 90degree; 4, backword; 6,180degree -->
+    <rosparam param= "waypoint">
+    <!--x, y, z, w-->
+    [
+     0.0,0.0,0.0,0.0,
+     9.477,  1.721,   0.707,   0.707,
+     9.477,  1.721,   0.0  ,   1.000,
+    12.371,  1.941,   0.0  ,   1.000,
+    12.371,  1.941,   0.707,   0.707,
+    12.371,  1.941,   -1.0 ,    0.0 ,
+    12.395,  0.847,   0.707,   0.707,
+    14.816,  2.117,   0.0  ,   1.000,
+    14.816,  2.117,   0.707,   0.707,
+    14.816,  2.117,   -1.0 ,    0.0 ,
+    14.874,  1.147,   0.707,   0.707
+    ]
+</rosparam>
+  </node>
+
+
+
+</launch>

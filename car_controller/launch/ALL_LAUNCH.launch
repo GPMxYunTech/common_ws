@@ -1,0 +1,23 @@
+<launch>
+	<include file="$(find car_controller)/launch/Carlike_driver_Ver1.0.launch">
+	</include>
+	<include file="$(find car_controller)/launch/navigation_3DLiDAR.launch">
+	</include>
+	<include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch">
+	</include>
+	<include file="$(find hdl_graph_slam)/launch/hdl_graph_navigation.launch">
+	<!-- </include>
+	<include file="$(find ar_track_alvar)/launch/Camera_Up_Down.launch">
+	</include>
+	<include file="$(find ar_track_alvar)/launch/ARTrackUp.launch">
+	</include> -->
+	<!-- <include file="$(find dashgo_tools)/launch/auto_goal_path.launch">
+	</include> -->
+	
+	<node pkg="turtlebot3_automatic_parking_vision" name="automatic_parking_zero_point_one" type="automatic_parking_zero_point_one.py" output="screen">
+	</node>
+
+
+
+
+</launch>

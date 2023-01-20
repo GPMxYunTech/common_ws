@@ -1,0 +1,207 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+################################################################################
+# Copyright 2018 ROBOTIS CO., LTD.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+################################################################################
+
+# Authors: Leon Jung
+
+import rospy
+import numpy as np
+import tf
+from enum import Enum
+from std_msgs.msg import Bool
+from ar_track_alvar_msgs.msg import AlvarMarkers
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
+import math
+import time
+import Tkinter as tk
+from ekf import KalmanFilter
+from geometry_msgs.msg import PoseWithCovarianceStamped
+import actionlib
+from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
+# from Tkinter import *
+MARKER_ID_DETECTION = 7
+
+class AutomaticParkingVision():
+    def __init__(self):
+        self.sub_amcl_robot = rospy.Subscriber('/amcl_pose', PoseWithCovarianceStamped, self.cbGetRobotamcl, queue_size = 1)
+        self.sub_info_marker = rospy.Subscriber('/ar_pose_marker_2', AlvarMarkers, self.cbGetMarkerOdom, queue_size = 1)
+        self.startflag = rospy.Subscriber('/lets_move_finished', Bool, self.cbGetStartflag, queue_size = 1)
+        self.loop_rate = rospy.Rate(20)
+        self.init_pose_and_parame()
+        
+        result = self.movebase_client()
+        if result:
+            rospy.loginfo("Goal execution done!")
+        # self.windows()
+
+        
+    def init_pose_and_parame(self):
+
+        self.robot_2d_pose_x = .0
+        self.robot_2d_pose_y = .0
+        self.robot_2d_theta = .0
+        self.marker_2d_pose_x = .0
+        self.marker_2d_pose_y = .0
+        self.marker_2d_theta = .0
+       
+        ekf_theta.init(1,1,5)
+        ekf_x.init(1,1,5)
+        ekf_y.init(1,1,5)
+
+    def cbGetStartflag(self, startflag_msg):
+        self.start_flag = startflag_msg.data #used to bo true
+        self.start_flag = True
+
+    def cbGetRobotamcl(self, amcl):
+
+        self.robot_2d_pose_x = amcl.pose.pose.position.x
+        self.robot_2d_pose_y = amcl.pose.pose.position.y
+        self.robot_2d_orientation_z = amcl.pose.pose.orientation.z
+        self.robot_2d_orientation_w = amcl.pose.pose.orientation.w
+
+    def cbGetMarkerOdom(self, markers_odom_msg):
+        for marker_odom_msg in markers_odom_msg.markers:
+            if marker_odom_msg.id == MARKER_ID_DETECTION:
+                pos_x, pos_y, theta = self.fnGet2DMarkerPose(marker_odom_msg)
+
+                self.marker_2d_pose_x = pos_x
+                self.marker_2d_pose_y = pos_y
+                # print(self.marker_2d_pose_x,self.marker_2d_pose_y)
+                self.marker_2d_theta = theta - math.pi
+    def fnGet2DMarkerPose(self, marker_odom_msg):
+        quaternion = (marker_odom_msg.pose.pose.orientation.x, marker_odom_msg.pose.pose.orientation.y, marker_odom_msg.pose.pose.orientation.z, marker_odom_msg.pose.pose.orientation.w)
+        theta = tf.transformations.euler_from_quaternion(quaternion)[2]
+
+        theta = theta + np.pi / 2.
+        #rospy.loginfo("\ntheta : %4f ,%4f", theta,math.degrees(theta))
+
+        if theta < 0:       #normolize
+            theta = theta + np.pi * 2
+        if theta > np.pi * 2:
+            theta = theta - np.pi * 2
+
+        pos_x = marker_odom_msg.pose.pose.position.x
+        pos_y = marker_odom_msg.pose.pose.position.y
+	    
+        theta = ekf_theta.update(theta)
+        pos_x = ekf_x.update(pos_x)
+        pos_y = ekf_y.update(pos_y)
+        # print ekf_x.update(pos_x),ekf_y.update(pos_y),ekf_theta.update(theta) ,"\n"
+        return pos_x, pos_y, theta
+
+    def movebase_client(self):
+        client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+        client.wait_for_server()
+        goal = MoveBaseGoal()
+        goal.target_pose.header.frame_id = "map"
+        goal.target_pose.header.stamp = rospy.Time.now()
+        goal.target_pose.pose.position.x = self.robot_2d_pose_x - (self.marker_2d_pose_x ) / 2
+        goal.target_pose.pose.position.y = self.robot_2d_pose_y - (self.marker_2d_pose_y ) / 2
+        goal.target_pose.pose.orientation.z = self.robot_2d_orientation_z
+        goal.target_pose.pose.orientation.w = self.robot_2d_orientation_w
+
+        client.send_goal(goal)
+        print(self.robot_2d_pose_x,self.robot_2d_pose_y)
+        print("send_goal ",goal.target_pose.pose.position.x,goal.target_pose.pose.position.y)
+        wait = client.wait_for_result()
+        if not wait:
+            rospy.logerr("Action server not available!")
+            rospy.signal_shutdown("Action server not available!")
+        else:
+            return client.get_result()
+
+    def main(self):
+        rospy.spin()
+
+    def windows(self):
+        self.window = tk.Tk()
+        self.window.geometry('450x450+1700+560') 
+        self.labelrobot_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_robot_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
+
+        self.labelrobot_2d_pose_y= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_robot_2d_pose_y = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')  
+
+        self.labelrobot_2d_theta= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_robot_2d_theta = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')   
+
+        self.labelmarker_2d_pose_x= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_marker_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')        
+
+        self.labelmarker_2d_pose_y= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_marker_2d_pose_y = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')     
+
+        self.labelmarker_2d_theta= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_marker_2d_theta = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
+
+        self.labelfork_pose= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_fork_pose = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
+        
+        self.update_window()
+        self.window.mainloop()
+    
+    def update_window(self):
+        time.sleep(0.05)
+        base = 30
+
+        base1 = base+70
+        self.labelrobot_2d_pose_x.configure(text="robot_2d_pose_x: ")
+        self.labelrobot_2d_pose_x.place(x=0, y=base1)        
+        self.label_robot_2d_pose_x.configure(text=self.robot_2d_pose_x)
+        self.label_robot_2d_pose_x.place(x=200, y=base1)
+
+        self.labelrobot_2d_pose_y.configure(text="robot_2d_pose_y: ")
+        self.labelrobot_2d_pose_y.place(x=0, y=base1+30)
+        self.label_robot_2d_pose_y.place(x=200, y=base1+30)
+        self.label_robot_2d_pose_y.configure(text=self.robot_2d_pose_y)
+
+        self.labelrobot_2d_theta.configure(text="robot_2d_theta: ")
+        self.labelrobot_2d_theta.place(x=0, y=base1+60)
+        self.label_robot_2d_theta.place(x=200, y=base1+60)
+        self.label_robot_2d_theta.configure(text=self.robot_2d_theta)
+
+        base2 = base1+100
+        self.labelmarker_2d_pose_x.configure(text="marker_2d_pose_x: ")
+        self.labelmarker_2d_pose_x.place(x=0, y=base2)
+        self.label_marker_2d_pose_x.place(x=200, y=base2)
+        self.label_marker_2d_pose_x.configure(text=self.marker_2d_pose_x)
+
+        self.labelmarker_2d_pose_y.configure(text="marker_2d_pose_y: ")
+        self.labelmarker_2d_pose_y.place(x=0, y=base2+30)
+        self.label_marker_2d_pose_y.place(x=200, y=base2+30)
+        self.label_marker_2d_pose_y.configure(text=self.marker_2d_pose_y)
+
+        self.labelmarker_2d_theta.configure(text="marker_2d_theta ")
+        self.labelmarker_2d_theta.place(x=0, y=base2+60)
+        self.label_marker_2d_theta.place(x=200, y=base2+60)
+        self.label_marker_2d_theta.configure(text=self.marker_2d_theta*180.0/3.1415926)
+
+        self.window.after(100, self.update_window)
+
+if __name__ == '__main__':
+    rospy.init_node('automatic_parking_vision')
+    ekf_theta = KalmanFilter()
+    ekf_x = KalmanFilter()
+    ekf_y = KalmanFilter()    
+    node = AutomaticParkingVision()
+    node.main()
+    # node.windows()
+    
+
+    
+

@@ -1,0 +1,304 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import rospy
+# import Tkinter as tk
+from apriltag_ros.msg import AprilTagDetectionArray
+import numpy as np
+import math
+import tf
+from nav_msgs.msg import Odometry
+from std_msgs.msg import Float32
+import tkinter as tk
+from enum import Enum
+class AutomaticParkingVision():
+    def __init__(self):
+        self.sub_odom_robot = rospy.Subscriber('/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
+        self.sub_info_marker = rospy.Subscriber('/tag_detections', AprilTagDetectionArray, self.cbGetMarkerOdom, queue_size = 1)
+        self.sub_fork_position = rospy.Subscriber('/fork_position', Float32, self.cbGetfork, queue_size = 1)
+        self.ParkingSequence = Enum('ParkingSequence', 'searching_parking_lot changing_direction1 decide1 decide2 decide3 moving_nearby_parking_lot parking_1 changing_direction2 changing_direction3 changing_direction_sec parking_2 dead_reckoning stop finished  back  \
+                                     setfork  forkdown_all wait next_station')
+        self.NearbySequence = Enum('NearbySequence', 'initial_turn go_straight turn_right parking ')
+        
+        self.init_pose_and_parame()
+        self.loop_rate = rospy.Rate(20)
+        self.windows()
+    #     while not rospy.is_shutdown():
+    #         self.main()s
+    #         self.loop_rate.sleep()
+    # def main(self):
+    #     print("position.x ", self.marker_2d_pose_x)
+    # def init_pose_and_parame(self):
+    def init_pose_and_parame(self):
+        self.current_nearby_sequence = self.NearbySequence.initial_turn.value
+        self.current_parking_sequence = self.ParkingSequence.searching_parking_lot.value
+
+        self.robot_2d_pose_x = .0
+        self.robot_2d_pose_y = .0
+        self.robot_2d_theta = .0
+        self.marker_2d_pose_x = .0
+        self.marker_2d_pose_y = .0
+        self.marker_2d_theta = .0
+        self.fork_pose = .0
+        ##
+        self.parking_dist = .0
+        self.back_dist = .0
+        self.next_station_back = False
+        ##
+
+        self.previous_robot_2d_theta = .0
+        self.total_robot_2d_theta = .0
+        self.is_triggered = False
+        self.is_sequence_finished = False
+        self.is_odom_received = False
+        self.is_marker_pose_received = False
+       
+
+    def cbGetMarkerOdom(self, marker_msg):
+        pos_x, pos_y, theta = self.fnGet2DMarkerPose(marker_msg.detections[0].pose)
+        self.marker_2d_pose_x = pos_x
+        self.marker_2d_pose_y = pos_y
+        self.marker_2d_theta = theta - math.pi
+        
+
+    def fnGet2DMarkerPose(self, marker_odom_msg):
+        quaternion = (marker_odom_msg.pose.pose.orientation.x, marker_odom_msg.pose.pose.orientation.y, marker_odom_msg.pose.pose.orientation.z, marker_odom_msg.pose.pose.orientation.w)
+        theta = tf.transformations.euler_from_quaternion(quaternion)[2]
+        theta = theta + np.pi / 2.
+        if theta < 0:       #normolize
+            theta = theta + np.pi * 2
+        if theta > np.pi * 2:
+            theta = theta - np.pi * 2
+        pos_x = marker_odom_msg.pose.pose.position.x
+        pos_y = marker_odom_msg.pose.pose.position.y
+        return pos_x, pos_y, theta
+
+    def cbGetRobotOdom(self, robot_odom_msg):
+        if self.is_odom_received == False:
+            self.is_odom_received = True 
+        
+        pos_x, pos_y, theta = self.fnGet2DRobotPose(robot_odom_msg)
+
+        self.robot_2d_pose_x = pos_x
+        self.robot_2d_pose_y = pos_y
+        self.robot_2d_theta = theta
+
+        if (self.robot_2d_theta - self.previous_robot_2d_theta) > 5.:
+            d_theta = (self.robot_2d_theta - self.previous_robot_2d_theta) - 2 * math.pi
+        elif (self.robot_2d_theta - self.previous_robot_2d_theta) < -5.:
+            d_theta = (self.robot_2d_theta - self.previous_robot_2d_theta) + 2 * math.pi
+        else:
+            d_theta = (self.robot_2d_theta - self.previous_robot_2d_theta)
+
+        self.total_robot_2d_theta = self.total_robot_2d_theta + d_theta
+        self.previous_robot_2d_theta = self.robot_2d_theta
+        self.robot_2d_theta = self.total_robot_2d_theta
+
+    def fnGet2DRobotPose(self, robot_odom_msg):
+        quaternion = (robot_odom_msg.pose.pose.orientation.x, robot_odom_msg.pose.pose.orientation.y, robot_odom_msg.pose.pose.orientation.z, robot_odom_msg.pose.pose.orientation.w)
+        theta = tf.transformations.euler_from_quaternion(quaternion)[2]
+
+        if theta < 0:
+            theta = theta + np.pi * 2
+        if theta > np.pi * 2:
+            theta = theta - np.pi * 2
+
+        pos_x = robot_odom_msg.pose.pose.position.x
+        pos_y = robot_odom_msg.pose.pose.position.y
+
+        return pos_x, pos_y, theta
+
+    def cbGetfork(self, fork_psition_msg):
+        self.fork_pose = fork_psition_msg.data #used to bo true
+
+    def spin(self):
+        rospy.spin()
+    def start(self):
+        self.start_flag = not self.start_flag
+    def dead(self):
+        self.current_parking_sequence = self.ParkingSequence.dead_reckoning.value
+    def ALL_Down(self):
+        self.current_parking_sequence = self.ParkingSequence.forkdown_all.value
+    def forklayer_1(self):
+        self.current_parking_sequence = self.ParkingSequence.forkdown_all.value
+        # self.desire_fork = 0.0
+    def forklayer_1_1(self):
+        self.current_parking_sequence = self.ParkingSequence.setfork.value
+        self.desire_fork = 0.04
+    def forklayer_2(self):
+        self.current_parking_sequence = self.ParkingSequence.setfork.value
+        self.desire_fork = 0.42
+    def forklayer_2_2(self):
+        self.current_parking_sequence = self.ParkingSequence.setfork.value
+        self.desire_fork = 0.47
+    def windows(self):
+        self.window = tk.Tk()
+        self.window.geometry('450x450+1700+560') 
+        button_base = 35
+        # 還沒做雙相機
+        # self.cambutton = tk.Button(self.window, text = "camera", command = self.cam)
+        # self.cambutton.place(x = 0, y = 0)
+        self.start_button = tk.Button(self.window, text = "start", command = self.start)
+        self.start_button.place(x = 80, y = 0)
+        self.deadbutton = tk.Button(self.window, text = "dead_reckoning", command = self.dead)
+        self.deadbutton.place(x = 140, y = 0)
+        self.forkdownbutton = tk.Button(self.window, text = "ALL_Down", command = self.ALL_Down)
+        self.forkdownbutton.place(x = 270, y = 0)
+
+        self.forkbutton1 = tk.Button(self.window, text = "layer_1", command = self.forklayer_1)
+        self.forkbutton1.place(x = 0, y = button_base+30)
+        self.forkbutton1_1 = tk.Button(self.window, text = "layer_1_1", command = self.forklayer_1_1)
+        self.forkbutton1_1.place(x = 0, y = button_base)
+        self.forkbutton2 = tk.Button(self.window, text = "layer_2", command = self.forklayer_2)
+        self.forkbutton2.place(x = 100, y = button_base+30)
+        self.forkbutton2_2 = tk.Button(self.window, text = "layer_2_2", command = self.forklayer_2_2)
+        self.forkbutton2_2.place(x = 100, y = button_base)
+
+
+        self.cam_flag = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.cam_start_flag = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+
+        self.buttonstart_flag = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.button_start_flag = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        
+
+        self.labelParkingSequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_ParkingSequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
+
+        self.labelNearbySequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_NearbySequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
+
+        self.labelrobot_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_robot_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
+
+        self.labelrobot_2d_pose_y= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_robot_2d_pose_y = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')  
+
+        self.labelrobot_2d_theta= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_robot_2d_theta = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')   
+
+        self.labelmarker_2d_pose_x= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_marker_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')        
+
+        self.labelmarker_2d_pose_y= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_marker_2d_pose_y = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')     
+
+        self.labelmarker_2d_theta= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_marker_2d_theta = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
+
+        self.labelfork_pose= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
+        self.label_fork_pose = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
+        
+        self.update_window()
+        self.window.mainloop()
+
+    def update_window(self):
+
+        if self.is_odom_received is True and self.start_flag is True:
+                self.fnParking()        
+        self.loop_rate.sleep()
+
+        # if self.set_camera == True:
+        #     camera = "up_camera"
+        # else:
+        #     camera = "down_camera"
+
+        if self.current_parking_sequence == self.ParkingSequence.searching_parking_lot.value:
+            sequence = "searching_parking_lot"
+        elif self.current_parking_sequence == self.ParkingSequence.changing_direction1.value:
+            sequence = "changing_direction1"
+        elif self.current_parking_sequence == self.ParkingSequence.decide1.value:
+            sequence = "decide1"            
+        elif self.current_parking_sequence == self.ParkingSequence.back.value:
+            sequence = "back"
+        elif self.current_parking_sequence == self.ParkingSequence.changing_direction2.value:
+            sequence = "changing_direction2"    
+        elif self.current_parking_sequence == self.ParkingSequence.decide2.value:
+            sequence = "decide2"           
+        elif self.current_parking_sequence == self.ParkingSequence.moving_nearby_parking_lot.value:
+            sequence = "moving_nearby_parking_lot"
+        elif self.current_parking_sequence == self.ParkingSequence.parking_1.value:
+            sequence = "parking_1"
+        elif self.current_parking_sequence == self.ParkingSequence.changing_direction3.value:
+            sequence = "changing_direction3"    
+        elif self.current_parking_sequence == self.ParkingSequence.decide3.value:
+            sequence = "decide3" 
+        elif self.current_parking_sequence == self.ParkingSequence.changing_direction_sec.value:
+            sequence = "changing_direction_sec" 
+        elif self.current_parking_sequence == self.ParkingSequence.setfork.value:
+            sequence = "setfork"
+        elif self.current_parking_sequence == self.ParkingSequence.parking_2.value:
+            sequence = "parking_2"
+        elif self.current_parking_sequence == self.ParkingSequence.dead_reckoning.value:
+            sequence = "dead_reckoning"
+        elif self.current_parking_sequence == self.ParkingSequence.wait.value:
+            sequence = "wait"
+        elif self.current_parking_sequence == self.ParkingSequence.next_station.value:
+            sequence = "next_station"            
+        elif self.current_parking_sequence == self.ParkingSequence.stop.value:
+            sequence = "stop"
+        elif self.current_parking_sequence == self.ParkingSequence.finished.value:
+            sequence = "finished"
+        elif self.current_parking_sequence == self.ParkingSequence.forkdown_all.value:
+            sequence = "forkdown_all"
+
+        base0 = 100
+        # self.cam_start_flag.configure(text="camera")
+        # self.cam_start_flag.place(x=0, y=base0)        
+        # self.cam_flag.configure(text=camera)
+        # self.cam_flag.place(x=200, y=base0)
+                
+        base = base0+30
+        self.buttonstart_flag.configure(text="start_flag ")
+        self.buttonstart_flag.place(x=0, y=base)        
+        self.button_start_flag.configure(text=self.start_flag)
+        self.button_start_flag.place(x=200, y=base)
+
+        self.labelParkingSequence.configure(text="ParkingSequence ")
+        self.labelParkingSequence.place(x=0, y=base+30)        
+        self.label_ParkingSequence.configure(text=sequence)
+        self.label_ParkingSequence.place(x=200, y=base+30)
+
+        base1 = base+70
+        self.labelrobot_2d_pose_x.configure(text="robot_2d_pose_x: ")
+        self.labelrobot_2d_pose_x.place(x=0, y=base1)        
+        self.label_robot_2d_pose_x.configure(text=self.robot_2d_pose_x)
+        self.label_robot_2d_pose_x.place(x=200, y=base1)
+
+        self.labelrobot_2d_pose_y.configure(text="robot_2d_pose_y: ")
+        self.labelrobot_2d_pose_y.place(x=0, y=base1+30)
+        self.label_robot_2d_pose_y.place(x=200, y=base1+30)
+        self.label_robot_2d_pose_y.configure(text=self.robot_2d_pose_y)
+
+        self.labelrobot_2d_theta.configure(text="robot_2d_theta: ")
+        self.labelrobot_2d_theta.place(x=0, y=base1+60)
+        self.label_robot_2d_theta.place(x=200, y=base1+60)
+        self.label_robot_2d_theta.configure(text=self.robot_2d_theta)
+
+        base2 = base1+100
+        self.labelmarker_2d_pose_x.configure(text="marker_2d_pose_x: ")
+        self.labelmarker_2d_pose_x.place(x=0, y=base2)
+        self.label_marker_2d_pose_x.place(x=200, y=base2)
+        self.label_marker_2d_pose_x.configure(text=self.marker_2d_pose_x)
+
+        self.labelmarker_2d_pose_y.configure(text="marker_2d_pose_y: ")
+        self.labelmarker_2d_pose_y.place(x=0, y=base2+30)
+        self.label_marker_2d_pose_y.place(x=200, y=base2+30)
+        self.label_marker_2d_pose_y.configure(text=self.marker_2d_pose_y)
+
+        self.labelmarker_2d_theta.configure(text="marker_2d_theta ")
+        self.labelmarker_2d_theta.place(x=0, y=base2+60)
+        self.label_marker_2d_theta.place(x=200, y=base2+60)
+        self.label_marker_2d_theta.configure(text=math.degrees(self.marker_2d_theta))
+
+        base3 = base2+100
+        self.labelfork_pose.configure(text="fork_pose ")
+        self.labelfork_pose.place(x=0, y=base3)
+        self.label_fork_pose.place(x=200, y=base3)
+        self.label_fork_pose.configure(text=self.fork_pose)
+        self.window.after(100, self.update_window)
+
+if __name__ == '__main__':
+    rospy.init_node('automatic_parking_vision')
+    node = AutomaticParkingVision()
+    node.spin()

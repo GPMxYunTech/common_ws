@@ -1,0 +1,16 @@
+#goal         
+int64 max_number
+string strControlType
+string target_name
+# This contains the position of a point in free space
+geometry_msgs/Pose target_pose
+# This represents an orientation in free space in quaternion form.
+geometry_msgs/Quaternion target_quaternion 
+string PBVSAction # NA, shelf, load() , unload()
+---
+#result
+int64 count
+---
+#feedback
+float64 percentage
+geometry_msgs/Pose c_pos

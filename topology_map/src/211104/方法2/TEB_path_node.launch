@@ -1,0 +1,17 @@
+<launch>
+  <node pkg="miniagv_nav" name="TEB_path_node" type="TEB_path_node">
+    <param name="path_point" type="int" value= '1' />
+  </node>
+
+  <node pkg="miniagv_nav" name="teb_pose_tf" type="robot_pose_publisher">
+    <param name="map_frame" type="string" value= '/map' />
+    <param name="base_frame" type="string" value= '/TEB_pose' />
+    <param name="publish_frame" type="string" value= '/TEB_pose_tf' />
+  </node>
+  
+</launch>
+
+<!--
+0 is robot position 
+path_point need high than 0
+-->

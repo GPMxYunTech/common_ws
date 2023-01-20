@@ -1,0 +1,36 @@
+方法1：修正角度依據AGV現在的位置與目標點的角度差
+	若AGV偏離原本路徑太遠，可能會斜走
+	請根據211001版本barcodemove的2417行，取得AGV與目標點的角度差
+	line_ang = CalculateLineAngle(grobot_pose,nextgoal_pose); //1104 char add
+
+
+方法2：根據路徑間的點位修正角度
+	TEB更新頻率過高，可能會導致不斷修正角度使AGV蛇行
+1.將TEB_path_node.luanch 放入miniagv_nav/launch
+path_point為TEB規劃的路徑節點，0為現在位置，數值越大距離越遠，節點數量與teb參數有關
+若path_point大於最大結點數，將設定為最大節點
+
+2.將TEB_path_node.cpp 及 robot_pose_publisher.cpp 放入miniagv_nav/src
+3.將
+	add_executable(TEB_path_node src/TEB_path_node.cpp)
+	target_link_libraries(TEB_path_node ${catkin_LIBRARIES})
+	加入miniagv_nav/CMakeLists.txt
+4.將211104版barcodemove中有  //1104 char  /* teb_path */ 的內容加入
+
+181：
+ros::Subscriber TEB_path_sub ;  //1104 char  /* teb_path */
+
+231：
+geometry_msgs::Pose TEB_path_pose; //1104 char  /* teb_path */
+
+949-952：
+void TEB_path_tf_callBack(const geometry_msgs::Pose &pose_tmp)//1104 char  /* teb_path */
+{
+  TEB_path_pose =pose_tmp;
+}
+
+2422：            
+line_ang =  atan2((TEB_path_pose.position.y - grobot_pose.getOrigin().y()), (TEB_path_pose.position.x - grobot_pose.getOrigin().x()));//1104 char  /* teb_path */
+
+3131：
+  TEB_path_sub =  n.subscribe("/TEB_pose_tf", 1, &TEB_path_tf_callBack);  //1104 char  /* teb_path */

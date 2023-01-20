@@ -1,0 +1,5 @@
+先啟動realsense
+//要去改跟realsense一樣的topic name
+roslaunch apriltag_ros continuous_detection.launch
+//啟動真偵測apriltag
+

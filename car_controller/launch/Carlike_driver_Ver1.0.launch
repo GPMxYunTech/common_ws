@@ -1,0 +1,26 @@
+<launch>
+	<param name="/use_sim_time" value="false" />
+  
+	<node pkg="car_controller" name="ros_communication" type="ros_communication" output="screen">
+	    <param name="odom_use_imu"  	type="bool"  	value="true"/>
+	    <param name="fork_init"  		type="bool"  	value="true"/>
+	    <param name="tf_publish"  		type="bool" 	value="false"/>
+	    <param name="max_steer_ang"  	type="double"  	value="30.0"/>
+	    <param name="Ka_odom"  			type="double"  	value="0.975"/>
+	    <param name="wheel_base"  		type="double"  	value="0.3"/>
+
+		<param name="odom_topic_name"			type="string"	value="wheel_odom"/>
+
+		<param name="odom_header_tf_name"		type="string"	value="wheel_odom"/>
+		<param name="odom_child_tf_name"		type="string"	value="base_link"/>
+
+		<param name="odom_header_topic_name"	type="string"	value="wheel_odom"/>
+		<param name="odom_child_topic_name"		type="string"	value="base_link"/>
+		
+		<param name="fork_header_tf_name"		type="string"	value="base_link"/>
+		<param name="fork_child_tf_name"		type="string"	value="fork"/>
+
+
+	</node>
+
+</launch>

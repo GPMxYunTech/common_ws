@@ -1,0 +1,13 @@
+<launch>
+	<param name="/use_sim_time" value="false" />
+  
+	<node pkg="car_controller" name="car_driver" type="car_driver" output="screen">
+	    <param name="odom_use_imu"  	type="bool"  	value="true"/>
+	    <param name="fork_init"  		type="bool"  	value="false"/>
+	    <param name="tf_publish"  		type="bool" 	value="false"/>
+	    <param name="max_steer_ang"  	type="double"  	value="30.0"/>
+	    <param name="Ka_odom"  			type="double"  	value="0.975"/>
+	    <param name="wheel_base"  		type="double"  	value="0.3"/>
+	</node>
+
+</launch>

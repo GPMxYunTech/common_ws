@@ -1,0 +1,51 @@
+<launch>
+  <!-- multi_goal_loop -->
+  <node pkg="dashgo_tools" name="multi_goal_loop" type="multi_goal_loop" output="screen">
+    <rosparam param= "goal_list">
+    <!--x, y, z, w-->
+    [
+     -0.196, 7.732,-0.702, 0.713,
+     -0.196, 7.732,1.000, -0.008,
+     0.6855, 7.697,1.000, -0.008,
+     1.567, 7.662,1.000, -0.008,
+     -0.196, 7.732,1.000, -0.008,
+     -0.196, 7.732,-0.702, 0.713,
+     -0.212, 5.915, -0.717, 0.697
+    ]
+    <rosparam param= "node">
+    [
+     5
+    ]
+<rosparam param= "path">
+[
+ 7
+]
+<rosparam param= "p">
+[
+	1,1,1,2,3,4,4
+]
+<rosparam param= "q">
+[
+	2,4,5,3,5,3,5
+]
+<rosparam param= "len">
+[
+	10,30,100,50,10,20,60
+]
+    <!--
+    deg    = z, w
+    0deg   = 0, 1
+    90deg  = 0.707, 0.707
+    180deg = 1, 0
+    270deg = 0.707, -0.707
+
+    [
+    -1.75, 1, 0, 1,
+    -1.75, 0, 0, 1,
+    -1.75, -1, 0, 1
+    ]
+
+    -->
+    </rosparam>
+  </node>
+</launch>
