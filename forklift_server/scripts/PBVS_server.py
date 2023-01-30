@@ -7,14 +7,14 @@ import forklift_server.msg
 import tf
 from apriltag_ros.msg import AprilTagDetectionArray
 from nav_msgs.msg import Odometry
-from std_msgs.msg import Float32
 import math
+from gpm_msg.msg import forkposition
 
 class Subscriber():
     def __init__(self):
         self.sub_info_marker = rospy.Subscriber('/tag_detections', AprilTagDetectionArray, self.cbGetMarker, queue_size = 1)
         self.sub_odom_robot = rospy.Subscriber('/wheel_odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
-        self.fork_psition = rospy.Subscriber('/fork_position', Float32, self.cbGetfork, queue_size = 1)
+        self.sub_forwardbackpostion = rospy.Subscriber('/forkpos', forkposition, self.cbGetforkpos, queue_size = 1)
         self.init_parame()
 
     def init_parame(self):
@@ -31,12 +31,15 @@ class Subscriber():
         self.marker_2d_pose_y = 0.0
         self.marker_2d_theta = 0.0
         # Forklift_param
-        self.fork_pose = 0.0
+        self.forwardbackpostion = 0.0
+        self.updownposition = 0.0
 
     def SpinOnce(self):
         return self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
                self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta, \
                self.fork_pose
+    def SpinOnce_fork(self):
+        return self.forwardbackpostion, self.updownposition
 
     def cbGetMarker(self, msg):
         try:
@@ -78,8 +81,9 @@ class Subscriber():
 
         self.robot_2d_theta = self.total_robot_2d_theta
 
-    def cbGetfork(self, msg):
-        self.fork_pose = msg.data
+    def cbGetforkpos(self, msg):
+        self.forwardbackpostion = msg.forwardbackpostion
+        self.updownposition = msg.updownposition
 
 class PBVSAction():
     def __init__(self, name):
@@ -91,16 +95,14 @@ class PBVSAction():
     def execute_cb(self, msg):
         rospy.loginfo('PBVS receive command : %s' % (msg))
         #TODO 對位與取放貨分開
-        #sample msg 'shelf/1/1'
         #TODO 棧板高度參數要加 
-        command = str(msg).split('/')
-
+        
         # if self._as.is_preempt_requested():
         #     del self.PBVS
         #     rospy.loginfo('%s: Preempted' % self._action_name)
         #     self._as.set_preempted()
         #     success = False
-        self.PBVS = PBVS(self._as, self.subscriber, command)
+        self.PBVS = PBVS(self._as, self.subscriber, int(msg))
         rospy.logwarn('PBVS Succeeded')
         self.PBVS = None
 
