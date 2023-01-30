@@ -5,13 +5,24 @@ import numpy as np
 import math
 from geometry_msgs.msg import Twist
 from enum import Enum
-
+from gpm_msg.msg import forklift
 class Action():
     def __init__(self, Subscriber):
+        # cmd_vel
         self.cmd_vel = cmd_vel()
         self.Subscriber = Subscriber
         self.NearbySequence = Enum('NearbySequence', 'initial_turn go_straight turn_right parking ')
         self.current_nearby_sequence = self.NearbySequence.initial_turn.value
+        # fork_cmd
+        self.pub_fork = rospy.Publisher('/cmd_fork', forklift, queue_size = 1)
+        self.forkmotion = Enum('forkmotion', 
+                        'stop \
+                        up \
+                        down \
+                        forward \
+                        backword \
+                        tilt_forward \
+                        tilt_backword')
         # Odometry_param
         self.is_odom_received = False
         self.robot_2d_pose_x = 0.0
@@ -23,7 +34,9 @@ class Action():
         self.marker_2d_pose_y = 0.0
         self.marker_2d_theta = 0.0
         # Fork_param
-        self.fork_pose = 0.0
+        self.forwardbackpostion = 0.0
+        self.updownposition = 0.0
+        self.fork_threshold = 0.05
         # other
         self.check_wait_time = 0
         self.is_triggered = False
@@ -32,7 +45,33 @@ class Action():
         (self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
          self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta, \
          self.fork_pose)=self.Subscriber.SpinOnce()
+    def update_fork(self):
+        self.forwardbackpostion, self.updownposition = self.Subscriber.SpinOnce_fork()
     
+    def fork_updown(self, desired_updownposition):
+        self.update_fork()
+        if self.updownposition < desired_updownposition - self.fork_threshold:
+            self.pub_fork.publish(self.forkmotion.up.value)
+            return False
+        elif self.updownposition > desired_updownposition + self.fork_threshold:
+            self.pub_fork.publish(self.forkmotion.down.value)
+            return False
+        else:
+            self.pub_fork.publish(self.forkmotion.stop.value)
+            return True
+
+    def fork_forwardback(self, desired_forwardbackpostion):
+        self.update_fork()
+        if self.forwardbackpostion < desired_forwardbackpostion - self.fork_threshold:
+            self.pub_fork.publish(self.forkmotion.forward.value)
+            return False
+        elif self.forwardbackpostion > desired_forwardbackpostion + self.fork_threshold:
+            self.pub_fork.publish(self.forkmotion.backword.value)
+            return False
+        else:
+            self.pub_fork.publish(self.forkmotion.stop.value)
+            return True
+            
     def fnSeqChangingDirection(self):
         self.SpinOnce()
         desired_angle_turn = -1. *  math.atan2(self.marker_2d_pose_y - 0, self.marker_2d_pose_x - 0)
@@ -196,31 +235,31 @@ class Action():
         else:
             return False
 
-    def fnSeqfork(self, desire_fork):
-        if(self.fork_pose < desire_fork-0.01):
-            self.cmd_vel.fnfork(1)
-            return False
-        elif(self.fork_pose > desire_fork+0.01):
-            self.cmd_vel.fnfork(-1)
-            return False
-        else:
-            self.cmd_vel.fnStop()
-            return True
+    # def fnSeqfork(self, desire_fork):
+    #     if(self.fork_pose < desire_fork-0.01):
+    #         self.cmd_vel.fnfork(1)
+    #         return False
+    #     elif(self.fork_pose > desire_fork+0.01):
+    #         self.cmd_vel.fnfork(-1)
+    #         return False
+    #     else:
+    #         self.cmd_vel.fnStop()
+    #         return True
             
-    def fnseqdead_reckoning(self, dead_reckoning_dist):
-        if self.is_triggered == False:
-            self.is_triggered = True
-            self.initial_robot_pose_x = self.robot_2d_pose_x
-            self.initial_marker_pose_x = self.marker_2d_pose_x 
-        self.dist = abs(self.marker_2d_pose_x - self.initial_marker_pose_x)
+    # def fnseqdead_reckoning(self, dead_reckoning_dist):
+    #     if self.is_triggered == False:
+    #         self.is_triggered = True
+    #         self.initial_robot_pose_x = self.robot_2d_pose_x
+    #         self.initial_marker_pose_x = self.marker_2d_pose_x 
+    #     self.dist = abs(self.marker_2d_pose_x - self.initial_marker_pose_x)
 
-        if self.dist > dead_reckoning_dist:
-            self.fnStop()
-            self.is_triggered = False
-            return True
-        else:
-            self.fnGoStraight(self.dist)
-            return False
+    #     if self.dist > dead_reckoning_dist:
+    #         self.fnStop()
+    #         self.is_triggered = False
+    #         return True
+    #     else:
+    #         self.fnGoStraight(self.dist)
+    #         return False
 
     def fnCalcDistPoints(self, x1, x2, y1, y2):
         return math.sqrt((x1 - x2) ** 2. + (y1 - y2) ** 2.)
@@ -229,6 +268,7 @@ class Action():
 class cmd_vel():
     def __init__(self):
         self.pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)
+
         self.front = False
 
     def cmd_pub(self, twist):

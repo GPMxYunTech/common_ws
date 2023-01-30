@@ -36,8 +36,7 @@ class Subscriber():
 
     def SpinOnce(self):
         return self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
-               self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta, \
-               self.fork_pose
+               self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta
     def SpinOnce_fork(self):
         return self.forwardbackpostion, self.updownposition
 
@@ -102,7 +101,7 @@ class PBVSAction():
         #     rospy.loginfo('%s: Preempted' % self._action_name)
         #     self._as.set_preempted()
         #     success = False
-        self.PBVS = PBVS(self._as, self.subscriber, int(msg))
+        self.PBVS = PBVS(self._as, self.subscriber, int(msg.command))
         rospy.logwarn('PBVS Succeeded')
         self.PBVS = None
 
