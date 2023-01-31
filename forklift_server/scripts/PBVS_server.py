@@ -102,7 +102,8 @@ class PBVSAction():
         #     self._as.set_preempted()
         #     success = False
         self.PBVS = PBVS(self._as, self.subscriber, int(msg.command))
-        rospy.logwarn('PBVS Succeeded')
+        #up 8
+        #down 14
         self.PBVS = None
 
 if __name__ == '__main__':
