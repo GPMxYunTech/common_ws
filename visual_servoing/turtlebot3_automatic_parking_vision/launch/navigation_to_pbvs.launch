@@ -1,5 +1,0 @@
-<launch>
-
-  <node pkg="turtlebot3_automatic_parking_vision" type="navigation_to_pbvs" name="navigation_to_pbvs" output="screen"/>
-
-</launch>

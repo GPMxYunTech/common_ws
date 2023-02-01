@@ -1,0 +1,21 @@
+<launch>
+ 	<!-- <node pkg="tf" type="static_transform_publisher" name="camera2baselink_publisher" args="0 0.035 0.5 -3.14 0 0 base_link cameraUP_link 10" /> -->
+
+  <arg name="marker_size" default="5.0" />
+  <arg name="max_new_marker_error" default="0.02" />
+  <arg name="max_track_error" default="0.1" />
+  <arg name="cam_image_topic" default="/cameraUP/color/image_raw"/>
+  <arg name="cam_info_topic" default="/cameraUP/color/camera_info" />	
+  <arg name="output_frame" default="base_link" />
+  <arg name="ar_pose_marker_topic" default="/ar_pose_marker" />
+  <arg name="visualization_marker_topic" default="/visualization_marker" />
+  <arg name="markerFrame" default="/ar_marker_" />
+  <arg name="odd_or_even" default="0" />
+  <arg name="trigger_" default="trigger_up" />
+
+  <node name="ar_track_alvar_up" pkg="ar_track_alvar" type="individualMarkersNoKinect_" respawn="false" output="screen" 
+    args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame) $(arg ar_pose_marker_topic) $(arg visualization_marker_topic) $(arg markerFrame) $(arg odd_or_even) $(arg trigger_)" />
+</launch>
+
+
+
