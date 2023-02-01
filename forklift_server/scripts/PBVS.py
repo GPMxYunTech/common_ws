@@ -49,7 +49,7 @@ class PBVS():
         rospy.logwarn('delete PBVS')
      
     def PBVS(self):
-        self._feedback.feedback = self.current_parking_sequence
+        self._feedback.feedback = str(self.ParkingSequence(self.current_parking_sequence))
         self._as.publish_feedback(self._feedback)
         # ============parking============
         if self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
@@ -174,7 +174,7 @@ class PBVS():
         self.PBVS()
 
         (robot_2d_pose_x, robot_2d_pose_y, robot_2d_theta, marker_2d_pose_x, marker_2d_pose_y, marker_2d_theta) = self.Subscriber.SpinOnce()
-    
+
         if self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
             sequence = "changing_direction"
         elif self.current_parking_sequence == self.ParkingSequence.changing_direction_2.value:

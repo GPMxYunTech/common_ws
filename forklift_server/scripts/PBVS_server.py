@@ -95,18 +95,26 @@ class PBVSAction():
         rospy.loginfo('PBVS receive command : %s' % (msg))
         #TODO 對位與取放貨分開
         #TODO 棧板高度參數要加 
-        
         # if self._as.is_preempt_requested():
         #     del self.PBVS
         #     rospy.loginfo('%s: Preempted' % self._action_name)
         #     self._as.set_preempted()
         #     success = False
-        self.PBVS = PBVS(self._as, self.subscriber, int(msg.command))
-        #up 8
-        #down 14
+
+        if msg.command == "parking":
+            rospy.loginfo("parking")
+            self.PBVS = PBVS(self._as, self.subscriber, 1)
+        elif msg.command == "up":
+            rospy.loginfo("up")
+            self.PBVS = PBVS(self._as, self.subscriber, 8)
+        elif msg.command == "down":
+            rospy.loginfo("down")
+            self.PBVS = PBVS(self._as, self.subscriber, 14)
+        # up 8 down 14 stop 18
         self.PBVS = None
 
 if __name__ == '__main__':
     rospy.init_node('PBVS')
+    rospy.loginfo('PBVS start')
     server = PBVSAction(rospy.get_name())
     rospy.spin()
