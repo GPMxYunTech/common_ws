@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import rospy
 import numpy as np
@@ -43,8 +43,7 @@ class Action():
 
     def SpinOnce(self):
         (self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
-         self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta, \
-         self.fork_pose)=self.Subscriber.SpinOnce()
+         self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta)=self.Subscriber.SpinOnce()
     def update_fork(self):
         self.forwardbackpostion, self.updownposition = self.Subscriber.SpinOnce_fork()
     
@@ -104,6 +103,7 @@ class Action():
 
     def fnSeqMovingNearbyParkingLot(self):
         self.SpinOnce()
+        print(self.NearbySequence(self.current_nearby_sequence))
         if self.current_nearby_sequence == self.NearbySequence.initial_turn.value:
             if self.is_triggered == False:
                 self.is_triggered = True
@@ -122,7 +122,7 @@ class Action():
             desired_angle_turn = -1. * desired_angle_turn
             self.cmd_vel.fnTurn(desired_angle_turn)
 
-            if abs(desired_angle_turn) < 0.03:
+            if abs(desired_angle_turn) < 0.05:
                 self.cmd_vel.fnStop()
                 if self.check_wait_time >10:
                     self.check_wait_time = 0
@@ -306,9 +306,12 @@ class cmd_vel():
         self.cmd_pub(twist)
 
     def fnTurn(self, theta):
-        Kp = 1.0 #1.0
- 
-        angular_z = Kp * theta
+        Kp = 0.5 #1.0
+        if theta>0:
+            angular_z = 0.15
+        elif theta<0:
+            angular_z = -0.15
+        
 
         twist = Twist()
         twist.linear.x = 0
@@ -323,7 +326,7 @@ class cmd_vel():
 
     def fnGoStraight(self,v):
         twist = Twist()
-        twist.linear.x = v*0.8
+        twist.linear.x = v*0.3
         twist.linear.y = 0
         twist.linear.z = 0
         twist.angular.x = 0
@@ -356,7 +359,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 0.8
+        Kp = 0.5
 
         angular_z = Kp * theta
 

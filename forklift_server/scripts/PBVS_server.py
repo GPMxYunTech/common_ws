@@ -1,5 +1,5 @@
-#! /usr/bin/env python3
-
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
 import rospy
 import actionlib
 from PBVS import PBVS
@@ -13,7 +13,7 @@ from gpm_msg.msg import forkposition
 class Subscriber():
     def __init__(self):
         self.sub_info_marker = rospy.Subscriber('/tag_detections', AprilTagDetectionArray, self.cbGetMarker, queue_size = 1)
-        self.sub_odom_robot = rospy.Subscriber('/wheel_odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
+        self.sub_odom_robot = rospy.Subscriber('/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
         self.sub_forwardbackpostion = rospy.Subscriber('/forkpos', forkposition, self.cbGetforkpos, queue_size = 1)
         self.init_parame()
 
