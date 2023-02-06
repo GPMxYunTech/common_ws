@@ -74,7 +74,7 @@ class Action():
     def fnSeqChangingDirection(self):
         self.SpinOnce()
         desired_angle_turn = -1. *  math.atan2(self.marker_2d_pose_y - 0, self.marker_2d_pose_x - 0)
-        # print("desired_angle_turn",desired_angle_turn)
+        
         if desired_angle_turn <0:
             desired_angle_turn = desired_angle_turn + math.pi
         else:
@@ -122,7 +122,7 @@ class Action():
             desired_angle_turn = -1. * desired_angle_turn
             self.cmd_vel.fnTurn(desired_angle_turn)
 
-            if abs(desired_angle_turn) < 0.05:
+            if abs(desired_angle_turn) < 0.03:
                 self.cmd_vel.fnStop()
                 if self.check_wait_time >10:
                     self.check_wait_time = 0
@@ -204,8 +204,6 @@ class Action():
                 desired_angle_turn = desired_angle_turn + math.pi
             else:
                 desired_angle_turn = desired_angle_turn - math.pi
-
-        parking_dist = 0.5 #0.55
 
 
         self.cmd_vel.fnTrackMarker(-desired_angle_turn)
@@ -306,11 +304,8 @@ class cmd_vel():
         self.cmd_pub(twist)
 
     def fnTurn(self, theta):
-        Kp = 0.5 #1.0
-        if theta>0:
-            angular_z = 0.15
-        elif theta<0:
-            angular_z = -0.15
+        Kp = 1.0 #1.0
+        angular_z = Kp * theta
         
 
         twist = Twist()
@@ -326,7 +321,7 @@ class cmd_vel():
 
     def fnGoStraight(self,v):
         twist = Twist()
-        twist.linear.x = v*0.3
+        twist.linear.x = v*0.8
         twist.linear.y = 0
         twist.linear.z = 0
         twist.angular.x = 0
@@ -359,7 +354,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 0.5
+        Kp = 0.8
 
         angular_z = Kp * theta
 

@@ -13,7 +13,7 @@
     <remap from="image_rect" to="$(arg camera_name)/$(arg image_topic)" />
     <remap from="camera_info" to="$(arg camera_name)/camera_info" />
 
-    <param name="publish_tag_detections_image" type="bool" value="true" />      <!-- default: false -->
+    <param name="publish_tag_detections_image" type="bool" value="false" />      <!-- default: false -->
   </node>
 </launch>
 
