@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import rospy
 import actionlib
@@ -13,7 +13,7 @@ from gpm_msg.msg import forkposition
 class Subscriber():
     def __init__(self):
         self.sub_info_marker = rospy.Subscriber('/tag_detections', AprilTagDetectionArray, self.cbGetMarker, queue_size = 1)
-        self.sub_odom_robot = rospy.Subscriber('/wheel_odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
+        self.sub_odom_robot = rospy.Subscriber('/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
         self.sub_forwardbackpostion = rospy.Subscriber('/forkpos', forkposition, self.cbGetforkpos, queue_size = 1)
         self.init_parame()
 
@@ -94,17 +94,17 @@ class PBVSAction():
     def execute_cb(self, msg):
         rospy.loginfo('PBVS receive command : %s' % (msg))
         #TODO 棧板高度參數要加 
-        command = msg.command.split("/")
+        command = msg.command
 
-        if msg.command[0] == "parking":
+        if msg.command == "parking":
             rospy.loginfo("parking")
-            self.PBVS = PBVS(self._as, self.subscriber, 1, int(command[1]))
-        elif msg.command[0] == "up":
+            self.PBVS = PBVS(self._as, self.subscriber, 1, command)
+        elif msg.command == "up":
             rospy.loginfo("up")
-            self.PBVS = PBVS(self._as, self.subscriber, 8, int(command[1]))
-        elif msg.command[0] == "down":
+            self.PBVS = PBVS(self._as, self.subscriber, 8, command)
+        elif msg.command == "down":
             rospy.loginfo("down")
-            self.PBVS = PBVS(self._as, self.subscriber, 14, int(command[1]))
+            self.PBVS = PBVS(self._as, self.subscriber, 14, command)
         # up 8 down 14 stop 18 parking 1 
         self.PBVS = None
 

@@ -4,7 +4,7 @@ import rospy
 import forklift_server.msg
 from enum import Enum
 import math
-import tkinter as tk
+import Tkinter as tk
 from PBVS_Action import Action
 class PBVS():
     _feedback = forklift_server.msg.PBVSFeedback()
@@ -42,7 +42,7 @@ class PBVS():
     def init_PBVS_parame(self):
         self.is_sequence_finished = False
         self.current_parking_sequence = self.Sequence
-        self.Parking_distance = 0.3 # meter
+        self.Parking_distance = 1.0 # meter
     def __del__(self):
         rospy.logwarn('delete PBVS')
      

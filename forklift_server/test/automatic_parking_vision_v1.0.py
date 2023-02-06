@@ -16,7 +16,7 @@ from geometry_msgs.msg import PoseWithCovarianceStamped
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import math
 # from ekf import KalmanFilter
-import tkinter as tk
+import Tkinter as tk
 from std_msgs.msg import String
 
 
@@ -26,7 +26,7 @@ class AutomaticParkingVision():
     def __init__(self):
         self.sub_odom_robot = rospy.Subscriber('command', String, self.cbGetCommand, queue_size = 100)
         self.pub_wait = rospy.Publisher('wait', Bool, queue_size=100)
-        self.sub_odom_robot = rospy.Subscriber('/wheel_odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
+        self.sub_odom_robot = rospy.Subscriber('/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
         self.sub_info_fixedmarker = rospy.Subscriber('/fixed', PoseWithCovarianceStamped, self.cbGetFixedMarkerOdom, queue_size = 1)
 #############
         self.sub_info_marker = rospy.Subscriber('/tag_detections', AprilTagDetectionArray, self.cbGetMarkerOdom_up, queue_size = 1) 

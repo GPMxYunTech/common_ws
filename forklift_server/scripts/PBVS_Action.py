@@ -273,10 +273,10 @@ class cmd_vel():
         if not self.front:
             twist.linear.x = -twist.linear.x
 
-        if twist.angular.z > 0.8:
-            twist.angular.z =0.8 
-        elif twist.angular.z < -0.8:
-            twist.angular.z =-0.8 
+        if twist.angular.z > 0.3:
+            twist.angular.z =0.3 
+        elif twist.angular.z < -0.3:
+            twist.angular.z =-0.3 
         if twist.linear.x > 0 and twist.linear.x < 0.01:
             twist.linear.x =0.01
         elif twist.linear.x < 0 and twist.linear.x > -0.01:
