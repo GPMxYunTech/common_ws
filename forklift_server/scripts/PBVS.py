@@ -31,17 +31,17 @@ class PBVS():
                             stop')
     
 
-    def __init__(self, _as, Subscriber, command):
+    def __init__(self, _as, Subscriber, Sequence, dist):
         self._as = _as
         self.Subscriber = Subscriber
-        self.command = command
+        self.Sequence = Sequence
         self.init_PBVS_parame()
         self.Action = Action(self.Subscriber)
         self.windows()
 
     def init_PBVS_parame(self):
         self.is_sequence_finished = False
-        self.current_parking_sequence = self.command
+        self.current_parking_sequence = self.Sequence
         self.Parking_distance = 0.3 # meter
     def __del__(self):
         rospy.logwarn('delete PBVS')
