@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import rospy
 import forklift_server.msg
 from enum import Enum
@@ -51,7 +49,7 @@ class PBVS():
         self._as.publish_feedback(self._feedback)
         # ============parking============
         if self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
-            self.is_sequence_finished = self.Action.fnSeqChangingDirection()
+            self.is_sequence_finished = self.Action.fnSeqChangingDirection(0.02)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.moving_nearby_parking_lot.value
@@ -71,7 +69,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.changing_direction_2.value:
-            self.is_sequence_finished = self.Action.fnSeqChangingDirection()
+            self.is_sequence_finished = self.Action.fnSeqChangingDirection(0.01)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.stop.value

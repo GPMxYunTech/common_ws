@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
 import rospy
 import numpy as np
 import math
@@ -71,7 +70,7 @@ class Action():
             self.pub_fork.publish(self.forkmotion.stop.value)
             return True
             
-    def fnSeqChangingDirection(self):
+    def fnSeqChangingDirection(self, desired_angle):
         self.SpinOnce()
         desired_angle_turn = -1. *  math.atan2(self.marker_2d_pose_y - 0, self.marker_2d_pose_x - 0)
         
@@ -82,7 +81,7 @@ class Action():
 
         self.cmd_vel.fnTurn(desired_angle_turn)
         
-        if abs(desired_angle_turn) < 0.02  :
+        if abs(desired_angle_turn) < desired_angle  :
             self.cmd_vel.fnStop()
             if self.check_wait_time > 10 :
                 self.check_wait_time = 0
@@ -233,17 +232,6 @@ class Action():
         else:
             return False
 
-    # def fnSeqfork(self, desire_fork):
-    #     if(self.fork_pose < desire_fork-0.01):
-    #         self.cmd_vel.fnfork(1)
-    #         return False
-    #     elif(self.fork_pose > desire_fork+0.01):
-    #         self.cmd_vel.fnfork(-1)
-    #         return False
-    #     else:
-    #         self.cmd_vel.fnStop()
-    #         return True
-            
     # def fnseqdead_reckoning(self, dead_reckoning_dist):
     #     if self.is_triggered == False:
     #         self.is_triggered = True
@@ -273,10 +261,10 @@ class cmd_vel():
         if not self.front:
             twist.linear.x = -twist.linear.x
 
-        if twist.angular.z > 0.3:
-            twist.angular.z =0.3 
-        elif twist.angular.z < -0.3:
-            twist.angular.z =-0.3 
+        if twist.angular.z > 0.8:
+            twist.angular.z =0.8 
+        elif twist.angular.z < -0.8:
+            twist.angular.z =-0.8 
         if twist.linear.x > 0 and twist.linear.x < 0.01:
             twist.linear.x =0.01
         elif twist.linear.x < 0 and twist.linear.x > -0.01:

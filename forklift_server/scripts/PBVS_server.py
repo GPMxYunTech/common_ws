@@ -12,7 +12,8 @@ from gpm_msg.msg import forkposition
 
 class Subscriber():
     def __init__(self):
-        self.sub_info_marker = rospy.Subscriber('/tag_detections', AprilTagDetectionArray, self.cbGetMarker, queue_size = 1)
+        self.sub_info_marker = rospy.Subscriber('/tag_detections_up', AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
+        self.sub_info_marker = rospy.Subscriber('/tag_detections_down', AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
         self.sub_odom_robot = rospy.Subscriber('/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
         self.sub_forwardbackpostion = rospy.Subscriber('/forkpos', forkposition, self.cbGetforkpos, queue_size = 1)
         self.init_parame()
@@ -26,7 +27,7 @@ class Subscriber():
         self.previous_robot_2d_theta = 0.0
         self.total_robot_2d_theta = 0.0
         # AprilTag_param
-        self.is_marker_pose_received = False
+        self.updown = True
         self.marker_2d_pose_x = 0.0
         self.marker_2d_pose_y = 0.0
         self.marker_2d_theta = 0.0
@@ -40,16 +41,27 @@ class Subscriber():
     def SpinOnce_fork(self):
         return self.forwardbackpostion, self.updownposition
 
-    def cbGetMarker(self, msg):
+    def cbGetMarker_up(self, msg):
         try:
-            if self.is_marker_pose_received == False:
-                self.is_marker_pose_received = True
-            marker_msg = msg.detections[0].pose.pose.pose
-            quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
-            theta = tf.transformations.euler_from_quaternion(quaternion)[1]
-            self.marker_2d_pose_x = -marker_msg.position.z
-            self.marker_2d_pose_y = marker_msg.position.x
-            self.marker_2d_theta = -theta
+            if self.updown == True:
+                marker_msg = msg.detections[0].pose.pose.pose
+                quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
+                theta = tf.transformations.euler_from_quaternion(quaternion)[1]
+                self.marker_2d_pose_x = -marker_msg.position.z
+                self.marker_2d_pose_y = marker_msg.position.x
+                self.marker_2d_theta = -theta
+        except:
+            pass
+
+    def cbGetMarker_down(self, msg):
+        try:
+            if self.updown == False:
+                marker_msg = msg.detections[0].pose.pose.pose
+                quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
+                theta = tf.transformations.euler_from_quaternion(quaternion)[1]
+                self.marker_2d_pose_x = -marker_msg.position.z
+                self.marker_2d_pose_y = marker_msg.position.x
+                self.marker_2d_theta = -theta
         except:
             pass
 
@@ -96,8 +108,13 @@ class PBVSAction():
         #TODO 棧板高度參數要加 
         command = msg.command
 
-        if msg.command == "parking":
-            rospy.loginfo("parking")
+        if msg.command == "parking_up":
+            rospy.loginfo("parking_up")
+            self.subscriber.updown = True
+            self.PBVS = PBVS(self._as, self.subscriber, 1, command)
+        if msg.command == "parking_down":
+            rospy.loginfo("parking_down")
+            self.subscriber.updown = True
             self.PBVS = PBVS(self._as, self.subscriber, 1, command)
         elif msg.command == "up":
             rospy.loginfo("up")
