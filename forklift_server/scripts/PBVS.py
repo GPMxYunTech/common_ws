@@ -2,7 +2,7 @@ import rospy
 import forklift_server.msg
 from enum import Enum
 import math
-import Tkinter as tk
+import tkinter as tk
 from PBVS_Action import Action
 class PBVS():
     _feedback = forklift_server.msg.PBVSFeedback()
@@ -10,7 +10,7 @@ class PBVS():
     
     ParkingSequence = Enum( 'ParkingSequence', \
                             'changing_direction_1 \
-                            changing_direction_2 \
+                            Changingtheta \
                             decide \
                             moving_nearby_parking_lot \
                             parking \
@@ -31,7 +31,7 @@ class PBVS():
                             stop')
     
 
-    def __init__(self, _as, Subscriber, Sequence, dist):
+    def __init__(self, _as, Subscriber, Sequence, command):
         self._as = _as
         self.Subscriber = Subscriber
         self.Sequence = Sequence
@@ -67,11 +67,11 @@ class PBVS():
             self.is_sequence_finished = self.Action.fnSeqParking(self.Parking_distance)
             
             if self.is_sequence_finished == True:
-                self.current_parking_sequence = self.ParkingSequence.changing_direction_2.value
+                self.current_parking_sequence = self.ParkingSequence.Changingtheta.value
                 self.is_sequence_finished = False
 
-        elif self.current_parking_sequence == self.ParkingSequence.changing_direction_2.value:
-            self.is_sequence_finished = self.Action.fnSeqChangingDirection(0.01)
+        elif self.current_parking_sequence == self.ParkingSequence.Changingtheta.value:
+            self.is_sequence_finished = self.Action.fnSeqChangingtheta(0.1)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.stop.value
@@ -187,14 +187,14 @@ class PBVS():
 
         (robot_2d_pose_x, robot_2d_pose_y, robot_2d_theta, marker_2d_pose_x, marker_2d_pose_y, marker_2d_theta) = self.Subscriber.SpinOnce()
 
-        if self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
-            sequence = "changing_direction"
-        elif self.current_parking_sequence == self.ParkingSequence.changing_direction_2.value:
-            sequence = "changing_direction"
-        elif self.current_parking_sequence == self.ParkingSequence.moving_nearby_parking_lot.value:
-            sequence = "moving_nearby_parking_lot"
-        elif self.current_parking_sequence == self.ParkingSequence.parking.value:
-            sequence = "parking"
+        # if self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
+        #     sequence = "changing_direction"
+        # elif self.current_parking_sequence == self.ParkingSequence.changing_direction_2.value:
+        #     sequence = "changing_direction"
+        # elif self.current_parking_sequence == self.ParkingSequence.moving_nearby_parking_lot.value:
+        #     sequence = "moving_nearby_parking_lot"
+        # elif self.current_parking_sequence == self.ParkingSequence.parking.value:
+        #     sequence = "parking"
 
 
         base = 130

@@ -88,18 +88,26 @@ class Action():
                 return True
             else:
                 self.check_wait_time =self.check_wait_time  +1
+        else:
+            self.check_wait_time =0
+            return False
+        
+    def fnSeqChangingtheta(self, desired_angle):
+        self.SpinOnce()
+        desired_angle_turn = -self.marker_2d_theta
 
-        elif abs(desired_angle_turn) < 0.035 and self.check_wait_time :
+        self.cmd_vel.fnTurn(desired_angle_turn)
+        
+        if abs(desired_angle_turn) < desired_angle  :
             self.cmd_vel.fnStop()
-            if self.check_wait_time > 10 :  
+            if self.check_wait_time > 10 :
                 self.check_wait_time = 0
                 return True
-            else :
+            else:
                 self.check_wait_time =self.check_wait_time  +1
         else:
             self.check_wait_time =0
             return False
-
     def fnSeqMovingNearbyParkingLot(self):
         self.SpinOnce()
         print(self.NearbySequence(self.current_nearby_sequence))
