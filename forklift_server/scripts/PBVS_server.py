@@ -50,6 +50,8 @@ class Subscriber():
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x
                 self.marker_2d_theta = -theta
+            else:
+                pass
         except:
             pass
 
@@ -62,6 +64,8 @@ class Subscriber():
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x
                 self.marker_2d_theta = -theta
+            else:
+                pass
         except:
             pass
 

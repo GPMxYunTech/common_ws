@@ -14,12 +14,14 @@ class PBVS():
                             decide \
                             moving_nearby_parking_lot \
                             parking \
+                            up_fork_init \
                             up_fork_up \
                             up_fork_down \
                             up_fork_forward \
                             up_fork_backword \
                             up_fork_tilt_forward \
                             up_fork_tilt_backword \
+                            down_fork_init \
                             down_fork_up \
                             down_fork_down \
                             down_fork_forward \
@@ -75,6 +77,13 @@ class PBVS():
                 self.current_parking_sequence = self.ParkingSequence.stop.value
                 self.is_sequence_finished = False
         # ============up_fork============
+        elif self.current_parking_sequence == self.ParkingSequence.up_fork_init.value:
+            self.is_sequence_finished = self.Action.fork_updown(0.4)
+            
+            if self.is_sequence_finished == True:
+                rospy.sleep(0.05)
+                self.current_parking_sequence = self.ParkingSequence.up_fork_forward.value
+                self.is_sequence_finished = False
         elif self.current_parking_sequence == self.ParkingSequence.up_fork_forward.value:
             self.is_sequence_finished = self.Action.fork_forwardback(0.65)
             
@@ -99,6 +108,13 @@ class PBVS():
                 self.current_parking_sequence = self.ParkingSequence.stop.value
                 self.is_sequence_finished = False
         # ============down_fork============
+        elif self.current_parking_sequence == self.ParkingSequence.down_fork_init.value:
+            self.is_sequence_finished = self.Action.fork_updown(0)
+            
+            if self.is_sequence_finished == True:
+                rospy.sleep(0.05)
+                self.current_parking_sequence = self.ParkingSequence.down_fork_forward.value
+                self.is_sequence_finished = False
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_forward.value:
             self.is_sequence_finished = self.Action.fork_forwardback(0.65)
             
