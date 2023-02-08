@@ -110,7 +110,6 @@ class Action():
             return False
     def fnSeqMovingNearbyParkingLot(self):
         self.SpinOnce()
-        print(self.NearbySequence(self.current_nearby_sequence))
         if self.current_nearby_sequence == self.NearbySequence.initial_turn.value:
             if self.is_triggered == False:
                 self.is_triggered = True
@@ -245,17 +244,14 @@ class Action():
         if self.is_triggered == False:
             self.is_triggered = True
             self.initial_marker_pose_x = self.marker_2d_pose_x 
-            self.initial_marker_pose_y = self.marker_2d_pose_y 
-        dist_1 = math.sqrt(self.marker_2d_pose_x* self.marker_2d_pose_x + self.marker_2d_pose_y + self.marker_2d_pose_x)
-        dist_2 = math.sqrt(self.initial_marker_pose_x* self.initial_marker_pose_x + self.initial_marker_pose_y + self.initial_marker_pose_y)
-        dist = abs(dist_1 - dist_2)
-
+        dist = abs(self.initial_marker_pose_x - self.marker_2d_pose_x)
+        print("dist", dist)
         if dist > dead_reckoning_dist:
             self.cmd_vel.fnStop()
             self.is_triggered = False
             return True
         else:
-            self.cmd_vel.fnGoStraight(-dist)
+            self.cmd_vel.fnGoStraight(dist-self.initial_marker_pose_x)
             return False
 
     def fnCalcDistPoints(self, x1, x2, y1, y2):

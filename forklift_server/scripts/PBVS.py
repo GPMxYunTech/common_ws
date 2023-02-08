@@ -74,7 +74,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.Changingtheta.value:
-            self.is_sequence_finished = self.Action.fnSeqChangingtheta(0.05)
+            self.is_sequence_finished = self.Action.fnSeqChangingtheta(0.07)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.stop.value
@@ -105,7 +105,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.up_fork_up.value:
-            self.is_sequence_finished = self.Action.fork_updown(0.25)
+            self.is_sequence_finished = self.Action.fork_updown(0.35)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -129,7 +129,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_init.value:
-            self.is_sequence_finished = self.Action.fork_updown(0.25)
+            self.is_sequence_finished = self.Action.fork_updown(0.35)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
