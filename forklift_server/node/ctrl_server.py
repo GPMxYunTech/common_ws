@@ -15,7 +15,7 @@ def PBVS_client(msg):
 
 if __name__ == '__main__':
     rospy.init_node('ctrl_server')
-    command = ["parking", "up", "down"]
+    command = ["parking_up", "up", "down"]
     for msg in command:
         print("send ", msg)
         result = PBVS_client(msg)
