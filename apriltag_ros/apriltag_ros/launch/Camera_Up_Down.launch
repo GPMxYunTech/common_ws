@@ -6,7 +6,7 @@
   <!--Intel RealSense D435 Node-->
   <include file="$(find realsense2_camera)/launch/rs_camera.launch">
     <arg name="camera"          value="cameraUP"/>
-    <arg name="serial_no"       value="050422070702"/>
+    <arg name="serial_no"       value="141722073652"/>
     <!-- <arg name="align_depth"     value="true"/> -->
     <!-- <arg name="filters"         value="pointcloud,decimation"/> -->
     <arg name="publish_odom_tf" value="false"/>
@@ -15,7 +15,7 @@
   
   <include file="$(find realsense2_camera)/launch/rs_camera.launch">
     <arg name="camera"          value="cameraDOWN"/>
-    <arg name="serial_no"       value="048522070636"/> >
+    <arg name="serial_no"       value="153122076971"/> >
     <!-- <arg name="align_depth"     value="true"/> -->
     <!-- <arg name="filters"         value="pointcloud,decimation"/> -->
     <arg name="publish_odom_tf" value="false"/>
