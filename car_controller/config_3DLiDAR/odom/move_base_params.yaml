@@ -16,7 +16,7 @@ base_local_planner: "teb_local_planner/TebLocalPlannerROS"
 max_planning_retries: 1
 
 recovery_behavior_enabled: false
-clearing_rotation_allowed: true
+clearing_rotation_allowed: false
 
 recovery_behaviors:
   - name: 'conservative_reset'
@@ -25,7 +25,7 @@ recovery_behaviors:
     type: 'rotate_recovery/RotateRecovery'
     
 conservative_reset:
-  reset_distance: 1.0
+  reset_distance: 0.5
   layer_names: [obstacle_layer]
 
 aggressive_reset:

@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>dashgo_tools</name>
+  <name>topology_map</name>
   <version>2.1.0</version>
-  <description>The dashgo_tools package</description>
+  <description>The topology_map package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->

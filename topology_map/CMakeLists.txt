@@ -1,6 +1,6 @@
 SET( CMAKE_CXX_FLAGS "-std=c++11 -O3")
 cmake_minimum_required(VERSION 2.8.3)
-project(dashgo_tools)
+project(topology_map)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)

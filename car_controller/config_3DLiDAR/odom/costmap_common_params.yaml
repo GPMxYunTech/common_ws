@@ -49,7 +49,7 @@ obstacle_layer:
 
 inflation_layer:
   enabled:              true
-  cost_scaling_factor:  1.0  #10.0
+  cost_scaling_factor:  10.0  #10.0
   inflation_radius:     0.7  #0.25
 
 static_layer:

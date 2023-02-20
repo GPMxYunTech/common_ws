@@ -1,0 +1,28 @@
+
+#---standard pioneer footprint---
+#---(in meters)---
+#footprint: [ [0.254, -0.0508], [0.1778, -0.0508], [0.1778, -0.1778], [-0.1905, -0.1778], [-0.254, 0], [-0.1905, 0.1778], [0.1778, 0.1778], [0.1778, 0.0508], [0.254, 0.0508] ]
+footprint: [[1.75,-0.575],[1.75,0.575],[-0.25,0.575],[-0.25,0.3],[-0.75,0.3],[-0.75,-0.3],[-0.25,-0.3],[-0.25,-0.575]] 
+
+transform_tolerance: 0.2
+
+obstacle_layer:
+ enabled: true
+ obstacle_range: 3.0
+ raytrace_range: 3.5
+ inflation_radius: 0.2
+ track_unknown_space: false
+ combination_method: 1
+
+ observation_sources: velodyne_points
+ velodyne_points: {data_type: PointCloud2, topic: velodyne_point, marking: true, clearing: true}
+
+
+inflation_layer:
+  enabled:              true
+  cost_scaling_factor:  10.0  # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius:     0.9  # max. distance from an obstacle at which costs are incurred for planning paths.
+
+static_layer:
+  enabled:              true
+  map_topic:            "/map"
