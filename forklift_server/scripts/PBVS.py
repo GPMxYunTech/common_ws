@@ -3,7 +3,7 @@ import rospy
 import forklift_server.msg
 from enum import Enum
 import math
-import Tkinter as tk
+import tkinter as tk
 from PBVS_Action import Action
 class PBVS():
     _feedback = forklift_server.msg.PBVSFeedback()
