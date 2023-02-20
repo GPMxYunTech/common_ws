@@ -196,7 +196,6 @@ class TopologyMapAction():
             
             if(i > 0 and (waypoints[path[i]][0] == waypoints[path[i-1]][0] and waypoints[path[i]][1] == waypoints[path[i-1]][1])):
                 rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
-                rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
                 self.Navigation.self_spin(waypoints[path[i-1]][2], waypoints[path[i-1]][3], waypoints[path[i]][2], waypoints[path[i]][3])
                 i = i + 1
                 continue
