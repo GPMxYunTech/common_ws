@@ -20,24 +20,21 @@ graph={
     "v7":{"v8":4},
     "v8":{"v9":4},
     "v9":{"v9":1},
-
-    
-    "v14": {"v15",4},
-    "v15": {"v16",4},
-    "v16": {"v17",4},
-    "v17": {"v18",4},
-    "v18": {"v19",4},
-    "v19": {"v14",4},
-    "v14": {"v20",8},
-
-    "v20": {"v21",4},
-    "v21": {"v22",4},
-    "v22": {"v23",4},
-    "v23": {"v24",4},
-    "v24": {"v25",4},
-    "v25": {"v26",4},
-    "v26": {"v27",4},
-    "v27": {"v15",4}
+    "v14": {"v15":4},
+    "v15": {"v16":4},
+    "v16": {"v17":4},
+    "v17": {"v18":4},
+    "v18": {"v19":4},
+    "v19": {"v14":4},
+    "v14": {"v20":8},
+    "v20": {"v21":4},
+    "v21": {"v22":4},
+    "v22": {"v23":4},
+    "v23": {"v24":4},
+    "v24": {"v25":4},
+    "v25": {"v26":4},
+    "v26": {"v27":4},
+    "v27": {"v15":4}
 }
 waypoints = {
     "v1": [9.713,-0.352,0.000,1.000],
@@ -49,7 +46,6 @@ waypoints = {
     "v7": [13.154,13.272,0.659,0.752],
     "v8": [13.304,19.622,0.7,0.714],
     "v9": [13.152,29.848,0.688,0.725],
-
     "v14": [12.228,34.329,0.71,0.704],
     "v15": [12.228,34.329,0,1],
     "v16": [14.819,34.384,0,1],
@@ -199,15 +195,9 @@ class Navigation():
         while(abs(self.odom_pass) < abs(desire_angle)):
             # print("odom_pass", self.odom_pass*180/math.pi)
             if(desire_angle >= 0):
-                speed.angular.z = desire_angle
-            elif(desire_angle <= 0):
-                speed.angular.z = desire_angle
-
-            if speed.angular.z > 0.3:
                 speed.angular.z = 0.3
-            elif speed.angular.z < -0.3:
+            elif(desire_angle <= 0):
                 speed.angular.z = -0.3
-                
             self.cmd_pub.publish(speed)
             rospy.sleep(0.01)
         
@@ -250,6 +240,6 @@ class TopologyMapAction():
         self._as.set_succeeded(self._result)
 
 if __name__ == '__main__':
-    rospy.init_node('TopologyMap')
+    rospy.init_node('TopologyMap_server')
     server = TopologyMapAction(rospy.get_name())
     rospy.spin()
