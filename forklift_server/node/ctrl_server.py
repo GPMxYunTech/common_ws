@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 import rospy
 import actionlib
@@ -13,12 +13,25 @@ def PBVS_client(msg):
     client.wait_for_result()
     return client.get_result()
 
+def TopologyMap_client(msg):
+    client = actionlib.SimpleActionClient('TopologyMap', forklift_server.msg.TopologyMapAction)
+    client.wait_for_server()
+    command = forklift_server.msg.PBVSGoal(command=msg)
+    print("send ", command)
+    client.send_goal(command)
+    client.wait_for_result()
+    return client.get_result()
+
 if __name__ == '__main__':
     rospy.init_node('ctrl_server')
-    command = ["parking_up", "up", "down"]
+    command = {
+        'PBVS': {'parking_up'},
+        'TopologyMap': {'v1'}
+    }
     for msg in command:
         print("send ", msg)
-        result = PBVS_client(msg)
-        print("result ", result)
+
+        # result = PBVS_client(msg)
+        # print("result ", result)
   
     
