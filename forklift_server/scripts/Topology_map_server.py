@@ -194,10 +194,10 @@ class Navigation():
         speed = Twist()
         while(abs(self.odom_pass) < abs(desire_angle)):
             # print("odom_pass", self.odom_pass*180/math.pi)
-            if(desire_angle >= 0):
-                speed.angular.z = desire_angle
-            elif(desire_angle <= 0):
-                speed.angular.z = desire_angle
+            # if(desire_angle >= 0):
+            #     speed.angular.z = desire_angle
+            # elif(desire_angle <= 0):
+            speed.angular.z = (desire_angle-odom_pass)*0.1
 
             if speed.angular.z > 0.3:
                 speed.angular.z = 0.3
