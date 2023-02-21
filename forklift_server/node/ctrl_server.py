@@ -24,14 +24,22 @@ def TopologyMap_client(msg):
 
 if __name__ == '__main__':
     rospy.init_node('ctrl_server')
-    command = {
-        'PBVS': {'parking_up'},
-        'TopologyMap': {'v1'}
-    }
-    for msg in command:
-        print("send ", msg)
 
-        # result = PBVS_client(msg)
-        # print("result ", result)
+    command =[
+        ['PBVS', 'parking_up'], 
+        ['TopologyMap', 'v1']
+    ]
+
+    for msg in command:
+        if(msg[0] == 'PBVS'):
+            print("send ", msg[1])
+            result = PBVS_client(msg[1])
+            print("result ", result)
+        elif(msg[0] == 'TopologyMap'):
+            print("send ", msg[1])
+            result = TopologyMap_client(msg[1])
+            print("result ", result)
+
+
   
     
