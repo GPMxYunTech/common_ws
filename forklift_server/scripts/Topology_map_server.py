@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 import rospy
 import actionlib
@@ -19,7 +19,25 @@ graph={
     "v6":{"v7":4},
     "v7":{"v8":4},
     "v8":{"v9":4},
-    "v9":{"v9":1}
+    "v9":{"v9":1},
+
+    
+    "v14": {"v15",4},
+    "v15": {"v16",4},
+    "v16": {"v17",4},
+    "v17": {"v18",4},
+    "v18": {"v19",4},
+    "v19": {"v14",4},
+    "v14": {"v20",8},
+
+    "v20": {"v21",4},
+    "v21": {"v22",4},
+    "v22": {"v23",4},
+    "v23": {"v24",4},
+    "v24": {"v25",4},
+    "v25": {"v26",4},
+    "v26": {"v27",4},
+    "v27": {"v15",4}
 }
 waypoints = {
     "v1": [9.713,-0.352,0.000,1.000],
@@ -29,8 +47,23 @@ waypoints = {
     "v5": [10.489,13.161,0.143,1.000],
     "v6": [13.154,13.272,0.000,1.000],
     "v7": [13.154,13.272,0.659,0.752],
-    "v8": [3.304,19.622,0.7,0.714],
-    "v9": [13.152,29.848,0.688,0.725]
+    "v8": [13.304,19.622,0.7,0.714],
+    "v9": [13.152,29.848,0.688,0.725],
+
+    "v14": [12.228,34.329,0.71,0.704],
+    "v15": [12.228,34.329,0,1],
+    "v16": [14.819,34.384,0,1],
+    "v17": [14.819,34.387,-0.724,0.69],
+    "v18": [14.819,34.387,1,0.01],
+    "v19": [12.228,34.329,1,0.01],
+    "v20": [11.875,47.021,0.696,0.718],
+    "v21": [11.875,47.021,0,1],
+    "v22": [13.896,47.083,0,1],
+    "v23": [13.896,47.083,0.697,0.717],
+    "v24": [13.896,47.083,1,0],
+    "v25": [11.875,47.021,1,0],
+    "v26": [11.875,47.021,-0.707,0.707],
+    "v27": [12.228,34.329,-0.707,0.707]
 }
 
 class TopologyMap():
@@ -110,6 +143,7 @@ class Navigation():
         goal.target_pose.pose.orientation.w = w
 
         self.client.send_goal(goal)
+        print("Navigation to", goal)
         wait = self.client.wait_for_result()
 
         if not wait:
@@ -193,9 +227,10 @@ class TopologyMapAction():
         path = self.TopologyMap.path(msg)
         print(path)
         for i in range(len(path)):
-            
+            rospy.sleep(1.0)
             if(i > 0 and (waypoints[path[i]][0] == waypoints[path[i-1]][0] and waypoints[path[i]][1] == waypoints[path[i-1]][1])):
                 rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
+                # rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
                 self.Navigation.self_spin(waypoints[path[i-1]][2], waypoints[path[i-1]][3], waypoints[path[i]][2], waypoints[path[i]][3])
                 i = i + 1
                 continue
