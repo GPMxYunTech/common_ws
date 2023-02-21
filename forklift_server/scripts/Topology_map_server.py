@@ -154,8 +154,8 @@ class Navigation():
         self.odom_pass = 0.0
 
     def cbGetRobotOdom(self, msg):
-        rz, rw = msg.pose.pose.orientation.z, msg.pose.pose.orientation.w
-        yaw_r = math.atan2(2 * rw * rz, rw * rw - rz * rz)
+        self.rz, self.rw = msg.pose.pose.orientation.z, msg.pose.pose.orientation.w
+        yaw_r = math.atan2(2 * self.rw * self.rz, self.rw * self.rw - self.rz * self.rz)
         if(yaw_r < 0):
             yaw_r = yaw_r + 2 * math.pi
 
@@ -169,13 +169,13 @@ class Navigation():
             self.odom_pass = self.odom_pass + yaw_r - self.pre_odom
         self.pre_odom = yaw_r
 
-    def self_spin(self, z1, w1, z2, w2):
+    def self_spin(self, z2, w2):
         # rospy.INFO('self_spin')
         self.trigger = False       
         self.odom_pass = 0.0
         rospy.sleep(0.1)
 
-        yaw_1 = math.atan2(2 * w1 * z1, w1 * w1 - z1 * z1)
+        yaw_1 = math.atan2(2 * self.rw * self.rz, self.rw * self.rw - self.rz * self.rz)
         if(yaw_1 < 0):
             yaw_1 = yaw_1 + 2 * math.pi
         # print('yaw_1 = ', yaw_1)
@@ -197,7 +197,7 @@ class Navigation():
             # if(desire_angle >= 0):
             #     speed.angular.z = desire_angle
             # elif(desire_angle <= 0):
-            speed.angular.z = (desire_angle-odom_pass)*0.1
+            speed.angular.z = (desire_angle-self.odom_pass)*0.1
 
             if speed.angular.z > 0.3:
                 speed.angular.z = 0.3
@@ -232,7 +232,7 @@ class TopologyMapAction():
             if(i > 0 and (waypoints[path[i]][0] == waypoints[path[i-1]][0] and waypoints[path[i]][1] == waypoints[path[i-1]][1])):
                 rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
                 # rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
-                self.Navigation.self_spin(waypoints[path[i-1]][2], waypoints[path[i-1]][3], waypoints[path[i]][2], waypoints[path[i]][3])
+                self.Navigation.self_spin(waypoints[path[i]][2], waypoints[path[i]][3])
                 i = i + 1
                 continue
             else:
