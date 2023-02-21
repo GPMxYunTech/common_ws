@@ -194,15 +194,19 @@ class Navigation():
         speed = Twist()
         while(abs(self.odom_pass) < abs(desire_angle)):
             # print("odom_pass", self.odom_pass*180/math.pi)
-            # if(desire_angle >= 0):
-            #     speed.angular.z = desire_angle
-            # elif(desire_angle <= 0):
-            speed.angular.z = (desire_angle-self.odom_pass)*0.1
+            if(desire_angle >= 0):
+                speed.angular.z = (desire_angle-self.odom_pass)*0.5
+            elif(desire_angle <= 0):
+                speed.angular.z = (desire_angle-self.odom_pass)*0.5
 
             if speed.angular.z > 0.3:
                 speed.angular.z = 0.3
             elif speed.angular.z < -0.3:
                 speed.angular.z = -0.3
+            elif speed.angular.z > -0.1 and speed.angular.z < 0:
+                speed.angular.z = -0.1
+            elif speed.angular.z < 0.1 and speed.angular.z > 0:
+                speed.angular.z = 0.1
             self.cmd_pub.publish(speed)
             rospy.sleep(0.01)
         
