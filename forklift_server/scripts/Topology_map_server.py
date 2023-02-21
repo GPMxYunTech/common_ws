@@ -199,9 +199,15 @@ class Navigation():
         while(abs(self.odom_pass) < abs(desire_angle)):
             # print("odom_pass", self.odom_pass*180/math.pi)
             if(desire_angle >= 0):
-                speed.angular.z = 0.3
+                speed.angular.z = desire_angle
             elif(desire_angle <= 0):
+                speed.angular.z = desire_angle
+
+            if speed.angular.z > 0.3:
+                speed.angular.z = 0.3
+            elif speed.angular.z < -0.3:
                 speed.angular.z = -0.3
+                
             self.cmd_pub.publish(speed)
             rospy.sleep(0.01)
         
@@ -244,6 +250,6 @@ class TopologyMapAction():
         self._as.set_succeeded(self._result)
 
 if __name__ == '__main__':
-    rospy.init_node('TopologyMap_server')
+    rospy.init_node('TopologyMap')
     server = TopologyMapAction(rospy.get_name())
     rospy.spin()
