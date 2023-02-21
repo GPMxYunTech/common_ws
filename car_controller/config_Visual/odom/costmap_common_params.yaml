@@ -53,7 +53,7 @@ inflation_layer:
 static_layer:
   enabled:              true
   # map_topic:            "/projected_map /map" 
-  map_topic:            "/map"
+  map_topic:            "/projected_map"
   
 # sonar_layer:
 #   enabled:            false
