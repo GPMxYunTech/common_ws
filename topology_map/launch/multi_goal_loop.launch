@@ -1,20 +1,15 @@
 <launch>
   <!-- multi_goal_loop -->
-  <node pkg="dashgo_tools" name="multi_goal_loop" type="multi_goal_loop" output="screen">
+  <node pkg="topology_map" name="multi_goal_loop" type="multi_goal_loop" output="screen">
     <rosparam param= "goal_list">
     <!--x, y, z, w-->
     [
       <!-- Long Distance Navigation -->
       <!-- 0.078,0,-0.016,1, -->
-      9.713,-0.352,0.000,1.000,
-      9.713,-0.352,0.649,0.761,
-      10.333,7.704,0.693,0.721,
-      10.489,13.161,0.705,0.710,
-      10.489,13.161,0.143,1.000,
-      13.154,13.272,0.000,1.000,
-      13.154,13.272,0.659,0.752,
-      13.304,19.622,0.7,0.714,
-      13.152,29.848,0.688,0.725
+      6.013,0.5001,-0.0322,0.9994,
+      6.013,0.5001,0.7109,0.7032,
+      5.6368,4.8093,0.702,0.7121
+      
 
       <!-- Visual Servoing -->
       <!-- 13.152,29.848,0.583,0.812, -->

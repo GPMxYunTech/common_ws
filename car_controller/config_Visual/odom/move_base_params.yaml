@@ -1,12 +1,12 @@
 shutdown_costmaps: false
 
-controller_frequency: 5.0
-controller_patience: 3.0 # 3.0
+controller_frequency: 20.0
+controller_patience: 15.0 # 3.0
 
-planner_frequency: 1.0
-planner_patience: 3.0
+planner_frequency: 5.0
+planner_patience: 5.0
 
-oscillation_timeout: 5.0
+oscillation_timeout: 0
 oscillation_distance: 0.2
 
 # Planner selection
@@ -16,7 +16,7 @@ base_local_planner: "teb_local_planner/TebLocalPlannerROS"
 max_planning_retries: 1
 
 recovery_behavior_enabled: false
-clearing_rotation_allowed: true
+clearing_rotation_allowed: false
 
 recovery_behaviors:
   - name: 'conservative_reset'
@@ -25,7 +25,7 @@ recovery_behaviors:
     type: 'rotate_recovery/RotateRecovery'
     
 conservative_reset:
-  reset_distance: 1.0
+  reset_distance: 0.5
   layer_names: [obstacle_layer]
 
 aggressive_reset:
@@ -37,9 +37,9 @@ super_reset:
   layer_names: [obstacle_layer]
 
 move_slow_and_clear:
-  clearing_distance: 0.7
+  clearing_distance: 0.5
   limited_trans_speed: 0.1
-  limited_rot_speed: 0.1
+  limited_rot_speed: 0.4
   limited_distance: 0.3
 
 

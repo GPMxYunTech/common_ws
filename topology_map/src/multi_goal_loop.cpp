@@ -43,7 +43,7 @@ int main(int argc, char **argv)
   ros::NodeHandle nh_priv("~");
   ros::Rate r(100);
   ros::Duration d(0.1);
-  ros::Subscriber odom_sub = nh.subscribe("/odom", 1000, odomCallback);
+  ros::Subscriber odom_sub = nh.subscribe("/rtabmap/odom", 1000, odomCallback);
   ros::Publisher cmdVelPub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
   MoveBaseClient ac("move_base", true);
 
