@@ -122,7 +122,7 @@ class PBVSAction():
             self.PBVS = PBVS(self._as, self.subscriber, 1, 0.43)
         elif msg.command == "up":
             rospy.loginfo("up")
-            self.PBVS = PBVS(self._as, self.subscriber, 6, 0.392)
+            self.PBVS = PBVS(self._as, self.subscriber, 6, 0.43)
         elif msg.command == "down":
             rospy.loginfo("down")
             self.PBVS = PBVS(self._as, self.subscriber, 15, 0.86)
