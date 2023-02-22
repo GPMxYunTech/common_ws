@@ -30,17 +30,18 @@ if __name__ == '__main__':
         ['PBVS', 'parking_down'], 
         ['PBVS', 'up'], 
         ['TopologyMap', 'v23'],
-        ['PBVS', 'parking_down'],
+        ['PBVS', 'parking_up'],
         ['PBVS', 'down'],
         ['TopologyMap', 'v17'],
         ['PBVS', 'parking_down'], 
         ['PBVS', 'up'], 
         ['TopologyMap', 'v23'],
-        ['PBVS', 'parking_down'],
+        ['PBVS', 'parking_up'],
         ['PBVS', 'down']
     ]
 
     for msg in command:
+        rospy.sleep(1)
         if(msg[0] == 'PBVS'):
             print("send PBVS: ", msg[1])
             result = PBVS_client(msg[1])

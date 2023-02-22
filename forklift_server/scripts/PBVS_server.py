@@ -27,7 +27,7 @@ class Subscriber():
         self.previous_robot_2d_theta = 0.0
         self.total_robot_2d_theta = 0.0
         # AprilTag_param
-        self.updown = True
+        self.updown = False
         self.marker_2d_pose_x = 0.0
         self.marker_2d_pose_y = 0.0
         self.marker_2d_theta = 0.0
@@ -44,6 +44,7 @@ class Subscriber():
     def cbGetMarker_up(self, msg):
         try:
             if self.updown == True:
+                # print("up tag")
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
@@ -58,6 +59,7 @@ class Subscriber():
     def cbGetMarker_down(self, msg):
         try:
             if self.updown == False:
+                # print("down tag")
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
@@ -105,8 +107,9 @@ class PBVSAction():
         self.subscriber = Subscriber()
         self._action_name = name
         self._as = actionlib.SimpleActionServer(self._action_name, forklift_server.msg.PBVSAction, execute_cb=self.execute_cb, auto_start = False)
+        self._result = forklift_server.msg.PBVSResult()
         self._as.start()
-      
+
     def execute_cb(self, msg):
         rospy.loginfo('PBVS receive command : %s' % (msg))
         #TODO 棧板高度參數要加 
@@ -115,18 +118,20 @@ class PBVSAction():
         if msg.command == "parking_up":
             rospy.loginfo("parking_up")
             self.subscriber.updown = True
-            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.392)
+            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.392, 1.5)
         if msg.command == "parking_down":
             rospy.loginfo("parking_down")
             self.subscriber.updown = False
-            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.43)
+            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.45, 1.45)
         elif msg.command == "up":
             rospy.loginfo("up")
-            self.PBVS = PBVS(self._as, self.subscriber, 6, 0.43)
+            self.PBVS = PBVS(self._as, self.subscriber, 8, 0.45, 0.0)
         elif msg.command == "down":
             rospy.loginfo("down")
-            self.PBVS = PBVS(self._as, self.subscriber, 15, 0.86)
+            self.PBVS = PBVS(self._as, self.subscriber, 18, 0.86, 0.0)
         # up 8 down 14 stop 18 parking 1 
+        self._result.result = 'success'
+        self._as.set_succeeded(self._result)
         self.PBVS = None
 
 if __name__ == '__main__':

@@ -6,8 +6,7 @@ import math
 import tkinter as tk
 from PBVS_Action import Action
 class PBVS():
-    _feedback = forklift_server.msg.PBVSFeedback()
-    _result = forklift_server.msg.PBVSResult()
+
     
     ParkingSequence = Enum( 'ParkingSequence', \
                             'init_fork \
@@ -39,21 +38,27 @@ class PBVS():
                             stop')
     
 
-    def __init__(self, _as, Subscriber, Sequence, init_fork):
+    def __init__(self, _as, Subscriber, Sequence, init_fork, Parking_distance):
+
         self._as = _as
+        self._feedback = forklift_server.msg.PBVSFeedback()
+        self._result = forklift_server.msg.PBVSResult()
         self.Subscriber = Subscriber
         self.Sequence = Sequence
         self.init_fork = init_fork
         self.init_PBVS_parame()
+        self.Parking_distance = Parking_distance # meter
         self.Action = Action(self.Subscriber)
         self.windows()
 
     def init_PBVS_parame(self):
         self.is_sequence_finished = False
         self.current_parking_sequence = self.Sequence
-        self.Parking_distance = 1.4 # meter
+        
     def __del__(self):
         rospy.logwarn('delete PBVS')
+        # self._result.result = 'success'
+        # self._as.set_succeeded(self._result)
      
     def PBVS(self):
         self._feedback.feedback = str(self.ParkingSequence(self.current_parking_sequence))
@@ -130,10 +135,10 @@ class PBVS():
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
-                self.current_parking_sequence = self.ParkingSequence.down_fork_back.value
+                self.current_parking_sequence = self.ParkingSequence.up_fork_back.value
                 self.is_sequence_finished = False
                 
-        elif self.current_parking_sequence == self.ParkingSequence.down_fork_back.value:
+        elif self.current_parking_sequence == self.ParkingSequence.up_fork_back.value:
             self.is_sequence_finished = self.Action.fnseqdead_reckoning(1.0)
             
             if self.is_sequence_finished == True:
@@ -158,7 +163,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_dead_reckoning.value:
-            self.is_sequence_finished = self.Action.fnseqdead_reckoning(-0.3)
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(-0.36)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -166,7 +171,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_forward.value:
-            self.is_sequence_finished = self.Action.fork_forwardback(0.65)
+            self.is_sequence_finished = self.Action.fork_forwardback(0.69)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -174,7 +179,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_down.value:
-            self.is_sequence_finished = self.Action.fork_updown(0.86)
+            self.is_sequence_finished = self.Action.fork_updown(0.67)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -190,7 +195,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_back.value:
-            self.is_sequence_finished = self.Action.back(1.0)
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(1.0)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -206,10 +211,10 @@ class PBVS():
                 self.is_sequence_finished = False
         # ============stop============
         elif self.current_parking_sequence == self.ParkingSequence.stop.value:
-            self._result.result = 'success'
-            self._as.set_succeeded(self._result)
+
             rospy.logwarn('PBVS Succeeded')
             self.window.destroy()
+            rospy.sleep(1)
             
             
 
