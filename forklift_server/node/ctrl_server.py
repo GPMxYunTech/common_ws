@@ -16,9 +16,9 @@ def PBVS_client(msg):
 def TopologyMap_client(msg):
     client = actionlib.SimpleActionClient('TopologyMap', forklift_server.msg.TopologyMapAction)
     client.wait_for_server()
-    command = forklift_server.msg.PBVSGoal(command=msg)
-    print("send ", command)
-    client.send_goal(command)
+    goal = forklift_server.msg.TopologyMapGoal(goal=msg)
+    print("send ", goal)
+    client.send_goal(goal)
     client.wait_for_result()
     return client.get_result()
 

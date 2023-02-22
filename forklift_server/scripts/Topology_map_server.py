@@ -78,8 +78,8 @@ class TopologyMap():
         # end = self.find_point(goal)
         print("{}到{}的路径:".format(self.start, goal))
         self.parent, self.distance=self.dijkstra(graph,self.start)
-        path=self.distance_path(graph,self.start,end)
-        self.start = end
+        path=self.distance_path(graph,self.start,goal)
+        self.start = goal
         return path
 
     # def find_point(self, goal):
@@ -256,6 +256,6 @@ class TopologyMapAction():
         self._as.set_succeeded(self._result)
 
 if __name__ == '__main__':
-    rospy.init_node('TopologyMap_server')
+    rospy.init_node('TopologyMap')
     server = TopologyMapAction(rospy.get_name())
     rospy.spin()
