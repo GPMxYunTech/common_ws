@@ -26,17 +26,27 @@ if __name__ == '__main__':
     rospy.init_node('ctrl_server')
 
     command =[
-        ['PBVS', 'parking_up'], 
-        ['TopologyMap', 'v1']
+        ['TopologyMap', 'v17'],
+        ['PBVS', 'parking_down'], 
+        ['PBVS', 'up'], 
+        ['TopologyMap', 'v23'],
+        ['PBVS', 'parking_down'],
+        ['PBVS', 'down'],
+        ['TopologyMap', 'v17'],
+        ['PBVS', 'parking_down'], 
+        ['PBVS', 'up'], 
+        ['TopologyMap', 'v23'],
+        ['PBVS', 'parking_down'],
+        ['PBVS', 'down']
     ]
 
     for msg in command:
         if(msg[0] == 'PBVS'):
-            print("send ", msg[1])
+            print("send PBVS: ", msg[1])
             result = PBVS_client(msg[1])
             print("result ", result)
         elif(msg[0] == 'TopologyMap'):
-            print("send ", msg[1])
+            print("send TopologyMap: ", msg[1])
             result = TopologyMap_client(msg[1])
             print("result ", result)
 
