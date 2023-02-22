@@ -75,18 +75,18 @@ class TopologyMap():
         self.start = input("輸入起始點(v1~v...): ")
 
     def path(self, goal):
-        end = self.find_point(goal)
-        print("{}到{}的路径:".format(self.start, end))
+        # end = self.find_point(goal)
+        print("{}到{}的路径:".format(self.start, goal))
         self.parent, self.distance=self.dijkstra(graph,self.start)
         path=self.distance_path(graph,self.start,end)
         self.start = end
         return path
 
-    def find_point(self, goal):
-        x, y, z, w = goal.goal.pose.position.x, goal.goal.pose.position.y, goal.goal.pose.orientation.z, goal.goal.pose.orientation.w
-        for i in waypoints:
-            if x == waypoints[i][0] and y == waypoints[i][1] and z == waypoints[i][2] and w == waypoints[i][3]:
-                return i
+    # def find_point(self, goal):
+    #     x, y, z, w = goal.goal.pose.position.x, goal.goal.pose.position.y, goal.goal.pose.orientation.z, goal.goal.pose.orientation.w
+    #     for i in waypoints:
+    #         if x == waypoints[i][0] and y == waypoints[i][1] and z == waypoints[i][2] and w == waypoints[i][3]:
+    #             return i
 
     # 初始化起点的距离  到自身为零 到其他节点为无穷大
     def init_distance(self, graph,s): #传入图像 和起点
@@ -236,8 +236,7 @@ class TopologyMapAction():
 
     def execute_cb(self, msg):
         rospy.loginfo('TopologyMap receive command : %s' % (msg))
-        
-        path = self.TopologyMap.path(msg)
+        path = self.TopologyMap.path(msg.goal)
         print(path)
         for i in range(len(path)):
             rospy.sleep(1.0)
