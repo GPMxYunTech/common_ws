@@ -174,7 +174,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_down.value:
-            self.is_sequence_finished = self.Action.fork_updown(0.647)
+            self.is_sequence_finished = self.Action.fork_updown(0.86)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -190,7 +190,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_back.value:
-            self.is_sequence_finished = self.Action.back(1.2)
+            self.is_sequence_finished = self.Action.back(1.0)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
