@@ -13,6 +13,7 @@ class PBVS():
                             changing_direction_1 \
                             Changingtheta \
                             decide \
+                            back \
                             moving_nearby_parking_lot \
                             parking \
                             up_fork_dead_reckoning \
@@ -95,6 +96,24 @@ class PBVS():
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.stop.value
+                self.is_sequence_finished = False
+
+        elif self.current_parking_sequence == self.ParkingSequence.decide.value:
+            self.is_sequence_finished = self.Action.fnSeqdecide(0.05)
+            
+            if self.is_sequence_finished == True:
+                self.current_parking_sequence = self.ParkingSequence.stop.value
+                self.is_sequence_finished = False
+
+            elif self.is_sequence_finished == False:
+                self.current_parking_sequence = self.ParkingSequence.back.value
+                self.is_sequence_finished = False
+
+        elif self.current_parking_sequence == self.ParkingSequence.back.value:
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(1.5)
+            
+            if self.is_sequence_finished == True:
+                self.current_parking_sequence = self.ParkingSequence.parking.value
                 self.is_sequence_finished = False
         # ============up_fork============
 
