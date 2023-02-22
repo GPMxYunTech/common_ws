@@ -160,7 +160,7 @@ class Navigation():
         self.trigger = True
         self.pre_odom = 0.0
         self.odom_pass = 0.0
-
+    
     def cbGetRobotOdom(self, msg):
         self.rz, self.rw = msg.pose.pose.orientation.z, msg.pose.pose.orientation.w
         yaw_r = math.atan2(2 * self.rw * self.rz, self.rw * self.rw - self.rz * self.rz)
