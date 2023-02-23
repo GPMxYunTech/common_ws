@@ -99,7 +99,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.decide.value:
-            self.is_sequence_finished = self.Action.fnSeqdecide(0.05)
+            self.is_sequence_finished = self.Action.fnSeqdecide(0.04)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.stop.value

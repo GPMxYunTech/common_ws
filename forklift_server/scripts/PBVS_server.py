@@ -125,10 +125,10 @@ class PBVSAction():
             self.PBVS = PBVS(self._as, self.subscriber, 1, 0.45, 1.45)
         elif msg.command == "up":
             rospy.loginfo("up")
-            self.PBVS = PBVS(self._as, self.subscriber, 8, 0.45, 0.0)
+            self.PBVS = PBVS(self._as, self.subscriber, 9, 0.45, 0.0)
         elif msg.command == "down":
             rospy.loginfo("down")
-            self.PBVS = PBVS(self._as, self.subscriber, 18, 0.86, 0.0)
+            self.PBVS = PBVS(self._as, self.subscriber, 19, 0.86, 0.0)
         # up 8 down 14 stop 18 parking 1 
         self._result.result = 'success'
         self._as.set_succeeded(self._result)
