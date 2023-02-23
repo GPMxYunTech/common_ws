@@ -118,7 +118,7 @@ class PBVSAction():
         if msg.command == "parking_up":
             rospy.loginfo("parking_up")
             self.subscriber.updown = True
-            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.392, 1.5)
+            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.392, 1.6)
         if msg.command == "parking_down":
             rospy.loginfo("parking_down")
             self.subscriber.updown = False
