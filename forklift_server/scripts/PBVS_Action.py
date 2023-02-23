@@ -34,6 +34,9 @@ class Action():
         self.marker_2d_pose_x = 0.0
         self.marker_2d_pose_y = 0.0
         self.marker_2d_theta = 0.0
+        self.initial_marker_pose_x = 0.0
+        self.initial_marker_pose_y = 0.0
+        self.initial_marker_pose_theta = 0.0
         # Fork_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
@@ -245,10 +248,10 @@ class Action():
         self.SpinOnce()
         if self.is_triggered == False:
             self.is_triggered = True
-            self.initial_robot_pose_x = self.robot_2d_pose_x
-            self.initial_robot_pose_y = self.robot_2d_pose_y
+            self.initial_marker_pose_x = self.marker_2d_pose_x
+            self.initial_marker_pose_y = self.marker_2d_pose_y
         
-        dist = math.copysign(1, dead_reckoning_dist) * math.sqrt((self.initial_robot_pose_x - self.robot_2d_pose_x)**2 + (self.initial_robot_pose_y - self.robot_2d_pose_y)**2)
+        dist = math.copysign(1, dead_reckoning_dist) * math.sqrt((self.initial_marker_pose_x - self.marker_2d_pose_x)**2 + (self.initial_marker_pose_y - self.marker_2d_pose_y)**2)
         # print("dist", dist)
         if math.copysign(1, dead_reckoning_dist) > 0.0:
             if  dead_reckoning_dist - dist < 0.0:
