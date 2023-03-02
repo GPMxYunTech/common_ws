@@ -238,8 +238,9 @@ class Action():
             return False
 
     def fnSeqdecide(self, decide_dist):#decide_dist偏離多少公分要後退
-        self.dist = self.marker_2d_pose_y
-        if  self.dist < decide_dist:
+        self.SpinOnce()
+        dist = self.marker_2d_pose_y
+        if  abs(dist) < abs(decide_dist):
             return True
         else:
             return False
