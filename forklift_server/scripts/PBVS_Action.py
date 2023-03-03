@@ -247,30 +247,19 @@ class Action():
 
     def fnseqdead_reckoning(self, dead_reckoning_dist):
         self.SpinOnce()
-        if self.is_triggered == False:
-            self.is_triggered = True
-            self.initial_marker_pose_x = self.marker_2d_pose_x
-            self.initial_marker_pose_y = self.marker_2d_pose_y
-        
-        dist = math.copysign(1, dead_reckoning_dist) * math.sqrt((self.initial_marker_pose_x - self.marker_2d_pose_x)**2 + (self.initial_marker_pose_y - self.marker_2d_pose_y)**2)
+        threshold = 0.03
+        dist = math.sqrt(self.marker_2d_pose_x**2 + self.marker_2d_pose_y**2)
         # print("dist", dist)
-        if math.copysign(1, dead_reckoning_dist) > 0.0:
-            if  dead_reckoning_dist - dist < 0.0:
-                self.cmd_vel.fnStop()
-                self.is_triggered = False
-                return True
-            else:
-                self.cmd_vel.fnGoStraight(-(dead_reckoning_dist - dist))
-                return False
-        elif math.copysign(1, dead_reckoning_dist) < 0.0:
-            if  dead_reckoning_dist - dist > 0.0:
-                self.cmd_vel.fnStop()
-                self.is_triggered = False
-                return True
-            else:
-                self.cmd_vel.fnGoStraight(-(dead_reckoning_dist - dist))
-                return False
-
+        if dist < (dead_reckoning_dist-threshold):
+            self.cmd_vel.fnGoStraight(-(dead_reckoning_dist - dist))
+            return False
+        elif dist > (dead_reckoning_dist-threshold):
+            self.cmd_vel.fnGoStraight(-(dead_reckoning_dist - dist))
+            return False
+        else:
+            self.cmd_vel.fnStop()
+            return True
+            
     def fnCalcDistPoints(self, x1, x2, y1, y2):
         return math.sqrt((x1 - x2) ** 2. + (y1 - y2) ** 2.)
 
