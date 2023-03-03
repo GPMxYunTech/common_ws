@@ -113,7 +113,7 @@ class PBVS():
             self.is_sequence_finished = self.Action.fnseqdead_reckoning(2)
             
             if self.is_sequence_finished == True:
-                self.current_parking_sequence = self.ParkingSequence.parking.value
+                self.current_parking_sequence = self.ParkingSequence.stop.value
                 self.is_sequence_finished = False
         # ============up_fork============
 

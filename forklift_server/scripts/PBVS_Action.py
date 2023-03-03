@@ -249,11 +249,12 @@ class Action():
         self.SpinOnce()
         threshold = 0.03
         dist = math.sqrt(self.marker_2d_pose_x**2 + self.marker_2d_pose_y**2)
+        print(dist, dead_reckoning_dist, dead_reckoning_dist - dist)
         # print("dist", dist)
         if dist < (dead_reckoning_dist-threshold):
             self.cmd_vel.fnGoStraight(-(dead_reckoning_dist - dist))
             return False
-        elif dist > (dead_reckoning_dist-threshold):
+        elif dist > (dead_reckoning_dist+threshold):
             self.cmd_vel.fnGoStraight(-(dead_reckoning_dist - dist))
             return False
         else:
@@ -278,10 +279,10 @@ class cmd_vel():
             twist.angular.z =0.3 
         elif twist.angular.z < -0.3:
             twist.angular.z =-0.3 
-        if twist.linear.x > 0 and twist.linear.x < 0.01:
-            twist.linear.x =0.01
-        elif twist.linear.x < 0 and twist.linear.x > -0.01:
-            twist.linear.x =-0.01   
+        if twist.linear.x > 0 and twist.linear.x < 0.05:
+            twist.linear.x =0.05
+        elif twist.linear.x < 0 and twist.linear.x > -0.05:
+            twist.linear.x =-0.05   
 
         if twist.linear.x > 0 and twist.linear.x > 0.2:
             twist.linear.x =0.2
