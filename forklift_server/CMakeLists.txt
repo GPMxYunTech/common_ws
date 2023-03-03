@@ -8,6 +8,7 @@ actionlib
 actionlib_msgs 
 geometry_msgs 
 tf 
+gpm_msg
 )
 find_package(Boost REQUIRED COMPONENTS system)
 
@@ -18,7 +19,7 @@ add_action_files(
 )
 
 generate_messages(
-  DEPENDENCIES actionlib_msgs std_msgs geometry_msgs 
+  DEPENDENCIES actionlib_msgs std_msgs geometry_msgs
 )
 
 catkin_package(
