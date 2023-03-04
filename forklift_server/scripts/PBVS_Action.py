@@ -386,7 +386,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 3.0
+        Kp = 3.5
 
         angular_z = Kp * theta
 
