@@ -100,12 +100,14 @@ class Action():
     def fnSeqChangingtheta(self, desired_angle):
         self.SpinOnce()
         desired_angle_turn = -self.marker_2d_theta
-
-        self.cmd_vel.fnTurn(desired_angle_turn)
-        
+        print(desired_angle_turn, desired_angle)
+        for i in range(3):
+            self.cmd_vel.fnTurn(desired_angle_turn)
+            rospy.sleep(0.12)
         if abs(desired_angle_turn) < desired_angle  :
             self.cmd_vel.fnStop()
-            if self.check_wait_time > 10 :
+            rospy.sleep(0.1)
+            if self.check_wait_time > 5 :
                 self.check_wait_time = 0
                 return True
             else:
@@ -303,10 +305,10 @@ class cmd_vel():
         if not self.front:
             twist.linear.x = -twist.linear.x
 
-        if twist.angular.z > 0.3:
-            twist.angular.z =0.3 
-        elif twist.angular.z < -0.3:
-            twist.angular.z =-0.3 
+        if twist.angular.z > 0.25:
+            twist.angular.z =0.25
+        elif twist.angular.z < -0.25:
+            twist.angular.z =-0.25
         if twist.linear.x > 0 and twist.linear.x < 0.02:
             twist.linear.x =0.05
         elif twist.linear.x < 0 and twist.linear.x > -0.02:
@@ -334,7 +336,7 @@ class cmd_vel():
         self.cmd_pub(twist)
 
     def fnTurn(self, theta):
-        Kp = 0.2 #1.0
+        Kp = 0.4 #1.0
         angular_z = Kp * theta
         
 
@@ -384,7 +386,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 1.2
+        Kp = 3.0
 
         angular_z = Kp * theta
 
@@ -395,6 +397,6 @@ class cmd_vel():
         twist.angular.x = 0
         twist.angular.y = 0
 
-        twist.angular.z = -angular_z *0.16
+        twist.angular.z = -angular_z 
         self.cmd_pub(twist)
 
