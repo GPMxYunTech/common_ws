@@ -72,7 +72,7 @@ class PBVS():
                 self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value
                 self.is_sequence_finished = False
         elif self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
-            self.is_sequence_finished = self.Action.fnSeqChangingDirection(0.015)
+            self.is_sequence_finished = self.Action.fnSeqChangingDirection(0.01)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.moving_nearby_parking_lot.value
@@ -92,7 +92,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.Changingtheta.value:
-            self.is_sequence_finished = self.Action.fnSeqChangingtheta(0.12)
+            self.is_sequence_finished = self.Action.fnSeqChangingtheta(0.1)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.decide.value

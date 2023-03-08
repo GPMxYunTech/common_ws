@@ -101,7 +101,7 @@ class Action():
         self.SpinOnce()
         desired_angle_turn = -self.marker_2d_theta
         print(desired_angle_turn, desired_angle)
-        for i in range(3):
+        for i in range(5):
             self.cmd_vel.fnTurn(desired_angle_turn)
             rospy.sleep(0.12)
         if abs(desired_angle_turn) < desired_angle  :
@@ -386,9 +386,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 3.5
-
-        angular_z = Kp * theta
+        Kp = 6.5
 
         twist = Twist()
         twist.linear.x = 0.1
@@ -397,6 +395,6 @@ class cmd_vel():
         twist.angular.x = 0
         twist.angular.y = 0
 
-        twist.angular.z = -angular_z 
+        twist.angular.z = -Kp * theta
         self.cmd_pub(twist)
 
