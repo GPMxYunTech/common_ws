@@ -162,7 +162,8 @@ class Action():
 
             dist_from_start = self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-
+            # HACK: self spin error correct
+            
             remained_dist = desired_dist - dist_from_start 
             if remained_dist < 0  :remained_dist =0
 
