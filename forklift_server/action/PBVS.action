@@ -1,5 +1,12 @@
 #goal definition
 string command
+# ActionCode-->[0]:shelf, [1]:up/down, [2]:forward/backward, [3]:tile, [4]:move
+int64 ActionCode
+int64 ShelfParameter
+int64 UpDownPosition
+int64 ForrwardBackwardPosition
+int64 TilePosition
+int64 MovePosition
 ---
 #result definition
 string result
