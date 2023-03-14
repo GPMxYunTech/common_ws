@@ -40,7 +40,7 @@ class Action():
         # Fork_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
-        self.fork_threshold = 0.005
+        self.fork_threshold = 0.004
         # other
         self.check_wait_time = 0
         self.is_triggered = False
@@ -100,7 +100,6 @@ class Action():
     def fnSeqChangingtheta(self, desired_angle):
         self.SpinOnce()
         desired_angle_turn = -self.marker_2d_theta
-        print(desired_angle_turn, desired_angle)
         for i in range(5):
             self.cmd_vel.fnTurn(desired_angle_turn)
             rospy.sleep(0.12)
@@ -163,7 +162,8 @@ class Action():
             dist_from_start = self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
             # HACK: self spin error correct
-            
+            desired_dist = desired_dist + 0.25
+
             remained_dist = desired_dist - dist_from_start 
             if remained_dist < 0  :remained_dist =0
 

@@ -123,12 +123,13 @@ class PBVSAction():
         if msg.command == "parking_up":
             rospy.loginfo("parking_up")
             self.subscriber.updown = True
-            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.392, 1.58)
+            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.392, 1.6)
                                                     #步驟,牙叉初始高度,對位停止距離 
         if msg.command == "parking_down":
             rospy.loginfo("parking_down")
             self.subscriber.updown = False
-            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.45, 1.43)
+            # self.PBVS = PBVS(self._as, self.subscriber, 1, 0.45, 1.43)
+            self.PBVS = PBVS(self._as, self.subscriber, 7, 0.45, 0.7)
         elif msg.command == "up":
             rospy.loginfo("up")
             self.PBVS = PBVS(self._as, self.subscriber, 9, 0.435, 0.0)
