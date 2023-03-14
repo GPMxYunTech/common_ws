@@ -72,7 +72,7 @@ class PBVS():
                 self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value
                 self.is_sequence_finished = False
         elif self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
-            self.is_sequence_finished = self.Action.fnSeqChangingDirection(0.02)
+            self.is_sequence_finished = self.Action.fnSeqChangingDirection(0.01)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.moving_nearby_parking_lot.value
@@ -92,7 +92,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.Changingtheta.value:
-            self.is_sequence_finished = self.Action.fnSeqChangingtheta(0.07)
+            self.is_sequence_finished = self.Action.fnSeqChangingtheta(0.1)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.decide.value
@@ -110,7 +110,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.back.value:
-            self.is_sequence_finished = self.Action.fnseqdead_reckoning(1.5)
+            self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(3.0)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.parking.value
@@ -126,7 +126,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.up_fork_dead_reckoning.value:
-            self.is_sequence_finished = self.Action.fnseqdead_reckoning(-0.35)
+            self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(1.0)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -134,7 +134,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.up_fork_forward.value:
-            self.is_sequence_finished = self.Action.fork_forwardback(0.65)
+            self.is_sequence_finished = self.Action.fork_forwardback(0.7)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -158,7 +158,7 @@ class PBVS():
                 self.is_sequence_finished = False
                 
         elif self.current_parking_sequence == self.ParkingSequence.up_fork_back.value:
-            self.is_sequence_finished = self.Action.fnseqdead_reckoning(1.0)
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(2.0)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -182,7 +182,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_dead_reckoning.value:
-            self.is_sequence_finished = self.Action.fnseqdead_reckoning(-0.4)
+            self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(0.95)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -239,7 +239,7 @@ class PBVS():
 
     def windows(self):
         self.window = tk.Tk()
-        self.window.geometry('450x450+1700+560') 
+        self.window.geometry('250x200+1700+560') 
 
         self.labelParkingSequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
         self.label_ParkingSequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='#19CAAD') 
@@ -273,27 +273,11 @@ class PBVS():
 
     def update_window(self):
         self.PBVS()
-
         (robot_2d_pose_x, robot_2d_pose_y, robot_2d_theta, marker_2d_pose_x, marker_2d_pose_y, marker_2d_theta) = self.Subscriber.SpinOnce()
+        base = 0
 
-        # if self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
-        #     sequence = "changing_direction"
-        # elif self.current_parking_sequence == self.ParkingSequence.changing_direction_2.value:
-        #     sequence = "changing_direction"
-        # elif self.current_parking_sequence == self.ParkingSequence.moving_nearby_parking_lot.value:
-        #     sequence = "moving_nearby_parking_lot"
-        # elif self.current_parking_sequence == self.ParkingSequence.parking.value:
-        #     sequence = "parking"
-
-
-        base = 130
-
-        # self.labelParkingSequence.configure(text="ParkingSequence ")
-        # self.labelParkingSequence.place(x=0, y=base+30)        
-        # self.label_ParkingSequence.configure(text=sequence)
-        # self.label_ParkingSequence.place(x=200, y=base+30)
         try:
-            base1 = base+70
+            base1 = base
             self.labelrobot_2d_pose_x.configure(text='Robot 2d Pose x: ')
             self.labelrobot_2d_pose_x.place(x=0, y=base1)        
             self.label_robot_2d_pose_x.configure(text=robot_2d_pose_x)
@@ -325,10 +309,6 @@ class PBVS():
             self.label_marker_2d_theta.place(x=200, y=base2+60)
             self.label_marker_2d_theta.configure(text=math.degrees(marker_2d_theta))
 
-            # base3 = base2+100
-            # self.labelfork_pose.configure(text="Fork pose: ")
-            # self.labelfork_pose.place(x=0, y=base3)
-            # self.label_fork_pose.place(x=200, y=base3)
         except:
             pass
         # self.label_fork_pose.configure(text=self.fork_pose)

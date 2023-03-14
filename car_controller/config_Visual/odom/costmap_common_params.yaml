@@ -48,7 +48,7 @@ inflation_layer:
   cost_scaling_factor:  10.0 #10.0  
 
   # 控制距離障礙物有多遠，數值越大離障礙物越遠
-  inflation_radius:     0.7 #0.25 
+  inflation_radius:     0.6 #0.25 
 
 static_layer:
   enabled:              true

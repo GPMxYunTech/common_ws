@@ -34,10 +34,13 @@ class Action():
         self.marker_2d_pose_x = 0.0
         self.marker_2d_pose_y = 0.0
         self.marker_2d_theta = 0.0
+        self.initial_marker_pose_x = 0.0
+        self.initial_marker_pose_y = 0.0
+        self.initial_marker_pose_theta = 0.0
         # Fork_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
-        self.fork_threshold = 0.005
+        self.fork_threshold = 0.004
         # other
         self.check_wait_time = 0
         self.is_triggered = False
@@ -97,12 +100,13 @@ class Action():
     def fnSeqChangingtheta(self, desired_angle):
         self.SpinOnce()
         desired_angle_turn = -self.marker_2d_theta
-
-        self.cmd_vel.fnTurn(desired_angle_turn)
-        
+        for i in range(5):
+            self.cmd_vel.fnTurn(desired_angle_turn)
+            rospy.sleep(0.12)
         if abs(desired_angle_turn) < desired_angle  :
             self.cmd_vel.fnStop()
-            if self.check_wait_time > 10 :
+            rospy.sleep(0.1)
+            if self.check_wait_time > 5 :
                 self.check_wait_time = 0
                 return True
             else:
@@ -157,6 +161,8 @@ class Action():
 
             dist_from_start = self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
+            # HACK: self spin error correct
+            desired_dist = desired_dist + 0.25
 
             remained_dist = desired_dist - dist_from_start 
             if remained_dist < 0  :remained_dist =0
@@ -235,20 +241,20 @@ class Action():
             return False
 
     def fnSeqdecide(self, decide_dist):#decide_dist偏離多少公分要後退
-        self.dist = self.marker_2d_pose_y
-        if  self.dist < decide_dist:
+        self.SpinOnce()
+        dist = self.marker_2d_pose_y
+        if  abs(dist) < abs(decide_dist):
             return True
         else:
             return False
 
-    def fnseqdead_reckoning(self, dead_reckoning_dist):
+    def fnseqdead_reckoning(self, dead_reckoning_dist):#(使用里程紀計算)移動到離現在位置dead_reckoning_dist公尺的地方
         self.SpinOnce()
         if self.is_triggered == False:
             self.is_triggered = True
             self.initial_robot_pose_x = self.robot_2d_pose_x
             self.initial_robot_pose_y = self.robot_2d_pose_y
-        
-        dist = math.copysign(1, dead_reckoning_dist) * math.sqrt((self.initial_robot_pose_x - self.robot_2d_pose_x)**2 + (self.initial_robot_pose_y - self.robot_2d_pose_y)**2)
+        dist = math.copysign(1, dead_reckoning_dist) * self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
         # print("dist", dist)
         if math.copysign(1, dead_reckoning_dist) > 0.0:
             if  dead_reckoning_dist - dist < 0.0:
@@ -267,6 +273,25 @@ class Action():
                 self.cmd_vel.fnGoStraight(-(dead_reckoning_dist - dist))
                 return False
 
+    def fnseqmove_to_marker_dist(self, marker_dist): #(使用marker)前後移動到距離marker_dist公尺的位置
+        self.SpinOnce()
+        if(marker_dist < 2.0):
+            threshold = 0.015
+        else:
+            threshold = 0.03
+
+        dist = math.sqrt(self.marker_2d_pose_x**2 + self.marker_2d_pose_y**2)
+        
+        if dist < (marker_dist-threshold):
+            self.cmd_vel.fnGoStraight(-(marker_dist - dist))
+            return False
+        elif dist > (marker_dist+threshold):
+            self.cmd_vel.fnGoStraight(-(marker_dist - dist))
+            return False
+        else:
+            self.cmd_vel.fnStop()
+            return True
+            
     def fnCalcDistPoints(self, x1, x2, y1, y2):
         return math.sqrt((x1 - x2) ** 2. + (y1 - y2) ** 2.)
 
@@ -281,23 +306,23 @@ class cmd_vel():
         if not self.front:
             twist.linear.x = -twist.linear.x
 
-        if twist.angular.z > 0.3:
-            twist.angular.z =0.3 
-        elif twist.angular.z < -0.3:
-            twist.angular.z =-0.3 
-        if twist.linear.x > 0 and twist.linear.x < 0.01:
-            twist.linear.x =0.01
-        elif twist.linear.x < 0 and twist.linear.x > -0.01:
-            twist.linear.x =-0.01   
+        if twist.angular.z > 0.25:
+            twist.angular.z =0.25
+        elif twist.angular.z < -0.25:
+            twist.angular.z =-0.25
+        if twist.linear.x > 0 and twist.linear.x < 0.02:
+            twist.linear.x =0.05
+        elif twist.linear.x < 0 and twist.linear.x > -0.02:
+            twist.linear.x =-0.05   
 
-        if twist.linear.x > 0 and twist.linear.x > 0.2:
+        if twist.linear.x > 0.2:
             twist.linear.x =0.2
-        elif twist.linear.x < 0 and twist.linear.x < -0.2:
+        elif twist.linear.x < -0.2:
             twist.linear.x =-0.2                     
-        if twist.angular.z > 0 and twist.angular.z < 0.1:
-            twist.angular.z =0.1
-        elif twist.angular.z < 0 and twist.angular.z > -0.1:
-            twist.angular.z =-0.1
+        if twist.angular.z > 0 and twist.angular.z < 0.015:
+            twist.angular.z =0.015
+        elif twist.angular.z < 0 and twist.angular.z > -0.015:
+            twist.angular.z =-0.015
         self.pub_cmd_vel.publish(twist)
 
     def fnStop(self):
@@ -312,7 +337,7 @@ class cmd_vel():
         self.cmd_pub(twist)
 
     def fnTurn(self, theta):
-        Kp = 0.5 #1.0
+        Kp = 0.4 #1.0
         angular_z = Kp * theta
         
 
@@ -362,9 +387,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 1.2
-
-        angular_z = Kp * theta
+        Kp = 6.5
 
         twist = Twist()
         twist.linear.x = 0.1
@@ -373,6 +396,6 @@ class cmd_vel():
         twist.angular.x = 0
         twist.angular.y = 0
 
-        twist.angular.z = -angular_z *0.16
+        twist.angular.z = -Kp * theta
         self.cmd_pub(twist)
 

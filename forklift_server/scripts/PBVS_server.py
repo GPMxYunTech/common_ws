@@ -9,13 +9,14 @@ from apriltag_ros.msg import AprilTagDetectionArray
 from nav_msgs.msg import Odometry
 import math
 from gpm_msg.msg import forkposition
-
+from ekf import KalmanFilter
 class Subscriber():
     def __init__(self):
         self.sub_info_marker = rospy.Subscriber('/tag_detections_up', AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
         self.sub_info_marker = rospy.Subscriber('/tag_detections_down', AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
         self.sub_odom_robot = rospy.Subscriber('/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
         self.sub_forwardbackpostion = rospy.Subscriber('/forkpos', forkposition, self.cbGetforkpos, queue_size = 1)
+        self.ekf_theta = KalmanFilter()
         self.init_parame()
 
     def init_parame(self):
@@ -34,6 +35,8 @@ class Subscriber():
         # Forklift_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
+        #ekf
+        self.ekf_theta.init(1,1,5)
 
     def SpinOnce(self):
         return self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
@@ -48,6 +51,7 @@ class Subscriber():
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
+                theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x
                 self.marker_2d_theta = -theta
@@ -63,6 +67,7 @@ class Subscriber():
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
+                theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x
                 self.marker_2d_theta = -theta
@@ -119,13 +124,15 @@ class PBVSAction():
             rospy.loginfo("parking_up")
             self.subscriber.updown = True
             self.PBVS = PBVS(self._as, self.subscriber, 1, 0.392, 1.6)
+                                                    #步驟,牙叉初始高度,對位停止距離 
         if msg.command == "parking_down":
             rospy.loginfo("parking_down")
             self.subscriber.updown = False
-            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.45, 1.45)
+            # self.PBVS = PBVS(self._as, self.subscriber, 1, 0.45, 1.43)
+            self.PBVS = PBVS(self._as, self.subscriber, 7, 0.45, 0.7)
         elif msg.command == "up":
             rospy.loginfo("up")
-            self.PBVS = PBVS(self._as, self.subscriber, 9, 0.45, 0.0)
+            self.PBVS = PBVS(self._as, self.subscriber, 9, 0.435, 0.0)
         elif msg.command == "down":
             rospy.loginfo("down")
             self.PBVS = PBVS(self._as, self.subscriber, 19, 0.86, 0.0)
