@@ -26,17 +26,14 @@ if __name__ == '__main__':
     rospy.init_node('ctrl_server')
 
     command =[
-        ['TopologyMap', 'v17'],
-        ['PBVS', 'parking_down'], 
-        ['PBVS', 'up'], 
-        ['TopologyMap', 'v23'],
-        ['PBVS', 'parking_up'],
-        ['PBVS', 'down'],
-        ['TopologyMap', 'v17'],
-        ['PBVS', 'parking_down'], 
-        ['PBVS', 'up'], 
-        ['TopologyMap', 'v23'],
-        ['PBVS', 'parking_up'],
+        ['TopologyMap', 'Place3Before'],
+        ['PBVS', 'parking_up'], 
+        ['PBVS', 'down'], 
+        ['TopologyMap', 'Pick3Before'],
+        ['PBVS', 'parking_down'],
+        ['PBVS', 'up'],
+        ['TopologyMap', 'Place3Before'],
+        ['PBVS', 'parking_up'], 
         ['PBVS', 'down']
     ]
 

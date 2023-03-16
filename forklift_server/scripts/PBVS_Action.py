@@ -40,7 +40,7 @@ class Action():
         # Fork_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
-        self.fork_threshold = 0.004
+        self.fork_threshold = 0.0015
         # other
         self.check_wait_time = 0
         self.is_triggered = False
@@ -53,6 +53,7 @@ class Action():
     
     def fork_updown(self, desired_updownposition):#0~2.7
         self.update_fork()
+        
         if self.updownposition < desired_updownposition - self.fork_threshold:
             self.pub_fork.publish(self.forkmotion.up.value)
             return False
@@ -60,15 +61,16 @@ class Action():
             self.pub_fork.publish(self.forkmotion.down.value)
             return False
         else:
+            print(self.updownposition , desired_updownposition, self.fork_threshold)
             self.pub_fork.publish(self.forkmotion.stop.value)
             return True
 
     def fork_forwardback(self, desired_forwardbackpostion):# 0~0.7
         self.update_fork()
-        if self.forwardbackpostion < desired_forwardbackpostion - self.fork_threshold:
+        if self.forwardbackpostion < desired_forwardbackpostion - self.fork_threshold*1.5:
             self.pub_fork.publish(self.forkmotion.forward.value)
             return False
-        elif self.forwardbackpostion > desired_forwardbackpostion + self.fork_threshold:
+        elif self.forwardbackpostion > desired_forwardbackpostion + self.fork_threshold*1.5:
             self.pub_fork.publish(self.forkmotion.backword.value)
             return False
         else:

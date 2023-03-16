@@ -126,7 +126,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.up_fork_dead_reckoning.value:
-            self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(1.0)
+            self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(0.9)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -158,7 +158,7 @@ class PBVS():
                 self.is_sequence_finished = False
                 
         elif self.current_parking_sequence == self.ParkingSequence.up_fork_back.value:
-            self.is_sequence_finished = self.Action.fnseqdead_reckoning(2.0)
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(1.0)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -182,7 +182,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_dead_reckoning.value:
-            self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(0.95)
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(-0.85)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -198,7 +198,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.down_fork_down.value:
-            self.is_sequence_finished = self.Action.fork_updown(0.67)
+            self.is_sequence_finished = self.Action.fork_updown(0.663)
             
             if self.is_sequence_finished == True:
                 rospy.sleep(0.05)
@@ -312,4 +312,4 @@ class PBVS():
         except:
             pass
         # self.label_fork_pose.configure(text=self.fork_pose)
-        self.window.after(100, self.update_window)
+        self.window.after(50, self.update_window)
