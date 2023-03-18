@@ -14,7 +14,7 @@ class Subscriber():
     def __init__(self):
         self.sub_info_marker = rospy.Subscriber('/tag_detections_up', AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
         self.sub_info_marker = rospy.Subscriber('/tag_detections_down', AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
-        self.sub_odom_robot = rospy.Subscriber('/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
+        self.sub_odom_robot = rospy.Subscriber('/rtabmap/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
         self.sub_forwardbackpostion = rospy.Subscriber('/forkpos', forkposition, self.cbGetforkpos, queue_size = 1)
         self.ekf_theta = KalmanFilter()
         self.init_parame()
@@ -132,7 +132,7 @@ class PBVSAction():
         elif msg.command == "up":
             rospy.loginfo("up")
             self.subscriber.updown = False
-            self.PBVS = PBVS(self._as, self.subscriber, 9, 0.422, 0.0)
+            self.PBVS = PBVS(self._as, self.subscriber, 9, 0.4576, 0.0)
         elif msg.command == "down":
             rospy.loginfo("down")
             self.PBVS = PBVS(self._as, self.subscriber, 19, 0.86, 0.0)
