@@ -44,7 +44,7 @@ class PBVS():
         self._feedback = forklift_server.msg.PBVSFeedback()
         self._result = forklift_server.msg.PBVSResult()
         self.subscriber = subscriber
-        self.mode = mode
+        self.mode = mode.command
         self.Action = Action(self.subscriber)
         self.init_PBVS_parame()
         
@@ -101,6 +101,11 @@ class PBVS():
         
      
     def PBVS(self):
+        if self._as.is_preempt_requested():
+            rospy.logwarn('PBVS Preempted')
+            self.window.destroy()
+            rospy.sleep(1)
+            return
         self._feedback.feedback = str(self.ParkingSequence(self.current_parking_sequence))
         self._as.publish_feedback(self._feedback)
         # ============parking============

@@ -25,7 +25,7 @@
     <param name="up_fork_fork_init" value = 0.4576 /><!--插起棧板的初始牙叉高度/-->
     <param name="up_fork_move_to_marker_dist" value = 0.4576 /><!--向後直線移動到距離Tag多少公尺的地方/-->
     <param name="up_fork_fork_forward_distance" value = 0.7 /><!--牙叉前伸的距離/-->
-    <param name="up_fork_raise_" value = 0.7 /><!--牙叉後伸的距離/-->
+    <param name="up_fork_raise_" value = 0.7 /><!--牙叉後縮的距離/-->
     <!--Drop the pallet setting/-->
     <param name="down_fork_fork_init" value = 0.86 /><!--放下棧板的初始牙叉高度/-->
     <param name="down_fork_dead_reckoning_dist" value = -0.85 /><!--使用里程計計算直走(正值)或後退(負值)距離，因為牙叉升起有可能會擋到Tag，因此改用里程計計算/-->

@@ -121,7 +121,8 @@ class PBVSAction():
 
     def execute_cb(self, msg):
         rospy.loginfo('PBVS receive command : %s' % (msg))
-        self.PBVS = PBVS(self._as, self.subscriber, msg.command)
+        
+        self.PBVS = PBVS(self._as, self.subscriber, msg)
         self.PBVS = None
 
 if __name__ == '__main__':
