@@ -97,15 +97,15 @@ waypoints = {
 
 class TopologyMap():
     def __init__(self):
-        self.start = input("輸入起始點(v1~v...): ")
+        self.start  = input("輸入起始點(v1~v...): ")     
 
     def path(self, goal):
-        # end = self.find_point(goal)
         print("{}到{}的路径:".format(self.start, goal))
         self.parent, self.distance=self.dijkstra(graph,self.start)
         path=self.distance_path(graph,self.start,goal)
         self.start = goal
         return path
+   
 
     # def find_point(self, goal):
     #     x, y, z, w = goal.goal.pose.position.x, goal.goal.pose.position.y, goal.goal.pose.orientation.z, goal.goal.pose.orientation.w
@@ -253,16 +253,22 @@ class TopologyMapAction():
     _feedback = forklift_server.msg.TopologyMapFeedback()
 
     def __init__(self, name):
-        self._action_name = name
-        self.TopologyMap = TopologyMap()
+        self._action_name = name        
+        self.TopologyMap = TopologyMap()        
         self.Navigation = Navigation()
         self._as = actionlib.SimpleActionServer(self._action_name, forklift_server.msg.TopologyMapAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
+        
 
     def execute_cb(self, msg):
         rospy.loginfo('TopologyMap receive command : %s' % (msg))
-        path = self.TopologyMap.path(msg.goal)
-        print(path)
+        if msg.goal!="":       
+            path = self.TopologyMap.path(msg.goal)
+            print(path)
+        elif msg.target_name!="":
+            path=[msg.target_name]
+            
+
         for i in range(len(path)):
             rospy.sleep(1.0)
             if(i > 0 and (waypoints[path[i]][0] == waypoints[path[i-1]][0] and waypoints[path[i]][1] == waypoints[path[i-1]][1])):
@@ -274,6 +280,7 @@ class TopologyMapAction():
             else:
                 rospy.loginfo('Navigation to %s' % path[i])
                 self.Navigation.move(waypoints[path[i]][0], waypoints[path[i]][1], waypoints[path[i]][2], waypoints[path[i]][3])
+
 
         
         rospy.logwarn('PBVS Succeeded')
