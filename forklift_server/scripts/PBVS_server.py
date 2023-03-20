@@ -12,10 +12,14 @@ from gpm_msg.msg import forkposition
 from ekf import KalmanFilter
 class Subscriber():
     def __init__(self):
-        self.sub_info_marker = rospy.Subscriber('/tag_detections_up', AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
-        self.sub_info_marker = rospy.Subscriber('/tag_detections_down', AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
-        self.sub_odom_robot = rospy.Subscriber('/rtabmap/odom', Odometry, self.cbGetRobotOdom, queue_size = 1)
-        self.sub_forwardbackpostion = rospy.Subscriber('/forkpos', forkposition, self.cbGetforkpos, queue_size = 1)
+        odom = rospy.get_param("odom", "/odom")
+        tag_detections_up = rospy.get_param("tag_detections_up", "/tag_detections_up")
+        tag_detections_down = rospy.get_param("tag_detections_down", "/tag_detections_down")
+        forkpos = rospy.get_param("forkpos", "/forkpos")
+        self.sub_info_marker = rospy.Subscriber(tag_detections_up, AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
+        self.sub_info_marker = rospy.Subscriber(tag_detections_down, AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
+        self.sub_odom_robot = rospy.Subscriber(odom, Odometry, self.cbGetRobotOdom, queue_size = 1)
+        self.sub_forwardbackpostion = rospy.Subscriber(forkpos, forkposition, self.cbGetforkpos, queue_size = 1)
         self.ekf_theta = KalmanFilter()
         self.init_parame()
 
@@ -117,33 +121,11 @@ class PBVSAction():
 
     def execute_cb(self, msg):
         rospy.loginfo('PBVS receive command : %s' % (msg))
-        #TODO 棧板高度參數要加 
-        command = msg.command
-
-        if msg.command == "parking_up":
-            rospy.loginfo("parking_up")
-            self.subscriber.updown = True
-            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.392, 1.8)
-                                                    #步驟,牙叉初始高度,對位停止距離 
-        if msg.command == "parking_down":
-            rospy.loginfo("parking_down")
-            self.subscriber.updown = False
-            self.PBVS = PBVS(self._as, self.subscriber, 1, 0.211, 1.43)
-        elif msg.command == "up":
-            rospy.loginfo("up")
-            self.subscriber.updown = False
-            self.PBVS = PBVS(self._as, self.subscriber, 9, 0.4576, 0.0)
-        elif msg.command == "down":
-            rospy.loginfo("down")
-            self.PBVS = PBVS(self._as, self.subscriber, 19, 0.86, 0.0)
-        # up 8 down 14 stop 18 parking 1 
-        self._result.result = 'success'
-        self.subscriber.updown = True
-        self._as.set_succeeded(self._result)
+        self.PBVS = PBVS(self._as, self.subscriber, msg.command)
         self.PBVS = None
 
 if __name__ == '__main__':
-    rospy.init_node('PBVS')
-    rospy.loginfo('PBVS start')
+    rospy.init_node('PBVS_server')
+    rospy.logwarn('PBVS start')
     server = PBVSAction(rospy.get_name())
     rospy.spin()

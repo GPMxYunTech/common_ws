@@ -79,7 +79,7 @@ class Action():
             
     def fnSeqChangingDirection(self, desired_angle):
         self.SpinOnce()
-        desired_angle_turn = -1. *  math.atan2(self.marker_2d_pose_y - 0, self.marker_2d_pose_x - 0)
+        desired_angle_turn = -1. *  math.atan2(self.marker_2d_pose_y, self.marker_2d_pose_x)
         
         if desired_angle_turn <0:
             desired_angle_turn = desired_angle_turn + math.pi
