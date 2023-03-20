@@ -19,16 +19,22 @@
     <param name="forkcamera_ChangingDirection_threshold" value = 0.01 />  <!--正對Tag(atan2(y, x) <= threshold) threshold/-->
     <param name="forkcamera_parking_stop" value = 1.43 /><!--牙叉相機對位停止距離/-->
     <param name="forkcamera_Changingtheta_threshold" value = 0.1 />  <!--平行Tag(theta <= threshold)/-->
+    <param name="forkcamera_decide_distance" value = 0.04 />  <!--將相機平行Tag之後，左右y距離誤差幾公尺內可以將牙叉插進去，如果不行的話就後退重新對位/-->
     <param name="forkcamera_back_distance" value = 3.0 />  <!--重新對位時後退的距離/-->
     
     <!--Raise the pallet setting/-->
-    <param name="up_fork_fork_init" value = 0.4576 /><!--插起棧板的初始牙叉高度/-->
-    <param name="up_fork_move_to_marker_dist" value = 0.4576 /><!--向後直線移動到距離Tag多少公尺的地方/-->
-    <param name="up_fork_fork_forward_distance" value = 0.7 /><!--牙叉前伸的距離/-->
-    <param name="up_fork_raise_" value = 0.7 /><!--牙叉後縮的距離/-->
-    <!--Drop the pallet setting/-->
-    <param name="down_fork_fork_init" value = 0.86 /><!--放下棧板的初始牙叉高度/-->
-    <param name="down_fork_dead_reckoning_dist" value = -0.85 /><!--使用里程計計算直走(正值)或後退(負值)距離，因為牙叉升起有可能會擋到Tag，因此改用里程計計算/-->
-    <param name="down_fork_fork_forward_distance" value = 0.68 /><!--牙叉前伸的距離/-->
+    <param name="raise_pallet_fork_init" value = 0.4576 /><!--插起棧板的初始牙叉高度/-->
+    <param name="raise_pallet_move_to_marker_dist" value = 0.9 /><!--直線移動到距離Tag多少公尺的地方/-->
+    <param name="raise_pallet_fork_forward_distance" value = 0.7 /><!--牙叉前伸的距離/-->
+    <param name="raise_pallet_raise_height" value = 0.57 /><!--牙叉叉起棧板的高度/-->
+    <param name="raise_pallet_back_distance" value = 1.0 /><!--插起棧板後，後退距離/-->
+    <param name="raise_pallet_back_distance" value = 1.0 /><!--導航時牙叉高度/-->
 
+    <!--Drop the pallet setting/-->
+    <param name="drop_pallet_fork_init" value = 0.86 /><!--放下棧板的初始牙叉高度/-->
+    <param name="drop_pallet_dead_reckoning_dist" value = -0.85 /><!--使用里程計計算直走(正值)或後退(負值)距離，因為牙叉升起有可能會擋到Tag，因此改用里程計計算/-->
+    <param name="drop_pallet_fork_forward_distance" value = 0.68 /><!--牙叉前伸的距離/-->
+    <param name="drop_pallet_drop_height" value = 0.67 /><!--牙叉放下棧板的高度/-->
+    <param name="drop_pallet_back_distance" value = 1.0 /><!--放下棧板後，後退距離/-->
+    <param name="raise_pallet_back_distance" value = 0.07 /><!--導航時牙叉高度/-->
 </launch>
