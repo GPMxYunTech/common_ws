@@ -254,8 +254,10 @@ class TopologyMapAction():
 
     def __init__(self, name):
         self._action_name = name        
-        self.TopologyMap = TopologyMap()        
+        self.TopologyMap = TopologyMap()      
+        print('TopologyMap initialized')  
         self.Navigation = Navigation()
+        print('Navigation initialized')  
         self._as = actionlib.SimpleActionServer(self._action_name, forklift_server.msg.TopologyMapAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
         
