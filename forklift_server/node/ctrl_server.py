@@ -27,14 +27,14 @@ if __name__ == '__main__':
 
     command =[
         ['TopologyMap', 'Place3Before'],
-        ['PBVS', 'parking_up'], 
-        ['PBVS', 'down'], 
+        ['PBVS', 'parking_bodycamera'], 
+        ['PBVS', 'drop_paller'], 
         ['TopologyMap', 'Pick3Before'],
-        ['PBVS', 'parking_down'],
-        ['PBVS', 'up'],
+        ['PBVS', 'parking_forkcamera'],
+        ['PBVS', 'raise_pallet'],
         ['TopologyMap', 'Place3Before'],
-        ['PBVS', 'parking_up'], 
-        ['PBVS', 'down']
+        ['PBVS', 'parking_bodycamera'], 
+        ['PBVS', 'drop_paller']
     ]
 
     for msg in command:
