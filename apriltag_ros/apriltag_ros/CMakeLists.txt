@@ -14,8 +14,13 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   tf
+  actionlib 
+  actionlib_msgs   
 )
-
+add_action_files(
+  DIRECTORY action
+  FILES AprilTag.action
+)
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(apriltag REQUIRED)
@@ -63,6 +68,8 @@ generate_messages(
   geometry_msgs
   sensor_msgs
   std_msgs
+  std_msgs
+  actionlib_msgs
 )
 
 # Extract the include directories and libraries from apriltag::apriltag as catkin_package() does not support modern cmake.

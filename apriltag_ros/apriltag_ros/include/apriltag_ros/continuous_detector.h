@@ -49,12 +49,23 @@
 
 #include <nodelet/nodelet.h>
 
+#include <actionlib/server/simple_action_server.h>
+
+#include <apriltag_ros/AprilTagAction.h>
 namespace apriltag_ros
 {
 
 class ContinuousDetector: public nodelet::Nodelet
 {
  public:
+  //TODO:未來可以利用Action server的feedback來回傳當前的偵測狀態，例如:偵測到幾個tag, tag的位置等, 以及是否節點已經意外關閉
+  //這裡新增Action Server 來接收是否開始分析畫面資訊, 接收到AprilTag/goal, True就開始偵測，False就關閉偵測============================================================================
+  bool stare_detector;
+  std::unique_ptr<actionlib::SimpleActionServer<apriltag_ros::AprilTagAction>> AprilTag_server;
+  void executeCB(const apriltag_ros::AprilTagGoalConstPtr &goal);
+  apriltag_ros::AprilTagAction feedback;
+  apriltag_ros::AprilTagResult result;
+  //============================================================================
   ContinuousDetector() = default;
   ~ContinuousDetector() = default;
 
