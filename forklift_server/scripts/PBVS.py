@@ -43,13 +43,24 @@ class PBVS():
         self._result = forklift_server.msg.PBVSResult()
         self.subscriber = subscriber
         self.mode = mode.command
+        self.ActionCode=mode.ActionCode
+        self.ShelfParameter=mode.ShelfParameter
+        self. UpDownPosition=mode.UpDownPosition
+        self. ForrwardBackwardPosition=mode.ForrwardBackwardPosition
+        self. TilePositionv=mode.TilePosition
+        self. MovePosition=mode.MovePosition
         self.Action = Action(self.subscriber)
         self.init_PBVS_parame()
-        
         
 
     def init_PBVS_parame(self):
         self.is_sequence_finished = False
+        if self.ActionCode==0:
+            if self.ShelfParameter==0:
+                self.mode="parking_bodycamera"
+            else:
+                self.mode == "parking_forkcamera"
+
         if self.mode == "parking_bodycamera":
             self.subscriber.updown = True
             self.init_fork = rospy.get_param("bodycamera_parking_fork_init", 0.392)
