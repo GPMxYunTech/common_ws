@@ -43,18 +43,11 @@ def AprilTag_down_client(msg):
 
 if __name__ == '__main__':
     rospy.init_node('ctrl_server')
-
-    command =[
-        # ['TopologyMap', 'Place3Before'],
-        ['PBVS', 'parking_bodycamera'], 
-        ['PBVS', 'drop_paller'], 
-        ['TopologyMap', 'Pick3Before'],
-        ['PBVS', 'parking_forkcamera'],
-        ['PBVS', 'raise_pallet'],
-        ['TopologyMap', 'Place3Before'],
-        ['PBVS', 'parking_bodycamera'], 
-        ['PBVS', 'drop_pallet']
-    ]
+    rospy.logwarn("ctrl_server start")
+    rospy.logwarn("your command list:\n")
+    command = rospy.get_param("/ctrl_server/command") 
+    for i in command:
+        print(i)
 
     for msg in command:
         rospy.sleep(1)
@@ -80,7 +73,9 @@ if __name__ == '__main__':
             print("send TopologyMap: ", msg[1])
             result = TopologyMap_client(msg[1])
             print("result ", result)
-
-
+        else:
+            print("error command: ", msg)
+            
+    rospy.signal_shutdown("finish command list")
   
     
