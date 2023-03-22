@@ -114,7 +114,6 @@ class PBVS():
     def __del__(self):
         rospy.logwarn('delet PBVS')
         
-     
     def PBVS(self):
         if self._as.is_preempt_requested():
             rospy.logwarn('PBVS Preempted')
@@ -289,13 +288,10 @@ class PBVS():
                 self.is_sequence_finished = False
         # ============stop============
         elif self.current_parking_sequence == self.ParkingSequence.stop.value:
-            rospy.logwarn('PBVS Succeeded')
-            self._result.result = 'success'
-            self.subscriber.updown = True
-            self._as.set_succeeded(self._result)
+
             self.window.destroy()
             rospy.sleep(1)
-            return
+            return 'success'
             
             
             

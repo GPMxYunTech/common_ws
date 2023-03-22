@@ -25,7 +25,7 @@
     <!--Raise the pallet setting/-->
     <param name="raise_pallet_fork_init" type="double" value = "0.4776" /><!--插起棧板的初始牙叉高度/-->
     <param name="raise_pallet_move_to_marker_dist" type="double" value = "0.9" /><!--直線移動到距離Tag多少公尺的地方/-->
-    <param name="raise_pallet_fork_forward_distance" type="double" value = "0.7" /><!--牙叉前伸的距離/-->
+    <param name="raise_pallet_fork_forward_distance" type="double" value = "0.68" /><!--牙叉前伸的距離/-->
     <param name="raise_pallet_raise_height" type="double" value = "0.57" /><!--牙叉叉起棧板的高度/-->
     <param name="raise_pallet_back_distance" type="double" value = "1.2" /><!--插起棧板後，後退距離/-->
     <param name="raise_pallet_navigation_helght" type="double" value = "0.392" /><!--導航時牙叉高度/-->
@@ -34,8 +34,8 @@
     <param name="drop_pallet_fork_init" type="double" value = "0.86" /><!--放下棧板的初始牙叉高度/-->
     <param name="drop_pallet_dead_reckoning_dist" type="double" value = "-0.85" /><!--使用里程計計算直走(正值)或後退(負值)距離，因為牙叉升起有可能會擋到Tag，因此改用里程計計算/-->
     <param name="drop_pallet_fork_forward_distance" type="double" value = "0.68" /><!--牙叉前伸的距離/-->
-    <param name="drop_pallet_drop_height" type="double" value = "0.67" /><!--牙叉放下棧板的高度/-->
-    <param name="drop_pallet_back_distance" type="double" value = "1.0" /><!--放下棧板後，後退距離/-->
+    <param name="drop_pallet_drop_height" type="double" value = "0.69" /><!--牙叉放下棧板的高度/-->
+    <param name="drop_pallet_back_distance" type="double" value = "1.2" /><!--放下棧板後，後退距離/-->
     <param name="drop_pallet_navigation_helght" type="double" value = "0.07" /><!--導航時牙叉高度/-->
 </node>
 </launch>

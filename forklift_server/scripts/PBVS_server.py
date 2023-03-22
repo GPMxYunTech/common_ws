@@ -124,7 +124,12 @@ class PBVSAction():
         rospy.loginfo('PBVS receive command : %s' % (msg))
         
         self.PBVS = PBVS(self._as, self.subscriber, msg)
+        rospy.logwarn('PBVS Succeeded')
+        self._result.result = 'PBVS Succeeded'
+        self.subscriber.updown = True
+        self._as.set_succeeded(self._result)
         self.PBVS = None
+
 
 if __name__ == '__main__':
     rospy.init_node('PBVS_server')
