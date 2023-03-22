@@ -2,10 +2,8 @@
 <node pkg="forklift_server" type="ctrl_server.py" name="ctrl_server" output="screen">
     <rosparam param="command">
     [
-        ["PBVS", "parking_bodycamera"],
-        ["PBVS", "drop_paller"],
-        ['TopologyMap', 'Pick3Before'],
-        ['PBVS', 'parking_forkcamera'],
+        <!-- ['TopologyMap', 'Pick3Before'], -->
+        <!-- ['PBVS', 'parking_forkcamera'], -->
         ['PBVS', 'raise_pallet'],
         ['TopologyMap', 'Place3Before'],
         ['PBVS', 'parking_bodycamera'], 

@@ -61,7 +61,6 @@ class Action():
             self.pub_fork.publish(self.forkmotion.down.value)
             return False
         else:
-            print(self.updownposition , desired_updownposition, self.fork_threshold)
             self.pub_fork.publish(self.forkmotion.stop.value)
             return True
 
@@ -164,7 +163,7 @@ class Action():
             dist_from_start = self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
             # HACK: self spin error correct
-            desired_dist = desired_dist + 0.25
+            desired_dist = desired_dist + 0.125
 
             remained_dist = desired_dist - dist_from_start 
             if remained_dist < 0  :remained_dist =0

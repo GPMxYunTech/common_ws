@@ -43,23 +43,23 @@ class PBVS():
         self._result = forklift_server.msg.PBVSResult()
         self.subscriber = subscriber
         self.mode = mode.command
-        self.ActionCode=mode.ActionCode
-        self.ShelfParameter=mode.ShelfParameter
-        self. UpDownPosition=mode.UpDownPosition
-        self. ForrwardBackwardPosition=mode.ForrwardBackwardPosition
-        self. TilePositionv=mode.TilePosition
-        self. MovePosition=mode.MovePosition
+        # self.ActionCode=mode.ActionCode
+        # self.ShelfParameter=mode.ShelfParameter
+        # self. UpDownPosition=mode.UpDownPosition
+        # self. ForrwardBackwardPosition=mode.ForrwardBackwardPosition
+        # self. TilePositionv=mode.TilePosition
+        # self. MovePosition=mode.MovePosition
         self.Action = Action(self.subscriber)
         self.init_PBVS_parame()
         
 
     def init_PBVS_parame(self):
         self.is_sequence_finished = False
-        if self.ActionCode==0:
-            if self.ShelfParameter==0:
-                self.mode="parking_bodycamera"
-            else:
-                self.mode == "parking_forkcamera"
+        # if self.ActionCode==0:
+        #     if self.ShelfParameter==0:
+        #         self.mode="parking_bodycamera"
+        #     else:
+        #         self.mode == "parking_forkcamera"
 
         if self.mode == "parking_bodycamera":
             self.subscriber.updown = True
@@ -118,9 +118,9 @@ class PBVS():
     def PBVS(self):
         if self._as.is_preempt_requested():
             rospy.logwarn('PBVS Preempted')
-            self.window.destroy()
-            rospy.sleep(1)
-            return
+            self.current_parking_sequence = self.ParkingSequence.stop.value
+            
+            
         self._feedback.feedback = str(self.ParkingSequence(self.current_parking_sequence))
         self._as.publish_feedback(self._feedback)
         # ============parking============
@@ -169,7 +169,7 @@ class PBVS():
                 self.is_sequence_finished = False
 
         elif self.current_parking_sequence == self.ParkingSequence.back.value:
-            self.is_sequence_finished = self.Action.fnseqmove_to_marker_distance(self.back_distance)
+            self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(self.back_distance)
             
             if self.is_sequence_finished == True:
                 self.current_parking_sequence = self.ParkingSequence.parking.value
@@ -295,6 +295,7 @@ class PBVS():
             self._as.set_succeeded(self._result)
             self.window.destroy()
             rospy.sleep(1)
+            return
             
             
             
@@ -373,5 +374,5 @@ class PBVS():
 
         except:
             pass
-        # self.label_fork_pose.configure(text=self.fork_pose)
-        self.window.after(50, self.update_window)
+
+        self.window.after(100, self.update_window)

@@ -23,11 +23,11 @@
     <param name="forkcamera_back_distance" type="double" value = "3.0" />  <!--重新對位時後退的距離/-->
 
     <!--Raise the pallet setting/-->
-    <param name="raise_pallet_fork_init" type="double" value = "0.4576" /><!--插起棧板的初始牙叉高度/-->
+    <param name="raise_pallet_fork_init" type="double" value = "0.4776" /><!--插起棧板的初始牙叉高度/-->
     <param name="raise_pallet_move_to_marker_dist" type="double" value = "0.9" /><!--直線移動到距離Tag多少公尺的地方/-->
     <param name="raise_pallet_fork_forward_distance" type="double" value = "0.7" /><!--牙叉前伸的距離/-->
     <param name="raise_pallet_raise_height" type="double" value = "0.57" /><!--牙叉叉起棧板的高度/-->
-    <param name="raise_pallet_back_distance" type="double" value = "1.0" /><!--插起棧板後，後退距離/-->
+    <param name="raise_pallet_back_distance" type="double" value = "1.2" /><!--插起棧板後，後退距離/-->
     <param name="raise_pallet_navigation_helght" type="double" value = "0.392" /><!--導航時牙叉高度/-->
 
     <!--Drop the pallet setting/-->
