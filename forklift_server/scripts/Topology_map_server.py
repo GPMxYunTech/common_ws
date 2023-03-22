@@ -290,6 +290,6 @@ class TopologyMapAction():
         self._as.set_succeeded(self._result)
 
 if __name__ == '__main__':
-    rospy.init_node('TopologyMap')
+    rospy.init_node('TopologyMap_server')
     server = TopologyMapAction(rospy.get_name())
     rospy.spin()
