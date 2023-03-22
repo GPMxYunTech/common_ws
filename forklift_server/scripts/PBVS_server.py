@@ -133,6 +133,6 @@ class PBVSAction():
 
 if __name__ == '__main__':
     rospy.init_node('PBVS_server')
-    rospy.logwarn('PBVS start')
+    rospy.logwarn(rospy.get_name() + 'start')
     server = PBVSAction(rospy.get_name())
     rospy.spin()

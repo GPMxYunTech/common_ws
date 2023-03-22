@@ -43,7 +43,7 @@ def AprilTag_down_client(msg):
 
 if __name__ == '__main__':
     rospy.init_node('ctrl_server')
-    rospy.logwarn("ctrl_server start")
+    rospy.logwarn(rospy.get_name() + "start")
     rospy.logwarn("your command list:\n")
     command = rospy.get_param(rospy.get_name() + "/command") 
     for i in command:
