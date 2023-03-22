@@ -76,14 +76,14 @@ namespace apriltag_ros
     if (goal->goal)
     {
       this->stare_detector = goal->goal;
-      result.result = "Turned on";
+      result.result = ros::this_node::getName() + "_server" + " Turned on";
       ROS_INFO("%s", result.result.c_str());
       this->AprilTag_server->setSucceeded(result);
     }
     else if (!goal->goal)
     {
       this->stare_detector = goal->goal;
-      result.result = "Turned off";
+      result.result = ros::this_node::getName() + "_server" + " Turned off";
       ROS_INFO("%s", result.result.c_str());
       this->AprilTag_server->setSucceeded(result);
     }
