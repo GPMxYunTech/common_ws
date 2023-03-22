@@ -45,7 +45,7 @@ if __name__ == '__main__':
     rospy.init_node('ctrl_server')
     rospy.logwarn("ctrl_server start")
     rospy.logwarn("your command list:\n")
-    command = rospy.get_param("/ctrl_server/command") 
+    command = rospy.get_param(rospy.get_name() + "/command") 
     for i in command:
         print(i)
 

@@ -63,45 +63,45 @@ class PBVS():
 
         if self.mode == "parking_bodycamera":
             self.subscriber.updown = True
-            self.init_fork = rospy.get_param("/PBVS_server/bodycamera_parking_fork_init", 0.392)
-            self.ChangingDirection_threshold = rospy.get_param("/PBVS_server/bodycamera_ChangingDirection_threshold", 0.01)
-            self.Parking_distance = rospy.get_param("/PBVS_server/bodycamera_parking_stop", 1.8)
-            self.Changingtheta_threshod = rospy.get_param("/PBVS_server/bodycamera_Changingtheta_threshod", 0.1)
-            self.decide_distance = rospy.get_param("/PBVS_server/bodycamera_decide_distance", 0.04)
-            self.back_distance = rospy.get_param("/PBVS_server/bodycamera_back_distance", 3.0)
+            self.init_fork = rospy.get_param(rospy.get_name() + "/bodycamera_parking_fork_init", 0.392)
+            self.ChangingDirection_threshold = rospy.get_param(rospy.get_name() + "/bodycamera_ChangingDirection_threshold", 0.01)
+            self.Parking_distance = rospy.get_param(rospy.get_name() + "/bodycamera_parking_stop", 1.8)
+            self.Changingtheta_threshod = rospy.get_param(rospy.get_name() + "/bodycamera_Changingtheta_threshod", 0.1)
+            self.decide_distance = rospy.get_param(rospy.get_name() + "/bodycamera_decide_distance", 0.04)
+            self.back_distance = rospy.get_param(rospy.get_name() + "/bodycamera_back_distance", 3.0)
             self.current_parking_sequence = self.ParkingSequence.init_fork.value
             self.windows()
 
         elif self.mode == "parking_forkcamera":
             self.subscriber.updown = False
-            self.init_fork = rospy.get_param("/PBVS_server/forkcamera_parking_fork_init", 0.211)
-            self.ChangingDirection_threshold = rospy.get_param("/PBVS_server/forkcamera_ChangingDirection_threshold", 0.01)
-            self.Parking_distance = rospy.get_param("/PBVS_server/forkcamera_parking_stop", 1.43)
-            self.Changingtheta_threshod = rospy.get_param("/PBVS_server/forkcamera_Changingtheta_threshod", 0.1)
-            self.decide_distance = rospy.get_param("/PBVS_server/forkcamera_decide_distance", 0.04)
-            self.back_distance = rospy.get_param("/PBVS_server/forkcamera_back_distance", 3.0)
+            self.init_fork = rospy.get_param(rospy.get_name() + "/forkcamera_parking_fork_init", 0.211)
+            self.ChangingDirection_threshold = rospy.get_param(rospy.get_name() + "/forkcamera_ChangingDirection_threshold", 0.01)
+            self.Parking_distance = rospy.get_param(rospy.get_name() + "/forkcamera_parking_stop", 1.43)
+            self.Changingtheta_threshod = rospy.get_param(rospy.get_name() + "/forkcamera_Changingtheta_threshod", 0.1)
+            self.decide_distance = rospy.get_param(rospy.get_name() + "/forkcamera_decide_distance", 0.04)
+            self.back_distance = rospy.get_param(rospy.get_name() + "/forkcamera_back_distance", 3.0)
             self.current_parking_sequence = self.ParkingSequence.init_fork.value
             self.windows()
 
         elif self.mode == "raise_pallet":
             self.subscriber.updown = False
-            self.init_fork = rospy.get_param("/PBVS_server/raise_pallet_fork_init", 0.4576)
-            self.move_to_marker_distance = rospy.get_param("/PBVS_server/raise_pallet_move_to_marker_distance", 0.9)
-            self.fork_forward_distance = rospy.get_param("/PBVS_server/raise_pallet_fork_forward_distance", 0.7)
-            self.raise_height = rospy.get_param("/PBVS_server/raise_pallet_raise_height", 0.57)
-            self.back_distance = rospy.get_param("/PBVS_server/raise_pallet_back_distance", 1.0)
-            self.navigation_helght = rospy.get_param("/PBVS_server/raise_pallet_navigation_helght", 0.392)
+            self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init", 0.4576)
+            self.move_to_marker_distance = rospy.get_param(rospy.get_name() + "/raise_pallet_move_to_marker_distance", 0.9)
+            self.fork_forward_distance = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_forward_distance", 0.7)
+            self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height", 0.57)
+            self.back_distance = rospy.get_param(rospy.get_name() + "/raise_pallet_back_distance", 1.0)
+            self.navigation_helght = rospy.get_param(rospy.get_name() + "/raise_pallet_navigation_helght", 0.392)
             self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
             self.windows()
 
         elif self.mode == "drop_pallet":
             self.subscriber.updown = True
-            self.init_fork = rospy.get_param("/PBVS_server/drop_pallet_fork_init", 0.86)
-            self.dead_reckoning_dist = rospy.get_param("/PBVS_server/drop_pallet_dead_reckoning_dist", -0.85)
-            self.fork_forward_distance = rospy.get_param("/PBVS_server/drop_pallet_fork_forward_distance", 0.7)
-            self.drop_height = rospy.get_param("/PBVS_server/drop_pallet_drop_height", 0.67)
-            self.back_distance = rospy.get_param("/PBVS_server/drop_pallet_back_distance", 1.0)
-            self.navigation_helght = rospy.get_param("/PBVS_server/drop_pallet_navigation_helght", 0.07)
+            self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_init", 0.86)
+            self.dead_reckoning_dist = rospy.get_param(rospy.get_name() + "/drop_pallet_dead_reckoning_dist", -0.85)
+            self.fork_forward_distance = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_forward_distance", 0.7)
+            self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height", 0.67)
+            self.back_distance = rospy.get_param(rospy.get_name() + "/drop_pallet_back_distance", 1.0)
+            self.navigation_helght = rospy.get_param(rospy.get_name() + "/drop_pallet_navigation_helght", 0.07)
             self.current_parking_sequence = self.ParkingSequence.down_fork_init.value
             self.windows()
 

@@ -12,10 +12,10 @@ from gpm_msg.msg import forkposition
 from ekf import KalmanFilter
 class Subscriber():
     def __init__(self):
-        odom = rospy.get_param("/PBVS_server/odom", "/odom")
-        tag_detections_up = rospy.get_param("/PBVS_server/tag_detections_up", "/tag_detections_up")
-        tag_detections_down = rospy.get_param("/PBVS_server/tag_detections_down", "/tag_detections_down")
-        forkpos = rospy.get_param("/PBVS_server/forkpos", "/forkpos")
+        odom = rospy.get_param(rospy.get_name() + "/odom", "/odom")
+        tag_detections_up = rospy.get_param(rospy.get_name() + "/tag_detections_up", "/tag_detections_up")
+        tag_detections_down = rospy.get_param(rospy.get_name() + "/tag_detections_down", "/tag_detections_down")
+        forkpos = rospy.get_param(rospy.get_name() + "/forkpos", "/forkpos")
         self.sub_info_marker = rospy.Subscriber(tag_detections_up, AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
         self.sub_info_marker = rospy.Subscriber(tag_detections_down, AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
         self.sub_odom_robot = rospy.Subscriber(odom, Odometry, self.cbGetRobotOdom, queue_size = 1)
