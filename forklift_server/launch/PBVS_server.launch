@@ -28,7 +28,7 @@
     <param name="raise_pallet_fork_forward_distance" type="double" value = "0.68" /><!--牙叉前伸的距離/-->
     <param name="raise_pallet_raise_height" type="double" value = "0.57" /><!--牙叉叉起棧板的高度/-->
     <param name="raise_pallet_back_distance" type="double" value = "1.2" /><!--插起棧板後，後退距離/-->
-    <param name="raise_pallet_navigation_helght" type="double" value = "0.392" /><!--導航時牙叉高度/-->
+    <param name="raise_pallet_navigation_helght" type="double" value = "0.392" /><!--完成插起棧板動作後，接續下一個動作時牙叉高度/-->
 
     <!--Drop the pallet setting/-->
     <param name="drop_pallet_fork_init" type="double" value = "0.86" /><!--放下棧板的初始牙叉高度/-->
@@ -36,6 +36,6 @@
     <param name="drop_pallet_fork_forward_distance" type="double" value = "0.68" /><!--牙叉前伸的距離/-->
     <param name="drop_pallet_drop_height" type="double" value = "0.69" /><!--牙叉放下棧板的高度/-->
     <param name="drop_pallet_back_distance" type="double" value = "1.2" /><!--放下棧板後，後退距離/-->
-    <param name="drop_pallet_navigation_helght" type="double" value = "0.07" /><!--導航時牙叉高度/-->
+    <param name="drop_pallet_navigation_helght" type="double" value = "0.07" /><!--完成放置棧板動作後，接續下一個動作時牙叉高度/-->
 </node>
 </launch>
