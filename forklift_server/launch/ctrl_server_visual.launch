@@ -1,5 +1,5 @@
 <launch>
-<node pkg="forklift_server" type="ctrl_server.py" name="ctrl_server" output="screen">
+<node pkg="forklift_server" type="ctrl_server_visual.py" name="ctrl_server" output="screen">
     <rosparam param="command">
     [
         ['TopologyMap', 'v17'],
