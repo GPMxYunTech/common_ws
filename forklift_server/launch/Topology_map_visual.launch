@@ -1,5 +1,5 @@
 <launch>
-<node pkg="forklift_server" type="Topology_map_server_visual.py" name="TopologyMap_server" output="screen">
+<node pkg="forklift_server" type="Topology_map_server.py" name="TopologyMap_server" output="screen">
     <param name="odom" value="/rtabmap/odom" /><!--里程計 Topic（map -> base_link, 是tf相對關係, 非輪式里程計）/-->
     <rosparam param= "graph">
     {
