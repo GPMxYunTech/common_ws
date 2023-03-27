@@ -131,7 +131,12 @@ class Action():
                 desired_angle_turn = (math.pi / 2.0) + self.initial_marker_pose_theta - (self.robot_2d_theta - self.initial_robot_pose_theta)
             elif self.initial_marker_pose_theta > 0.0:
                 desired_angle_turn = -(math.pi / 2.0) + self.initial_marker_pose_theta - (self.robot_2d_theta - self.initial_robot_pose_theta)
-
+            
+            # decide doing fnSeqMovingNearbyParkingLot or not
+            desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
+            if abs(desired_dist) < 0.1:
+                return True
+            
             desired_angle_turn = -1. * desired_angle_turn
             self.cmd_vel.fnTurn(desired_angle_turn)
 
@@ -163,6 +168,7 @@ class Action():
             dist_from_start = self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
             # HACK: self spin error correct
+            
             desired_dist = desired_dist + 0.125
 
             remained_dist = desired_dist - dist_from_start 

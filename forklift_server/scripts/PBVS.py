@@ -71,7 +71,7 @@ class PBVS():
                     self.mode == "parking_forkcamera"
             else: #[0]:未附值, [other]:給錯值 走舊流程
                 pass
-        
+            
             if self.mode == "parking_bodycamera":
                 self.subscriber.updown = True
                 self.init_fork = rospy.get_param(rospy.get_name() + "/bodycamera_parking_fork_init", 0.392)

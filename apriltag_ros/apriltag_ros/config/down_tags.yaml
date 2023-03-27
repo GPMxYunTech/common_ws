@@ -19,10 +19,10 @@
 #     {id: ID, size: SIZE, name: NAME},
 #     ...
 #   ]
-standalone_tags:
-  [
+# standalone_tags:
+#   [
     #{id: 0, size: 0.1, x: 0, y: 0, z: 0, qw: 0.0, qx: 0.0, qy: 0.0, qz: 0.0}
-  ]
+  # ]
 # ## Tag bundle definitions
 # ### Remarks
 #
