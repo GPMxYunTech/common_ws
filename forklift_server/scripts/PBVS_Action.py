@@ -40,7 +40,7 @@ class Action():
         # Fork_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
-        self.fork_threshold = 0.0015
+        self.fork_threshold = 0.002
         # other
         self.check_wait_time = 0
         self.is_triggered = False
@@ -53,16 +53,16 @@ class Action():
     
     def fork_updown(self, desired_updownposition):#0~2.7
         self.update_fork()
-        
-        if self.updownposition < desired_updownposition - self.fork_threshold:
-            self.pub_fork.publish(self.forkmotion.up.value)
-            return False
-        elif self.updownposition > desired_updownposition + self.fork_threshold:
-            self.pub_fork.publish(self.forkmotion.down.value)
-            return False
-        else:
-            self.pub_fork.publish(self.forkmotion.stop.value)
-            return True
+        while((self.updownposition < desired_updownposition - self.fork_threshold) and (self.updownposition > desired_updownposition + self.fork_threshold)):
+            self.update_fork()
+            if self.updownposition < desired_updownposition - self.fork_threshold:
+                self.pub_fork.publish(self.forkmotion.up.value)
+            elif self.updownposition > desired_updownposition + self.fork_threshold:
+                self.pub_fork.publish(self.forkmotion.down.value)
+            self.update_fork()
+            rospy.sleep(0.05)
+        return True
+
 
     def fork_forwardback(self, desired_forwardbackpostion):# 0~0.7
         self.update_fork()

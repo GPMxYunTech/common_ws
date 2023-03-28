@@ -216,7 +216,7 @@ class PBVS():
                 
                 if self.is_sequence_finished == True:
                     rospy.sleep(0.05)
-                    self.current_parking_sequence = self.ParkingSequence.up_fork_dead_reckoning.value
+                    self.current_parking_sequence = self.ParkingSequence.stop.value
                     self.is_sequence_finished = False
 
             elif self.current_parking_sequence == self.ParkingSequence.up_fork_dead_reckoning.value:
