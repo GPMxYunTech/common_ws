@@ -161,8 +161,8 @@ class PBVS():
             # ============parking============
             if self.current_parking_sequence == self.ParkingSequence.init_fork.value:
                 self.is_sequence_finished = self.Action.fork_updown(self.init_fork)
-                
-                if self.is_sequence_finished == True:
+                :
+                if self.is_sequence_finished == True
                     self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value
                     self.is_sequence_finished = False
             elif self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
