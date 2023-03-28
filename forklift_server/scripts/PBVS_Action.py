@@ -40,7 +40,7 @@ class Action():
         # Fork_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
-        self.fork_threshold = 0.002
+        self.fork_threshold = 0.01
         # other
         self.check_wait_time = 0
         self.is_triggered = False
@@ -48,21 +48,43 @@ class Action():
     def SpinOnce(self):
         (self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
          self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta)=self.Subscriber.SpinOnce()
+    
     def update_fork(self):
         self.forwardbackpostion, self.updownposition = self.Subscriber.SpinOnce_fork()
     
+    def fork_updown_finetune(self, desired_updownposition, fork_threshold):
+        self.update_fork()
+        
+        while(abs(self.updownposition - desired_updownposition) > fork_threshold ):
+            if self.updownposition < desired_updownposition - fork_threshold:
+                for i in range(55):
+                    self.pub_fork.publish(self.forkmotion.up.value)
+                    rospy.sleep(0.01)
+                self.pub_fork.publish(self.forkmotion.stop.value)
+            elif self.updownposition > desired_updownposition + fork_threshold:
+                for i in range(55):
+                    self.pub_fork.publish(self.forkmotion.down.value)
+                    rospy.sleep(0.01)
+                self.pub_fork.publish(self.forkmotion.stop.value)
+            rospy.sleep(0.5)
+            self.update_fork()
+        print(self.updownposition, desired_updownposition)
+
+
     def fork_updown(self, desired_updownposition):#0~2.7
         self.update_fork()
-        while((self.updownposition < desired_updownposition - self.fork_threshold) and (self.updownposition > desired_updownposition + self.fork_threshold)):
-            self.update_fork()
-            if self.updownposition < desired_updownposition - self.fork_threshold:
-                self.pub_fork.publish(self.forkmotion.up.value)
-            elif self.updownposition > desired_updownposition + self.fork_threshold:
-                self.pub_fork.publish(self.forkmotion.down.value)
-            self.update_fork()
-            rospy.sleep(0.05)
-        return True
-
+        if self.updownposition < desired_updownposition - self.fork_threshold:
+            self.pub_fork.publish(self.forkmotion.up.value)
+            return False
+        elif self.updownposition > desired_updownposition + self.fork_threshold:
+            self.pub_fork.publish(self.forkmotion.down.value)
+            return False
+        else:
+            
+            self.fork_updown_finetune(desired_updownposition, 0.003)
+            self.pub_fork.publish(self.forkmotion.stop.value)
+            return True
+    
 
     def fork_forwardback(self, desired_forwardbackpostion):# 0~0.7
         self.update_fork()
