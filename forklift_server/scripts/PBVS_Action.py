@@ -49,6 +49,7 @@ class Action():
         (self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
          self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta)=self.Subscriber.SpinOnce()
     
+    
     def update_fork(self):
         self.forwardbackpostion, self.updownposition = self.Subscriber.SpinOnce_fork()
     
@@ -146,7 +147,7 @@ class Action():
                 self.initial_robot_pose_x = self.robot_2d_pose_x
                 self.initial_robot_pose_y = self.robot_2d_pose_y
 
-                self.initial_marker_pose_theta = self.marker_2d_theta
+                self.initial_marker_pose_theta = self.Subscriber.TrustworthyMarker2DTheta(3)
                 self.initial_marker_pose_x = self.marker_2d_pose_x
 
             if self.initial_marker_pose_theta < 0.0:
