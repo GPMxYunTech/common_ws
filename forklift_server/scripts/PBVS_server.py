@@ -10,6 +10,7 @@ from nav_msgs.msg import Odometry
 import math
 from gpm_msg.msg import forkposition
 from ekf import KalmanFilter
+import statistics
 class Subscriber():
     def __init__(self):
         odom = rospy.get_param(rospy.get_name() + "/odom", "/odom")
@@ -39,6 +40,7 @@ class Subscriber():
         # Forklift_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
+        self.marker_2d_theta_list = []
         #ekf
         self.ekf_theta.init(1,1,5)
 
@@ -111,6 +113,24 @@ class Subscriber():
     def cbGetforkpos(self, msg):
         self.forwardbackpostion = msg.forwardbackpostion
         self.updownposition = msg.updownposition
+
+    def TrustworthyMarker2DTheta(self, time):
+        initial_time = rospy.Time.now().secs
+        while(abs(initial_time - rospy.Time.now().secs) < time):
+            self.marker_2d_theta_list.append(self.marker_2d_theta)
+        
+        threshold = 1
+        mean = statistics.mean(self.marker_2d_theta_list)
+        stdev = statistics.stdev(self.marker_2d_theta_list)
+        upcutoff = mean + threshold * stdev
+        downcutoff = mean - threshold * stdev
+        clean_list = []
+        for i in self.marker_2d_theta_list:
+            if(i > downcutoff and i < upcutoff):
+               clean_list.append(i)
+               
+        return statistics.mean(clean_list)      
+        # print(statistics.mean(clean_list))  
 
 class PBVSAction():
     def __init__(self, name):
