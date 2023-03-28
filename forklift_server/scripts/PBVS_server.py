@@ -40,7 +40,6 @@ class Subscriber():
         # Forklift_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
-        self.marker_2d_theta_list = []
         #ekf
         self.ekf_theta.init(1,1,5)
 
@@ -115,19 +114,20 @@ class Subscriber():
         self.updownposition = msg.updownposition
 
     def TrustworthyMarker2DTheta(self, time):
+        marker_2d_theta_list = []
         initial_time = rospy.Time.now().secs
         while(abs(initial_time - rospy.Time.now().secs) < time):
-            self.marker_2d_theta_list.append(self.marker_2d_theta)
+            marker_2d_theta_list.append(self.marker_2d_theta)
             
             rospy.sleep(0.05)
-        print(self.marker_2d_theta_list)
+        print(marker_2d_theta_list)
         threshold = 0.5
-        mean = statistics.mean(self.marker_2d_theta_list)
-        stdev = statistics.stdev(self.marker_2d_theta_list)
+        mean = statistics.mean(marker_2d_theta_list)
+        stdev = statistics.stdev(marker_2d_theta_list)
         upcutoff = mean + threshold * stdev
         downcutoff = mean - threshold * stdev
         clean_list = []
-        for i in self.marker_2d_theta_list:
+        for i in marker_2d_theta_list:
             if(i > downcutoff and i < upcutoff):
                clean_list.append(i)
                
