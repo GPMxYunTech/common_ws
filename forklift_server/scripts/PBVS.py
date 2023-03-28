@@ -210,13 +210,13 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.parking.value
                     self.is_sequence_finished = False
             # ============raise_pallet============
-
+            # :TODO only raise pallet heve fork_updown_finetune()
             elif self.current_parking_sequence == self.ParkingSequence.up_fork_init.value:
                 self.is_sequence_finished = self.Action.fork_updown(self.init_fork)
                 
                 if self.is_sequence_finished == True:
                     rospy.sleep(0.05)
-                    self.current_parking_sequence = self.ParkingSequence.stop.value
+                    self.current_parking_sequence = self.ParkingSequence.up_fork_dead_reckoning.value
                     self.is_sequence_finished = False
 
             elif self.current_parking_sequence == self.ParkingSequence.up_fork_dead_reckoning.value:
@@ -402,9 +402,10 @@ class PBVS():
             self.labelmarker_2d_theta.configure(text="Marker 2d theta: ")
             self.labelmarker_2d_theta.place(x=0, y=base2+60)
             self.label_marker_2d_theta.place(x=200, y=base2+60)
-            self.label_marker_2d_theta.configure(text=math.degrees(marker_2d_theta))
+            self.label_marker_2d_theta.configure(text=marker_2d_theta)
+            # self.label_marker_2d_theta.configure(text=math.degrees(marker_2d_theta))
 
         except:
             pass
 
-        self.window.after(10, self.update_window)
+        self.window.after(100, self.update_window)

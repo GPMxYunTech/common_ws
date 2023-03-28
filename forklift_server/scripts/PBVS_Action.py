@@ -58,16 +58,16 @@ class Action():
         
         while(abs(self.updownposition - desired_updownposition) > fork_threshold ):
             if self.updownposition < desired_updownposition - fork_threshold:
-                for i in range(55):
-                    self.pub_fork.publish(self.forkmotion.up.value)
-                    rospy.sleep(0.01)
+                
+                self.pub_fork.publish(self.forkmotion.up.value)
+                rospy.sleep(0.1)
                 self.pub_fork.publish(self.forkmotion.stop.value)
             elif self.updownposition > desired_updownposition + fork_threshold:
-                for i in range(55):
-                    self.pub_fork.publish(self.forkmotion.down.value)
-                    rospy.sleep(0.01)
+                
+                self.pub_fork.publish(self.forkmotion.down.value)
+                rospy.sleep(0.05)
                 self.pub_fork.publish(self.forkmotion.stop.value)
-            rospy.sleep(0.5)
+            rospy.sleep(0.7)
             self.update_fork()
         print(self.updownposition, desired_updownposition)
 
@@ -82,7 +82,7 @@ class Action():
             return False
         else:
             
-            self.fork_updown_finetune(desired_updownposition, 0.003)
+            self.fork_updown_finetune(desired_updownposition, 0.005)
             self.pub_fork.publish(self.forkmotion.stop.value)
             return True
     
@@ -149,7 +149,8 @@ class Action():
 
                 self.initial_marker_pose_theta = self.Subscriber.TrustworthyMarker2DTheta(3)
                 self.initial_marker_pose_x = self.marker_2d_pose_x
-
+            print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
+            
             if self.initial_marker_pose_theta < 0.0:
                 desired_angle_turn = (math.pi / 2.0) + self.initial_marker_pose_theta - (self.robot_2d_theta - self.initial_robot_pose_theta)
             elif self.initial_marker_pose_theta > 0.0:

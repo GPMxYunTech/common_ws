@@ -57,7 +57,7 @@ class Subscriber():
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
-                theta = self.ekf_theta.update(theta)
+                # theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x
                 self.marker_2d_theta = -theta
@@ -73,7 +73,7 @@ class Subscriber():
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
-                theta = self.ekf_theta.update(theta)
+                # theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x
                 self.marker_2d_theta = -theta
@@ -118,8 +118,10 @@ class Subscriber():
         initial_time = rospy.Time.now().secs
         while(abs(initial_time - rospy.Time.now().secs) < time):
             self.marker_2d_theta_list.append(self.marker_2d_theta)
-        
-        threshold = 1
+            
+            rospy.sleep(0.05)
+        print(self.marker_2d_theta_list)
+        threshold = 0.5
         mean = statistics.mean(self.marker_2d_theta_list)
         stdev = statistics.stdev(self.marker_2d_theta_list)
         upcutoff = mean + threshold * stdev
