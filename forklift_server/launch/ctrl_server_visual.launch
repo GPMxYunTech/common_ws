@@ -7,7 +7,13 @@
         ['PBVS', 'raise_pallet'], <!--叉起棧板/-->
         ['TopologyMap', 'v23'],<!--導航到v23/-->
         ['PBVS', 'parking_bodycamera'],<!--使用牙叉相機對位貨價/-->
-        ['PBVS', 'drop_pallet']<!--放下棧板/-->
+        ['PBVS', 'drop_pallet'],<!--放下棧板/-->
+        ['TopologyMap', 'v17'],<!--導航到v17/-->
+        ['PBVS', 'parking_forkcamera'], <!--使用牙叉相機對位棧板/-->
+        ['PBVS', 'raise_pallet'], <!--叉起棧板/-->
+        ['TopologyMap', 'v23'],<!--導航到v23/-->
+        ['PBVS', 'parking_bodycamera'],<!--使用牙叉相機對位貨價/-->
+        ['PBVS', 'drop_pallet']
     ]
     </rosparam>
 </node>

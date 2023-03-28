@@ -97,7 +97,7 @@ class PBVS():
             elif self.mode == "raise_pallet":
                 self.subscriber.updown = False
                 self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init", 0.4576)
-                self.move_to_marker_distance = rospy.get_param(rospy.get_name() + "/raise_pallet_move_to_marker_distance", 0.9)
+                self.dead_reckoning_dist = rospy.get_param(rospy.get_name() + "/raise_pallet_dead_reckoning_dist", 0.9)
                 self.fork_forward_distance = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_forward_distance", 0.7)
                 self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height", 0.57)
                 self.back_distance = rospy.get_param(rospy.get_name() + "/raise_pallet_back_distance", 1.0)
@@ -220,7 +220,7 @@ class PBVS():
                     self.is_sequence_finished = False
 
             elif self.current_parking_sequence == self.ParkingSequence.up_fork_dead_reckoning.value:
-                self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(self.move_to_marker_distance)
+                self.is_sequence_finished = self.Action.fnseqdead_reckoning(self.dead_reckoning_dist)
                 
                 if self.is_sequence_finished == True:
                     rospy.sleep(0.05)
@@ -407,4 +407,4 @@ class PBVS():
         except:
             pass
 
-        self.window.after(100, self.update_window)
+        self.window.after(10, self.update_window)
