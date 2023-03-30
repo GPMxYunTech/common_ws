@@ -25,7 +25,7 @@ class Subscriber():
         self.ekf_theta = KalmanFilter()
         self.init_parame()
 
-        if(rospy.get_param(rospy.get_name() + "/gui", True)):
+        if(rospy.get_param(rospy.get_name() + "/gui", False)):
             self.windows()
 
     def init_parame(self):

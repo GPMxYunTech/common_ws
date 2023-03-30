@@ -195,7 +195,7 @@ class Action():
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
             # HACK: self spin error correct
             
-            desired_dist = desired_dist + 0.065
+            desired_dist = desired_dist + 0.1
 
             remained_dist = desired_dist - dist_from_start 
             if remained_dist < 0  :remained_dist =0
@@ -333,7 +333,7 @@ class Action():
         initial_time = rospy.Time.now().secs
         print("self.marker_2d_theta_1", self.marker_2d_theta)
         while(abs(initial_time - rospy.Time.now().secs) < time):
-            self.Subscriber.spinOnce()
+            self.SpinOnce()
             marker_2d_theta_list.append(self.marker_2d_theta)
             print("self.marker_2d_theta", self.marker_2d_theta)
             rospy.sleep(0.05)
