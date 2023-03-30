@@ -5,6 +5,7 @@ import math
 from geometry_msgs.msg import Twist
 from enum import Enum
 from gpm_msg.msg import forklift
+import statistics
 class Action():
     def __init__(self, Subscriber):
         # cmd_vel
@@ -147,7 +148,7 @@ class Action():
                 self.initial_robot_pose_x = self.robot_2d_pose_x
                 self.initial_robot_pose_y = self.robot_2d_pose_y
 
-                self.initial_marker_pose_theta = self.Subscriber.TrustworthyMarker2DTheta(3)
+                self.initial_marker_pose_theta = self.TrustworthyMarker2DTheta(3)
                 self.initial_marker_pose_x = self.marker_2d_pose_x
                 print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
             
@@ -327,7 +328,28 @@ class Action():
     def fnCalcDistPoints(self, x1, x2, y1, y2):
         return math.sqrt((x1 - x2) ** 2. + (y1 - y2) ** 2.)
 
-
+    def TrustworthyMarker2DTheta(self, time):
+        marker_2d_theta_list = [0.0]
+        initial_time = rospy.Time.now().secs
+        print("self.marker_2d_theta_1", self.marker_2d_theta)
+        while(abs(initial_time - rospy.Time.now().secs) < time):
+            self.Subscriber.spinOnce()
+            marker_2d_theta_list.append(self.marker_2d_theta)
+            print("self.marker_2d_theta", self.marker_2d_theta)
+            rospy.sleep(0.05)
+        print("marker_2d_theta_list", marker_2d_theta_list)
+        threshold = 0.5
+        mean = statistics.mean(marker_2d_theta_list)
+        stdev = statistics.stdev(marker_2d_theta_list)
+        upcutoff = mean + threshold * stdev
+        downcutoff = mean - threshold * stdev
+        clean_list = []
+        for i in marker_2d_theta_list:
+            if(i > downcutoff and i < upcutoff):
+               clean_list.append(i)
+               
+        return statistics.median(clean_list) 
+     
 class cmd_vel():
     def __init__(self):
         self.pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)

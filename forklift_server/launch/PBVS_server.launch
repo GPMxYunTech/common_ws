@@ -1,5 +1,9 @@
 <launch>
 <node pkg="forklift_server" type="PBVS_server.py" name="PBVS_server" output="screen">
+    
+    <!-- <param name="gui" type="bool" value = "False" /> -->
+    <!--是否開啟GUI顯示里程計, 標籤, 牙叉等資訊-->>
+    
     <!--Subscriber Topic setting/-->
     <param name="odom" value="/odom" /><!--里程計 Topic（map -> base_link, 是tf相對關係, 非輪式里程計）/-->
     <param name="tag_detections_up" value="/tag_detections_up" /><!--車體相機對位AprilTag Topic/-->
