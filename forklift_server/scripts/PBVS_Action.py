@@ -60,7 +60,7 @@ class Action():
             if self.updownposition < desired_updownposition - fork_threshold:
                 
                 self.pub_fork.publish(self.forkmotion.up.value)
-                rospy.sleep(0.1)
+                rospy.sleep(0.2)
                 self.pub_fork.publish(self.forkmotion.stop.value)
             elif self.updownposition > desired_updownposition + fork_threshold:
                 
@@ -149,7 +149,8 @@ class Action():
 
                 self.initial_marker_pose_theta = self.Subscriber.TrustworthyMarker2DTheta(3)
                 self.initial_marker_pose_x = self.marker_2d_pose_x
-            print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
+                print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
+            
             
             if self.initial_marker_pose_theta < 0.0:
                 desired_angle_turn = (math.pi / 2.0) + self.initial_marker_pose_theta - (self.robot_2d_theta - self.initial_robot_pose_theta)
@@ -158,7 +159,7 @@ class Action():
             
             # decide doing fnSeqMovingNearbyParkingLot or not
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-            if abs(desired_dist) < 0.1:
+            if abs(desired_dist) < 0.15:
                 return True
             
             desired_angle_turn = -1. * desired_angle_turn
@@ -193,7 +194,7 @@ class Action():
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
             # HACK: self spin error correct
             
-            desired_dist = desired_dist + 0.125
+            desired_dist = desired_dist + 0.065
 
             remained_dist = desired_dist - dist_from_start 
             if remained_dist < 0  :remained_dist =0

@@ -11,6 +11,7 @@ import math
 from gpm_msg.msg import forkposition
 from ekf import KalmanFilter
 import statistics
+
 class Subscriber():
     def __init__(self):
         odom = rospy.get_param(rospy.get_name() + "/odom", "/odom")
@@ -56,10 +57,13 @@ class Subscriber():
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
-                # theta = self.ekf_theta.update(theta)
+                theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x
                 self.marker_2d_theta = -theta
+                print("marker_2d_theta", math.degrees(self.marker_2d_theta))
+                print("self.marker_2d_pose_x", self.marker_2d_pose_x)
+                print("self.marker_2d_pose_y", self.marker_2d_pose_y)
             else:
                 pass
         except:
@@ -72,11 +76,11 @@ class Subscriber():
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
-                # theta = self.ekf_theta.update(theta)
+                theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x
                 self.marker_2d_theta = -theta
-                
+
             else:
                 pass
         except:
@@ -114,13 +118,15 @@ class Subscriber():
         self.updownposition = msg.updownposition
 
     def TrustworthyMarker2DTheta(self, time):
-        marker_2d_theta_list = []
+        rospy.sleep(0.5)
+        marker_2d_theta_list = [0.0]
         initial_time = rospy.Time.now().secs
+        print("self.marker_2d_theta_1", self.marker_2d_theta)
         while(abs(initial_time - rospy.Time.now().secs) < time):
             marker_2d_theta_list.append(self.marker_2d_theta)
-            
+            print("self.marker_2d_theta", self.marker_2d_theta)
             rospy.sleep(0.05)
-        print(marker_2d_theta_list)
+        print("marker_2d_theta_list", marker_2d_theta_list)
         threshold = 0.5
         mean = statistics.mean(marker_2d_theta_list)
         stdev = statistics.stdev(marker_2d_theta_list)
