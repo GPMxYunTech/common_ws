@@ -133,7 +133,7 @@ class Subscriber():
             'robot_2d_theta': math.degrees(self.robot_2d_theta),
             'marker_2d_pose_x': self.marker_2d_pose_x,
             'marker_2d_pose_y': self.marker_2d_pose_y,
-            'marker_2d_theta': self.marker_2d_theta,
+            'marker_2d_theta': math.degrees(self.marker_2d_theta),
             'fork_updown_position': self.updownposition,
             'fork_forwardback_position': self.forwardbackpostion
         }

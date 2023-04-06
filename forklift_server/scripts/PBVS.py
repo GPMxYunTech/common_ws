@@ -247,8 +247,8 @@ class PBVS():
                 self.pub_fork = rospy.Publisher('/cmd_fork', forklift, queue_size = 1)
                 rospy.sleep(0.05)
                 self.pub_fork.publish(3)
-                rospy.sleep(0.05)
-                self.pub_fork.publish(3)
+                rospy.sleep(0.14)
+                self.pub_fork.publish(1)
                 self.is_sequence_finished = True
                 if self.is_sequence_finished == True:
                     rospy.sleep(0.05)
@@ -366,7 +366,7 @@ class PBVS():
         while(not rospy.is_shutdown()):
             if(self.PBVS()):
                 break
-            rospy.sleep(0.05)
+            rospy.sleep(0.09)
     #     self.window = tk.Tk()
     #     self.window.geometry('250x200+1700+560') 
 

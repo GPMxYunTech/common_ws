@@ -151,17 +151,17 @@ class Action():
                 self.initial_marker_pose_theta = self.TrustworthyMarker2DTheta(3)
                 self.initial_marker_pose_x = self.marker_2d_pose_x
                 print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
-            
+                # decide doing fnSeqMovingNearbyParkingLot or not
+                desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
+                if abs(desired_dist) < 0.25:
+                    return True
             
             if self.initial_marker_pose_theta < 0.0:
                 desired_angle_turn = (math.pi / 2.0) + self.initial_marker_pose_theta - (self.robot_2d_theta - self.initial_robot_pose_theta)
             elif self.initial_marker_pose_theta > 0.0:
                 desired_angle_turn = -(math.pi / 2.0) + self.initial_marker_pose_theta - (self.robot_2d_theta - self.initial_robot_pose_theta)
             
-            # decide doing fnSeqMovingNearbyParkingLot or not
-            desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-            if abs(desired_dist) < 0.15:
-                return True
+
             
             desired_angle_turn = -1. * desired_angle_turn
             self.cmd_vel.fnTurn(desired_angle_turn)
@@ -203,7 +203,7 @@ class Action():
             
             self.cmd_vel.fnGoStraight(desired_dist)
 
-            if abs(remained_dist) < 0.01:
+            if abs(remained_dist) < 0.07:
                 self.cmd_vel.fnStop()
                 self.current_nearby_sequence = self.NearbySequence.turn_right.value
                 self.is_triggered = False
