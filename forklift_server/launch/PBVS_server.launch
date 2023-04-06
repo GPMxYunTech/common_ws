@@ -8,6 +8,7 @@
     <param name="forkpos" value="/forkpos" /><!--牙叉編碼器回傳Topic/-->
 
     <!--bodycamera parking setting-->
+    <param name="bodycamera_tag_offset_x" type="double" value = "0.325" /><!--對位目標點與tag的左右偏移量/-->
     <param name="bodycamera_parking_fork_init" type="double" value = "0.392" /><!--車體相機對位初始牙叉高度-->
     <param name="bodycamera_ChangingDirection_threshold" type="double" value = "0.01" />  <!--正對Tag(atan2(y, x) <= threshold)/-->
     <param name="bodycamera_parking_stop" type="double" value = "1.8" />  <!--車體相機對位停止距離/-->
@@ -16,6 +17,7 @@
     <param name="bodycamera_back_distance" type="double" value = "3.5" />  <!--重新對位時後退的距離/-->
 
     <!--forkcamera parking setting/-->
+    <param name="forkcamera_tag_offset_x" type="double" value = "0.03" /><!--對位目標點與tag的左右偏移量/-->
     <param name="forkcamera_parking_fork_init" type="double" value = "0.211" /><!--牙叉相機對位初始牙叉高度, 為了將牙叉相機與棧板高度一致/-->
     <param name="forkcamera_ChangingDirection_threshold" type="double" value = "0.01" />  <!--正對Tag(atan2(y, x) <= threshold) threshold/-->
     <param name="forkcamera_parking_stop" type="double" value = "1.43" /><!--牙叉相機對位停止距離/-->

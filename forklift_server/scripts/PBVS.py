@@ -77,6 +77,7 @@ class PBVS():
             
             if self.mode == "parking_bodycamera":
                 self.subscriber.updown = True
+                self.subscriber.offset_x = rospy.get_param(rospy.get_name() + "/bodycamera_tag_offset_x", 0.325)
                 self.init_fork = rospy.get_param(rospy.get_name() + "/bodycamera_parking_fork_init", 0.392)
                 self.ChangingDirection_threshold = rospy.get_param(rospy.get_name() + "/bodycamera_ChangingDirection_threshold", 0.01)
                 self.Parking_distance = rospy.get_param(rospy.get_name() + "/bodycamera_parking_stop", 1.8)
@@ -88,6 +89,7 @@ class PBVS():
 
             elif self.mode == "parking_forkcamera":
                 self.subscriber.updown = False
+                self.subscriber.offset_x = rospy.get_param(rospy.get_name() + "/forkcamera_tag_offset_x", 0.03)
                 self.init_fork = rospy.get_param(rospy.get_name() + "/forkcamera_parking_fork_init", 0.211)
                 self.ChangingDirection_threshold = rospy.get_param(rospy.get_name() + "/forkcamera_ChangingDirection_threshold", 0.01)
                 self.Parking_distance = rospy.get_param(rospy.get_name() + "/forkcamera_parking_stop", 1.43)
