@@ -1,9 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 import rospy
-import actionlib
-from PBVS import PBVS
-import forklift_server.msg
 import tf
 from apriltag_ros.msg import AprilTagDetectionArray
 from nav_msgs.msg import Odometry
@@ -24,6 +21,7 @@ class Subscriber():
         self.sub_forwardbackpostion = rospy.Subscriber(forkpos, forkposition, self.cbGetforkpos, queue_size = 1)
         self.ekf_theta = KalmanFilter()
         self.init_parame()
+        self.windows()
 
     def init_parame(self):
         # Odometry_param
@@ -43,45 +41,31 @@ class Subscriber():
         self.updownposition = 0.0
         #ekf
         self.ekf_theta.init(1,1,5)
-    def __del__(self):
-        self.window.destroy()
-
-    def SpinOnce(self):
-        return self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
-               self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta
-    def SpinOnce_fork(self):
-        return self.forwardbackpostion, self.updownposition
 
     def cbGetMarker_up(self, msg):
         try:
-            if self.updown == True:
-                # print("up tag")
-                marker_msg = msg.detections[0].pose.pose.pose
-                quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
-                theta = tf.transformations.euler_from_quaternion(quaternion)[1]
-                theta = self.ekf_theta.update(theta)
-                self.marker_2d_pose_x = -marker_msg.position.z
-                self.marker_2d_pose_y = marker_msg.position.x
-                self.marker_2d_theta = -theta
-            else:
-                pass
+            # print("up tag")
+            marker_msg = msg.detections[0].pose.pose.pose
+            quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
+            theta = tf.transformations.euler_from_quaternion(quaternion)[1]
+            theta = self.ekf_theta.update(theta)
+            self.marker_2d_pose_x = -marker_msg.position.z
+            self.marker_2d_pose_y = marker_msg.position.x
+            self.marker_2d_theta = -theta
+
         except:
             pass
 
     def cbGetMarker_down(self, msg):
         try:
-            if self.updown == False:
-                # print("down tag")
-                marker_msg = msg.detections[0].pose.pose.pose
-                quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
-                theta = tf.transformations.euler_from_quaternion(quaternion)[1]
-                theta = self.ekf_theta.update(theta)
-                self.marker_2d_pose_x = -marker_msg.position.z
-                self.marker_2d_pose_y = marker_msg.position.x
-                self.marker_2d_theta = -theta
-
-            else:
-                pass
+            # print("down tag")
+            marker_msg = msg.detections[0].pose.pose.pose
+            quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
+            theta = tf.transformations.euler_from_quaternion(quaternion)[1]
+            theta = self.ekf_theta.update(theta)
+            self.marker_2d_pose_x = -marker_msg.position.z
+            self.marker_2d_pose_y = marker_msg.position.x
+            self.marker_2d_theta = -theta
         except:
             pass
 
@@ -116,28 +100,49 @@ class Subscriber():
         self.forwardbackpostion = msg.forwardbackpostion
         self.updownposition = msg.updownposition
 
- 
-class PBVSAction():
-    def __init__(self, name):
-        self.subscriber = Subscriber()
-        self._action_name = name
-        self._as = actionlib.SimpleActionServer(self._action_name, forklift_server.msg.PBVSAction, execute_cb=self.execute_cb, auto_start = False)
-        self._result = forklift_server.msg.PBVSResult()
-        self._as.start()
 
-    def execute_cb(self, msg):
-        rospy.loginfo('PBVS receive command : %s' % (msg))
-        
-        self.PBVS = PBVS(self._as, self.subscriber, msg)
-        rospy.logwarn('PBVS Succeeded')
-        self._result.result = 'PBVS Succeeded'
-        self.subscriber.updown = True
-        self._as.set_succeeded(self._result)
-        self.PBVS = None
+    def windows(self):
+        self.window = tk.Tk()
+        self.window.geometry('220x170+1700+560')
+        self.labels = {
+            'robot_2d_pose_x': [0, 0],
+            'robot_2d_pose_y': [0, 20],
+            'robot_2d_theta': [0, 40],
+            'marker_2d_pose_x': [0, 100],
+            'marker_2d_pose_y': [0, 120],
+            'marker_2d_theta': [0, 140],
+            'fork_updown_position': [0, 160],
+            'fork_forwardback_position': [0, 180]
+        }
+        for key, value in self.labels.items():
+            self.labels[key] = [tk.Label(self.window, text=f"{key.replace('_', ' ').title()}: "), tk.Label(self.window, text="")]
+            self.labels[key][0].place(x=value[0], y=value[1])
+            self.labels[key][1].place(x=190, y=value[1])
+        while not rospy.is_shutdown():
+            self.update_window()
+            self.window.update()
+            rospy.sleep(0.05) # Set the desired update rate
+        self.window.destroy()
+        # self.update_window()
+        # self.window.mainloop()
 
+    def update_window(self):
+        update_values = {
+            'robot_2d_pose_x': self.robot_2d_pose_x,
+            'robot_2d_pose_y': self.robot_2d_pose_y,
+            'robot_2d_theta': math.degrees(self.robot_2d_theta),
+            'marker_2d_pose_x': self.marker_2d_pose_x,
+            'marker_2d_pose_y': self.marker_2d_pose_y,
+            'marker_2d_theta': self.marker_2d_theta,
+            'fork_updown_position': self.updownposition,
+            'fork_forwardback_position': self.forwardbackpostion
+        }
+        for key, value in update_values.items():
+            self.labels[key][1].configure(text=value)
+
+        # self.window.after(50, self.update_window)
 
 if __name__ == '__main__':
-    rospy.init_node('PBVS_server')
-    rospy.logwarn(rospy.get_name() + 'start')
-    server = PBVSAction(rospy.get_name())
+    rospy.init_node('gui')
+    subscriber = Subscriber()
     rospy.spin()
