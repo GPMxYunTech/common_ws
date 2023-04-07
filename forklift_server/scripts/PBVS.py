@@ -247,7 +247,7 @@ class PBVS():
                 self.pub_fork = rospy.Publisher('/cmd_fork', forklift, queue_size = 1)
                 rospy.sleep(0.05)
                 self.pub_fork.publish(3)
-                rospy.sleep(0.14)
+                rospy.sleep(0.07)
                 self.pub_fork.publish(1)
                 self.is_sequence_finished = True
                 if self.is_sequence_finished == True:
