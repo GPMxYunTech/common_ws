@@ -13,14 +13,15 @@ import math
 
 
 class TopologyMap():
-    def __init__(self):
-        self.start  = input("輸入起始點: ")     
+    def __init__(self, start_node):
+        # self.start_node  = input("輸入起始點: ")     
+        self.start_node  = start_node
 
     def path(self, goal):
-        print("{}到{}的路径:".format(self.start, goal))
-        self.parent, self.distance=self.dijkstra(graph,self.start)
-        path=self.distance_path(graph,self.start,goal)
-        self.start = goal
+        print("{}到{}的路径:".format(self.start_node, goal))
+        self.parent, self.distance=self.dijkstra(graph,self.start_node)
+        path=self.distance_path(graph,self.start_node,goal)
+        self.start_node = goal
         return path
    
 
@@ -173,7 +174,7 @@ class TopologyMapAction():
     def __init__(self, name):
         self._action_name = name        
         self.init_param()
-        self.TopologyMap = TopologyMap()      
+        self.TopologyMap = TopologyMap(self.start_node)      
         self.Navigation = Navigation()
         self._as = actionlib.SimpleActionServer(self._action_name, forklift_server.msg.TopologyMapAction, execute_cb=self.execute_cb, auto_start = False)
         self._as.start()
@@ -181,6 +182,7 @@ class TopologyMapAction():
     def init_param(self):
         global waypoints
         global graph
+        self.start_node = rospy.get_param(rospy.get_name() + "/start_node", "LD3")
         waypoints = rospy.get_param(rospy.get_name() + "/waypoints")
         graph = rospy.get_param(rospy.get_name() + "/graph")
         
