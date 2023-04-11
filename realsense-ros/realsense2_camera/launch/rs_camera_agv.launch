@@ -1,7 +1,7 @@
 <launch>
   <!-- Cameras -->
   <!-- Cameras -->
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+  <include file="$(find realsense2_camera)/launch/rs_camera_visual.launch">
     <arg name="camera"          value="camera" />
     <arg name="serial_no"       value="141222072898" />
     <arg name="align_depth"     value="true" />
@@ -10,7 +10,7 @@
 
   </include>
 
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+  <include file="$(find realsense2_camera)/launch/rs_camera_visual.launch">
     <arg name="camera"          value="cameraUP" />
     <arg name="serial_no"       value="141722073652" />
     <arg name="align_depth"     value="true" />
@@ -19,7 +19,7 @@
   </include>
 
 
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+  <include file="$(find realsense2_camera)/launch/rs_camera_visual.launch">
     <arg name="camera"          value="cameraDOWN" />
     <arg name="serial_no"       value="153122076971" />
     <arg name="align_depth"     value="true" />
