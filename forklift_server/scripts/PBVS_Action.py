@@ -441,7 +441,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 6.5
+        Kp = 4.0 #6.5
 
         twist = Twist()
         twist.linear.x = 0.1
