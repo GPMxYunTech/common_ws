@@ -12,6 +12,7 @@ class PBVS():
                             changing_direction_1 \
                             Changingtheta \
                             decide \
+                            back_turn \
                             back \
                             moving_nearby_parking_lot \
                             parking \
@@ -210,11 +211,19 @@ class PBVS():
                     self.is_sequence_finished = False
 
                 elif self.is_sequence_finished == False:
+                    self.current_parking_sequence = self.ParkingSequence.back_turn.value
+                    self.is_sequence_finished = False
+
+            elif self.current_parking_sequence == self.ParkingSequence.back_turn.value:
+                turn_threshod = 0.04
+                self.is_sequence_finished = self.Action.fnseqturn(self.back_distance, turn_threshod)
+                
+                if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.back.value
                     self.is_sequence_finished = False
 
             elif self.current_parking_sequence == self.ParkingSequence.back.value:
-                self.is_sequence_finished = self.Action.fnSeqParkingBack(self.back_distance)
+                self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(self.back_distance)
                 
                 if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.parking.value
