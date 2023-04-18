@@ -360,10 +360,10 @@ class cmd_vel():
         if not self.front:
             twist.linear.x = -twist.linear.x
 
-        if twist.angular.z > 0.25:
-            twist.angular.z =0.25
-        elif twist.angular.z < -0.25:
-            twist.angular.z =-0.25
+        if twist.angular.z > 0.2:
+            twist.angular.z =0.2
+        elif twist.angular.z < -0.2:
+            twist.angular.z =-0.2
         if twist.linear.x > 0 and twist.linear.x < 0.02:
             twist.linear.x =0.05
         elif twist.linear.x < 0 and twist.linear.x > -0.02:
@@ -391,7 +391,7 @@ class cmd_vel():
         self.cmd_pub(twist)
 
     def fnTurn(self, theta):
-        Kp = 0.4 #1.0
+        Kp = 0.3 #1.0
         angular_z = Kp * theta
         
 

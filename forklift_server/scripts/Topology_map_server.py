@@ -151,14 +151,14 @@ class Navigation():
             elif(desire_angle <= 0):
                 speed.angular.z = (desire_angle-self.odom_pass)*0.4
 
-            if speed.angular.z > 0.25:
-                speed.angular.z = 0.25
-            elif speed.angular.z < -0.25:
-                speed.angular.z = -0.25
-            elif speed.angular.z > -0.1 and speed.angular.z < 0:
-                speed.angular.z = -0.1
-            elif speed.angular.z < 0.1 and speed.angular.z > 0:
-                speed.angular.z = 0.1
+            if speed.angular.z > 0.2:
+                speed.angular.z = 0.2
+            elif speed.angular.z < -0.2:
+                speed.angular.z = -0.2
+            elif speed.angular.z > -0.05 and speed.angular.z < 0:
+                speed.angular.z = -0.05
+            elif speed.angular.z < 0.05 and speed.angular.z > 0:
+                speed.angular.z = 0.05
             self.cmd_pub.publish(speed)
             rospy.sleep(0.01)
         
