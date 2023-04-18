@@ -273,41 +273,6 @@ class Action():
             self.check_wait_time =0
             return False
         
-    def fnSeqParkingBack(self, parking_dist):
-        '''
-        後退到距離tag, parking_dist的長度後停止
-        讓機器人靠近中軸線
-        '''
-        self.SpinOnce()
-        desired_angle_turn = math.atan2(self.marker_2d_pose_y - 0, self.marker_2d_pose_x - 0)
-
-
-        if desired_angle_turn <0:
-            desired_angle_turn = desired_angle_turn + math.pi
-        else:
-            desired_angle_turn = desired_angle_turn - math.pi
-
-
-        self.cmd_vel.fnTrackMarker(-desired_angle_turn)
-
-        if (abs(self.marker_2d_pose_x) > parking_dist)  :
-            self.cmd_vel.fnStop()
-            if self.check_wait_time > 10:
-                self.check_wait_time = 0
-                return True
-            else:
-                self.check_wait_time =self.check_wait_time  +1
-        elif (abs(self.marker_2d_pose_x) > parking_dist) and self.check_wait_time:
-            self.cmd_vel.fnStop()
-            if self.check_wait_time > 10:
-                self.check_wait_time = 0
-                return True
-            else:
-                self.check_wait_time =self.check_wait_time  +1
-        else:
-            self.check_wait_time =0
-            return False
-
     def fnSeqdecide(self, decide_dist):#decide_dist偏離多少公分要後退
         self.SpinOnce()
         dist = self.marker_2d_pose_y
@@ -315,6 +280,35 @@ class Action():
             return True
         else:
             return False
+
+    def fnseqturn(self, back_distance, turn_threshod):#旋轉到後退所需角度
+        self.SpinOnce()
+        if self.is_triggered == False:
+            self.is_triggered = True
+            self.theta_pass = 0.0
+            self.last_theta = self.robot_2d_theta
+            desired_angle_turn = math.atan2(self.marker_2d_pose_y, back_distance)
+        
+        if(abs(self.robot_2d_theta - self.last_theta) > 1):
+            self.theta_pass = self.theta_pass
+        else:
+            self.theta_pass = self.theta_pass + abs(self.robot_2d_theta - self.last_theta)
+        
+        self.cmd_vel.fnTurn(math.copysign(1, self.marker_2d_pose_y) * (desired_angle_turn - self.theta_pass))
+
+        if abs(desired_angle_turn - self.theta_pass) < turn_threshod:
+            self.cmd_vel.fnStop()
+            if self.check_wait_time >10:
+                self.check_wait_time = 0
+                self.is_triggered = False
+                return True
+            else:
+                self.check_wait_time =self.check_wait_time +1
+        else:
+            self.check_wait_time =0    
+            return False
+                     
+
 
     def fnseqdead_reckoning(self, dead_reckoning_dist):#(使用里程紀計算)移動到離現在位置dead_reckoning_dist公尺的地方
         self.SpinOnce()
@@ -388,7 +382,6 @@ class Action():
 class cmd_vel():
     def __init__(self):
         self.pub_cmd_vel = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)
-
         self.front = False
 
     def cmd_pub(self, twist):
@@ -476,7 +469,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 4.5 
+        Kp = 4.5 #6.5
 
         twist = Twist()
         twist.linear.x = 0.1
@@ -488,15 +481,4 @@ class cmd_vel():
         twist.angular.z = -Kp * theta
         self.cmd_pub(twist)
 
-    def fnTrackMarker(self, theta):
-            Kp = 4.5 
-
-            twist = Twist()
-            twist.linear.x = -0.1
-            twist.linear.y = 0
-            twist.linear.z = 0
-            twist.angular.x = 0
-            twist.angular.y = 0
-
-            twist.angular.z = Kp * theta
-            self.cmd_pub(twist)
+  
