@@ -214,7 +214,7 @@ class PBVS():
                     self.is_sequence_finished = False
 
             elif self.current_parking_sequence == self.ParkingSequence.back.value:
-                self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(self.back_distance)
+                self.is_sequence_finished = self.Action.fnSeqParkingBack(self.back_distance)
                 
                 if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.parking.value

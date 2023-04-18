@@ -246,11 +246,11 @@ class Action():
         self.SpinOnce()
         desired_angle_turn = math.atan2(self.marker_2d_pose_y - 0, self.marker_2d_pose_x - 0)
 
-        if  not self.cmd_vel.front:
-            if desired_angle_turn <0:
-                desired_angle_turn = desired_angle_turn + math.pi
-            else:
-                desired_angle_turn = desired_angle_turn - math.pi
+
+        if desired_angle_turn <0:
+            desired_angle_turn = desired_angle_turn + math.pi
+        else:
+            desired_angle_turn = desired_angle_turn - math.pi
 
 
         self.cmd_vel.fnTrackMarker(-desired_angle_turn)
@@ -263,6 +263,41 @@ class Action():
             else:
                 self.check_wait_time =self.check_wait_time  +1
         elif (abs(self.marker_2d_pose_x) < parking_dist) and self.check_wait_time:
+            self.cmd_vel.fnStop()
+            if self.check_wait_time > 10:
+                self.check_wait_time = 0
+                return True
+            else:
+                self.check_wait_time =self.check_wait_time  +1
+        else:
+            self.check_wait_time =0
+            return False
+        
+    def fnSeqParkingBack(self, parking_dist):
+        '''
+        後退到距離tag, parking_dist的長度後停止
+        讓機器人靠近中軸線
+        '''
+        self.SpinOnce()
+        desired_angle_turn = math.atan2(self.marker_2d_pose_y - 0, self.marker_2d_pose_x - 0)
+
+
+        if desired_angle_turn <0:
+            desired_angle_turn = desired_angle_turn + math.pi
+        else:
+            desired_angle_turn = desired_angle_turn - math.pi
+
+
+        self.cmd_vel.fnTrackMarker(-desired_angle_turn)
+
+        if (abs(self.marker_2d_pose_x) > parking_dist)  :
+            self.cmd_vel.fnStop()
+            if self.check_wait_time > 10:
+                self.check_wait_time = 0
+                return True
+            else:
+                self.check_wait_time =self.check_wait_time  +1
+        elif (abs(self.marker_2d_pose_x) > parking_dist) and self.check_wait_time:
             self.cmd_vel.fnStop()
             if self.check_wait_time > 10:
                 self.check_wait_time = 0
@@ -441,7 +476,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 4.0 #6.5
+        Kp = 4.5 
 
         twist = Twist()
         twist.linear.x = 0.1
@@ -453,3 +488,15 @@ class cmd_vel():
         twist.angular.z = -Kp * theta
         self.cmd_pub(twist)
 
+    def fnTrackMarker(self, theta):
+            Kp = 4.5 
+
+            twist = Twist()
+            twist.linear.x = -0.1
+            twist.linear.y = 0
+            twist.linear.z = 0
+            twist.angular.x = 0
+            twist.angular.y = 0
+
+            twist.angular.z = Kp * theta
+            self.cmd_pub(twist)
