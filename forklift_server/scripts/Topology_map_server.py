@@ -189,26 +189,43 @@ class TopologyMapAction():
 
     def execute_cb(self, msg):
         rospy.loginfo('TopologyMap receive command : %s' % (msg))
-        if msg.goal!="":       
-            path = self.TopologyMap.path(msg.goal)
-            print(path)
-        elif msg.target_name!="":
-            path=[msg.target_name]
-            
+        if msg.goal != "" or msg.target_name != "":
+            if msg.goal != "":
+                path = self.TopologyMap.path(msg.goal)
+                print(path)
+            elif msg.target_name != "":
+                path = [msg.target_name]
 
-        for i in range(len(path)):
-            rospy.sleep(1.0)
-            if(i > 0 and (waypoints[path[i]][0] == waypoints[path[i-1]][0] and waypoints[path[i]][1] == waypoints[path[i-1]][1])):
-                rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
-                # rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
-                self.Navigation.self_spin(waypoints[path[i]][2], waypoints[path[i]][3])
-                i = i + 1
-                continue
+            for i in range(len(path)):
+                rospy.sleep(1.0)
+                if (i > 0 and (waypoints[path[i]][0] == waypoints[path[i-1]][0] and waypoints[path[i]][1] == waypoints[path[i-1]][1])):
+                    rospy.loginfo('self_spin from %s to %s' %
+                                  (path[i-1], path[i]))
+                    # rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
+                    self.Navigation.self_spin(
+                        waypoints[path[i]][2], waypoints[path[i]][3])
+                    i = i + 1
+                    continue
+                else:
+                    rospy.loginfo('Navigation to %s' % path[i])
+                    self.Navigation.move(
+                        waypoints[path[i]][0], waypoints[path[i]][1], waypoints[path[i]][2], waypoints[path[i]][3])
+        elif msg.target_pose != None:
+
+            posix = msg.target_pose.pose.position.x
+            posity = msg.target_pose.pose.position.y
+            orienz = msg.target_pose.pose.orientation.z
+            orienw = msg.target_pose.pose.orientation.w
+
+            if self.last_target_pose != None and self.last_target_pose.pose.position.x == msg.target_pose.pose.position.x and self.last_target_pose.pose.position.y == msg.target_pose.pose.position.y:
+                self.Navigation.self_spin(orienz, orienw)
             else:
-                rospy.loginfo('Navigation to %s' % path[i])
-                self.Navigation.move(waypoints[path[i]][0], waypoints[path[i]][1], waypoints[path[i]][2], waypoints[path[i]][3])
-
-
+                self.Navigation.move(posix, posity, orienz, orienw)
+                
+            self.last_target_pose.pose.position.x = posix
+            self.last_target_pose.target_pose.pose.position.y = posity
+            self.last_target_pose.target_pose.pose.orientation.z = orienz
+            self.last_target_pose.target_pose.pose.orientation.w = orienw
         
         rospy.logwarn('PBVS Succeeded')
         self._result.result = 'success'
