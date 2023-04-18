@@ -1,7 +1,7 @@
 #goal definition
 string command
 # ActionCode-->[10]:shelf, [20]:up/down, [21]:forward/backward, [22]:tile, [30]:move
-int64 ActionCode=-1
+int64 ActionCode
 int64 ShelfParameter
 int64 UpDownPosition
 int64 ForrwardBackwardPosition
