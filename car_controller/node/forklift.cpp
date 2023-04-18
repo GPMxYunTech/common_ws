@@ -27,16 +27,22 @@ private:
 
     void GetAndInitParam()
     {
+        ros::NodeHandle priv_nh("~"); 
         float wheel_base(0.0), wheel_angle(0.0), wheel_speed(0.0), motor_fork(0.0);
-        ros::param::get("/topic_odom", topic_odom);
-        ros::param::get("/topic_imu", topic_imu);
-        ros::param::get("/topic_forkpose", topic_forkpose);
-        ros::param::get("/topic_cmdvel", topic_cmdvel);
-        ros::param::get("/wheel_base", wheel_base);
+        priv_nh.param<string>("/topic_odom", topic_odom, "/odom");
+        priv_nh.param<string>("/topic_imu", topic_imu, "/imu");
+        priv_nh.param<string>("/topic_forkpose", topic_forkpose, "/forkpose");
+        priv_nh.param<string>("/topic_cmdvel", topic_cmdvel, "/cmd_vel");
+        priv_nh.param<float>("/wheel_base", wheel_base, 0.3);
+        cout << "wheel_base: " << wheel_base << endl;
+        cout << "topic_odom: " << topic_odom << endl;
+        cout << "topic_imu: " << topic_imu << endl;
+        cout << "topic_forkpose: " << topic_forkpose << endl;
+        cout << "topic_cmdvel: " << topic_cmdvel << endl;
     };
 public:
-    SubscribeAndPublish(ros::NodeHandle &nh, STM32 &stm32); // 建構子constructor
-    ~SubscribeAndPublish();                                 // 解構子destructor 當程式結束時停止機器人
+    SubscribeAndPublish(ros::NodeHandle &nh, STM32 &stm32); // SubscribeAndPublish建構子
+    ~SubscribeAndPublish();                                 // SubscribeAndPublish解構子當程式結束時停止機器人
 };
 
 SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle &nh, STM32 &stm32)
@@ -65,12 +71,13 @@ void SubscribeAndPublish::CmdVelCB(const geometry_msgs::Twist &msg) // 參考cmd
     wheel_speed = msg.linear.x;//v = 線速度 = 前輪速度 = linear.x
     //判斷旋轉半徑是否為無限大(直走)或小於wheel_base，如果是則r = wheel_base，否則r = wheel_speed / msg.angular.z
     (isnan(r = msg.linear.x / msg.angular.z) || abs(r) < wheel_base) ? r = wheel_base : r = wheel_speed / msg.angular.z;//r = v / w
-    wheel_angle = atan(wheel_base / r);//theta = arctan(L/r)
+    wheel_angle = atan(wheel_base / r);//theta = arctan(前輪到兩後輪中心/r)
 };
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "forklift");        // 先初始化ROS node，在ROS Master上註冊node
-    ros::NodeHandle nh;                       // 接下來建立ROS node的handle，用來與ROS Master溝通
+    ros::NodeHandle nh, priv_nh("~");                        // 接下來建立ROS node的handle，用來與ROS Master溝通
     STM32 stm32;                              // 再建立與stm32溝通的物件，建構式會初始化串口，解構式會關閉串口，
     SubscribeAndPublish SAP_object(nh, stm32); // 最後再初始ROS subccriber&publisher這些與其他node的接口，並使用call by reference將stm32與nh物件傳入
     return 0;

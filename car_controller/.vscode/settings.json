@@ -3,6 +3,9 @@
         "ostream": "cpp",
         "cmath": "cpp",
         "iostream": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "array": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     }
 }
