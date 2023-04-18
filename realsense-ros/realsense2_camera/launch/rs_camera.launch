@@ -30,14 +30,14 @@
   <arg name="enable_infra2"       default="false"/>
   <arg name="infra_rgb"           default="false"/>
 
-  <arg name="color_width"         default="1920"/>
-  <arg name="color_height"        default="1080"/>
+  <arg name="color_width"         default="-1"/>
+  <arg name="color_height"        default="-1"/>
   <arg name="enable_color"        default="true"/>
 
   <arg name="fisheye_fps"         default="-1"/>
   <arg name="depth_fps"           default="-1"/>
   <arg name="infra_fps"           default="-1"/>
-  <arg name="color_fps"           default="15"/>
+  <arg name="color_fps"           default="-1"/>
   <arg name="gyro_fps"            default="-1"/>
   <arg name="accel_fps"           default="-1"/>
   <arg name="enable_gyro"         default="false"/>
