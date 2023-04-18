@@ -1,5 +1,5 @@
 #include <stm32.h>
-stm32::stm32()
+STM32::STM32()
 {
     sp.setPort("/dev/ttyUSB0");                                // 設定要打開的串口名稱
     sp.setBaudrate(115200);                                    // 設定串口波特率
@@ -26,16 +26,16 @@ stm32::stm32()
     for (uint8_t j = 0; j < 3; j++) // clear buff
         send_data(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }
-stm32::~stm32()
+STM32::~STM32()
 {
     for (uint8_t j = 0; j < 3; j++) // clear buff
         send_data(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     // 關閉串口
     sp.close();
-    ROS_WARN("stm32 closed");
+    ROS_WARN("STM32 closed");
 }
 //     send_data(Flag_start , wheel_speed, 0          , wheel_angle, motor_Fork, 0, 0, 0, 0, 0, 0, 0);
-void stm32::send_data(float data1, float data2, float data3, float data4, float data5, float data6, float data7, float data8, float data9, float data10, float data11, float data12)
+void STM32::send_data(float data1, float data2, float data3, float data4, float data5, float data6, float data7, float data8, float data9, float data10, float data11, float data12)
 {
     isnan(data4) ? data4 = 0.0 : data4 = data4;
     unsigned char *p;
@@ -134,7 +134,7 @@ void stm32::send_data(float data1, float data2, float data3, float data4, float 
         ROS_ERROR_STREAM("Unable to send data through serial port"); // 如果发送数据失败，打印错误信息
     }
 };
-void stm32::read_data()
+void STM32::read_data()
 {
     n = sp.available(); // 獲取緩衝區內字節數
     if (n > 0)
@@ -186,7 +186,7 @@ void stm32::read_data()
     
 }
 
-float stm32::b2f(byte m0, byte m1, byte m2, byte m3)
+float STM32::b2f(byte m0, byte m1, byte m2, byte m3)
 {
     //求符号位
     float sig = 1.;

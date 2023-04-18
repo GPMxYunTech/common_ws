@@ -15,37 +15,37 @@ class SubscribeAndPublish
 {
 private:
     // publisher & subscriber declare
-    string TopicOdom, TopicImu, TopicForkPose, TopicCmdVel;
-    ros::Publisher PubOdom;
-    ros::Publisher PubImu;
-    ros::Publisher PubForkPose;
-    ros::Subscriber SubCmdVel;
-    tf::TransformBroadcaster OdomtfBroadcaster;
+    string topic_odom, topic_imu, topic_forkpose, topic_cmdvel;
+    ros::Publisher pub_odom;
+    ros::Publisher pub_imu;
+    ros::Publisher pub_forkpose;
+    ros::Subscriber sub_cmdvel;
+    tf::TransformBroadcaster odom_tfbroadcaster;
     void CmdVelCB(const geometry_msgs::Twist &msg);
-    // variable declare
+    // forklift variable declare
     float wheel_base, wheel_angle, wheel_speed, motor_fork;
 
     void GetAndInitParam()
     {
         float wheel_base(0.0), wheel_angle(0.0), wheel_speed(0.0), motor_fork(0.0);
-        ros::param::get("/TopicOdom", TopicOdom);
-        ros::param::get("/TopicImu", TopicImu);
-        ros::param::get("/TopicForkPose", TopicForkPose);
-        ros::param::get("/TopicCmdVel", TopicCmdVel);
+        ros::param::get("/topic_odom", topic_odom);
+        ros::param::get("/topic_imu", topic_imu);
+        ros::param::get("/topic_forkpose", topic_forkpose);
+        ros::param::get("/topic_cmdvel", topic_cmdvel);
         ros::param::get("/wheel_base", wheel_base);
     };
 public:
-    SubscribeAndPublish(ros::NodeHandle &nh, stm32 &stm32); // 建構子constructor
-    ~SubscribeAndPublish();                                // 解構子destructor 當程式結束時停止機器人
+    SubscribeAndPublish(ros::NodeHandle &nh, STM32 &stm32); // 建構子constructor
+    ~SubscribeAndPublish();                                 // 解構子destructor 當程式結束時停止機器人
 };
 
-SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle &nh, stm32 &stm32)
+SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle &nh, STM32 &stm32)
 {
     GetAndInitParam();
-    PubOdom = nh.advertise<nav_msgs::Odometry>(TopicOdom, 10);
-    PubImu = nh.advertise<sensor_msgs::Imu>(TopicImu, 10);
-    PubForkPose = nh.advertise<std_msgs::Float32>(TopicForkPose, 10);
-    SubCmdVel = nh.subscribe(TopicCmdVel, 1, &SubscribeAndPublish::CmdVelCB, this);
+    pub_odom = nh.advertise<nav_msgs::Odometry>(topic_odom, 10);
+    pub_imu = nh.advertise<sensor_msgs::Imu>(topic_imu, 10);
+    pub_forkpose = nh.advertise<std_msgs::Float32>(topic_forkpose, 10);
+    sub_cmdvel = nh.subscribe(topic_cmdvel, 1, &SubscribeAndPublish::CmdVelCB, this);
 
     while (ros::ok())
     {
@@ -61,22 +61,22 @@ SubscribeAndPublish::~SubscribeAndPublish()
 };
 void SubscribeAndPublish::CmdVelCB(const geometry_msgs::Twist &msg) // 參考cmd_vel_to_ackermann_drive.py
 {
-    static float  r;// r = 旋轉半徑
-    wheel_speed = msg.linear.x;
+    static float r;// r = 旋轉半徑
+    wheel_speed = msg.linear.x;//v = 線速度 = 前輪速度 = linear.x
     //判斷旋轉半徑是否為無限大(直走)或小於wheel_base，如果是則r = wheel_base，否則r = wheel_speed / msg.angular.z
-    (isnan(r = msg.linear.x / msg.angular.z) || r < wheel_base) ? r = wheel_base : r = wheel_speed / msg.angular.z;
-    wheel_angle = atan(wheel_base / r);
+    (isnan(r = msg.linear.x / msg.angular.z) || abs(r) < wheel_base) ? r = wheel_base : r = wheel_speed / msg.angular.z;//r = v / w
+    wheel_angle = atan(wheel_base / r);//theta = arctan(L/r)
 };
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "forklift");        // 先初始化ROS node，在ROS Master上註冊node
     ros::NodeHandle nh;                       // 接下來建立ROS node的handle，用來與ROS Master溝通
-    stm32 stm32;                              // 再建立與stm32溝通的物件，建構式會初始化串口，解構式會關閉串口，
-    SubscribeAndPublish SAPObject(nh, stm32); // 最後再初始ROS subccriber&publisher這些與其他node的接口，並使用call by reference將stm32與nh物件傳入
+    STM32 stm32;                              // 再建立與stm32溝通的物件，建構式會初始化串口，解構式會關閉串口，
+    SubscribeAndPublish SAP_object(nh, stm32); // 最後再初始ROS subccriber&publisher這些與其他node的接口，並使用call by reference將stm32與nh物件傳入
     return 0;
 }
 /*
-stm32 物件的 public variable
+STM32 物件的 public variable
 Data1   // 电机启动停止控制位（1/0 启动/停止）
 Data2   // 前轮线速度
 Data3   // 前轮转角
