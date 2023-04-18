@@ -70,9 +70,9 @@ class PBVS():
         else:
             if self.ActionCode==10:
                 if self.ShelfParameter==0:
-                    self.mode="parking_bodycamera"
+                    self.mode="parking_forkcamera"
                 else:
-                    self.mode == "parking_forkcamera"
+                    self.mode == "parking_bodycamera"
             else: #[0]:未附值, [other]:給錯值 走舊流程
                 pass
             
@@ -164,9 +164,9 @@ class PBVS():
         else:
             if self.ActionCode==10:
                 if self.ShelfParameter==0:
-                    self.mode="parking_bodycamera"
+                    self.mode="parking_forkcamera"
                 else:
-                    self.mode == "parking_forkcamera"
+                    self.mode == "parking_bodycamera"
             else: #[0]:未附值, [other]:給錯值 走舊流程
                 pass
             # ============parking============

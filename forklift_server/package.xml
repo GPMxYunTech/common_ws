@@ -61,7 +61,8 @@
 
 	<build_depend>actionlib_msgs</build_depend>
 	<build_export_depend>actionlib_msgs</build_export_depend>
-
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
   <build_depend>gpm_msg</build_depend>
   <exec_depend>gpm_msg</exec_depend>
 
