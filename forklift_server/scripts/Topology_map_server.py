@@ -7,6 +7,8 @@ import forklift_server.msg
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
+from visualization_msgs.msg import Marker
+import tf2_ros
 import heapq
 import math
 
@@ -18,7 +20,7 @@ class TopologyMap():
         self.start_node  = start_node
 
     def path(self, goal):
-        print("{}到{}的路径:".format(self.start_node, goal))
+        print("Path from {} to {}:".format(self.start_node, goal))
         self.parent, self.distance=self.dijkstra(graph,self.start_node)
         path=self.distance_path(graph,self.start_node,goal)
         self.start_node = goal
@@ -231,7 +233,67 @@ class TopologyMapAction():
         self._result.result = 'success'
         self._as.set_succeeded(self._result)
 
+
+class MarkerViewer():
+    def __init__(self):
+        rospy.loginfo("Start View Marker")
+        self.Marker_Pub = rospy.Publisher("/GoalMarker", Marker, queue_size = 100)
+        self.TextMarker_Pub = rospy.Publisher("/GoalNameMarker", Marker, queue_size = 100)
+
+        
+    def PublishMarker(self, GoalName):
+        marker = Marker()
+        marker.action = Marker.ADD
+        marker.header.frame_id = 'map'
+        marker.header.stamp = rospy.Time.now()
+        marker.lifetime = rospy.Duration()
+        marker.ns = GoalName
+        marker.id = 0
+        marker.type = Marker.ARROW
+        
+        marker.pose.position.x = waypoints[GoalName][0]
+        marker.pose.position.y = waypoints[GoalName][1]
+        marker.pose.position.z = 0.0
+        
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = waypoints[GoalName][2]
+        marker.pose.orientation.w = waypoints[GoalName][3]
+        
+        marker.scale.x = 1.0
+        marker.scale.y = 0.2
+        marker.scale.z = 0.1
+        
+        marker.color.r = 255 / 255
+        marker.color.g = 255 / 255
+        marker.color.b = 255 / 255
+        marker.color.a = 1.0
+        rospy.sleep(0.2)
+        self.Marker_Pub.publish(marker)
+        
+        rospy.loginfo("PublishMarker %s",GoalName)
+        
+        marker.type = Marker.TEXT_VIEW_FACING
+        marker.text = GoalName
+        marker.pose.position.x = waypoints[GoalName][0] - 0.3
+        marker.pose.position.y = waypoints[GoalName][1] - 0.3
+        marker.pose.position.z = 0.0
+        marker.pose.orientation.x = 0.0
+        marker.pose.orientation.y = 0.0
+        marker.pose.orientation.z = waypoints[GoalName][2]
+        marker.pose.orientation.w = waypoints[GoalName][3]
+        
+        rospy.sleep(0.2)
+        self.TextMarker_Pub.publish(marker)
+        
+        
+
 if __name__ == '__main__':
     rospy.init_node('TopologyMap_server')
     server = TopologyMapAction(rospy.get_name())
+    
+    MarkerViewer = MarkerViewer()
+    for i in waypoints:
+        MarkerViewer.PublishMarker(i)
+        rospy.sleep(0.2)
     rospy.spin()
