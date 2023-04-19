@@ -8,7 +8,7 @@
 #include "std_msgs/Float32.h"
 #include <stm32.h>
 #include <string>
-#include <cmath> //using isinf()
+#include <cmath> //using isinf(), isnan()
 #define Sign(A) ((A) >= 0 ? 1 : -1)
 using namespace std;
 class SubscribeAndPublish
@@ -30,18 +30,6 @@ private:
     void PublishOdom();
     void PublishImu();
     void PublishForkPose();
-    void GetAndInitParam(ros::NodeHandle *priv_nh)
-    {
-        priv_nh->param<string>("topic_odom", topic_odom, "/odom");
-        priv_nh->param<string>("topic_imu", topic_imu, "/imu");
-        priv_nh->param<string>("topic_forkpose", topic_forkpose, "/forkpose");
-        priv_nh->param<string>("topic_cmdvel", topic_cmdvel, "/cmd_vel");
-        priv_nh->param<float>("wheel_base", wheel_base, 0.3);
-        priv_nh->param<int>("Rate", rate, 20);
-        wheel_angle = wheel_speed = motor_fork = 0.0f;
-        // :TODO float wheel_speed(0.0)會出現錯誤
-    };
-
 public:
     SubscribeAndPublish(ros::NodeHandle* , ros::NodeHandle* , STM32&); // SubscribeAndPublish建構子
     ~SubscribeAndPublish();                                 // SubscribeAndPublish解構子當程式結束時停止機器人
@@ -49,13 +37,25 @@ public:
 
 SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *priv_nh, STM32 &stm32)
 {
-    GetAndInitParam(priv_nh);
-    // initialize variable
+    // get variable 
+    priv_nh->param<string>("topic_odom", topic_odom, "/odom");
+    priv_nh->param<string>("topic_imu", topic_imu, "/imu");
+    priv_nh->param<string>("topic_forkpose", topic_forkpose, "/forkpose");
+    priv_nh->param<string>("topic_cmdvel", topic_cmdvel, "/cmd_vel");
+    priv_nh->param<float>("wheel_base", wheel_base, 0.3);
+    priv_nh->param<int>("Rate", rate, 20);
+
+    // definition publisher & subscriber
     pub_odom = new ros::Publisher(nh->advertise<nav_msgs::Odometry>(topic_odom, 10));
     pub_imu = new ros::Publisher(nh->advertise<sensor_msgs::Imu>(topic_imu, 10));
     pub_forkpose = new ros::Publisher(nh->advertise<std_msgs::Float32>(topic_forkpose, 10, true));
     sub_cmdvel = new ros::Subscriber(nh->subscribe(topic_cmdvel, 1, &SubscribeAndPublish::CmdVelCB, this));
+    
+    // Initialize variable
+    wheel_angle = wheel_speed = motor_fork = 0.0f;// :TODO float wheel_speed(0.0)會出現錯誤
     r = new ros::Rate(rate);
+
+    //main loop
     while (ros::ok())
     {
         ros::spinOnce();
@@ -67,6 +67,7 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
 
 SubscribeAndPublish::~SubscribeAndPublish()
 {
+    delete pub_odom, pub_imu, pub_forkpose, sub_cmdvel, r;
     ROS_WARN("forklift close");
 };
 
@@ -90,7 +91,7 @@ void SubscribeAndPublish::CmdVelCB(const geometry_msgs::Twist &msg) // 參考cmd
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "forklift");          // 先初始化ROS node，在ROS Master上註冊node
-    ros::NodeHandle nh, priv_nh("~");                         // 接下來建立ROS node的handle，用來與ROS Master溝通
+    ros::NodeHandle nh, priv_nh("~");           // 接下來建立ROS node的handle，用來與ROS Master溝通
     STM32 stm32;                                // 再建立與stm32溝通的物件，建構式會初始化串口，解構式會關閉串口，
     SubscribeAndPublish SAP_object(&nh, &priv_nh, stm32); // 最後再初始ROS subccriber&publisher這些與其他node的接口，並將stm32與nh物件傳入
     return 0;
