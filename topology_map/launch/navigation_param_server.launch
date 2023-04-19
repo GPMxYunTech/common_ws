@@ -1,5 +1,0 @@
-<launch>
-  <!-- dynamic_reconfigure -->
-  <node pkg="dashgo_tools" name="navigation_param_server" type="navigation_param_server" output="screen">
-  </node>
-</launch>
