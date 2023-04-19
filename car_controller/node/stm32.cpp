@@ -34,9 +34,10 @@ STM32::~STM32()
     sp.close();
     ROS_WARN("STM32 closed");
 }
-//     send_data(Flag_start , wheel_speed, 0          , wheel_angle, motor_Fork, 0, 0, 0, 0, 0, 0, 0);
+
 void STM32::send_data(float data1, float data2, float data3, float data4, float data5, float data6, float data7, float data8, float data9, float data10, float data11, float data12)
 {
+    // printf("%f, %f, %f, %f, %f\n", data1, data2, data3, data4, data5);
     isnan(data4) ? data4 = 0.0 : data4 = data4;
     unsigned char *p;
     p = (unsigned char *)&data1;
@@ -188,13 +189,14 @@ void STM32::read_data()
 
 float STM32::b2f(byte m0, byte m1, byte m2, byte m3)
 {
+    static float sig, jie, tail, f;
     //求符号位
-    float sig = 1.;
+    sig = 1.;
     if (m0 >= 128.)
         sig = -1.;
 
     //求阶码
-    float jie = 0.;
+    jie = 0.;
     if (m0 >= 128.)
     {
         jie = m0 - 128.;
@@ -209,13 +211,12 @@ float STM32::b2f(byte m0, byte m1, byte m2, byte m3)
 
     jie -= 127.;
     //求尾码
-    float tail = 0.;
+    tail = 0.;
     if (m1 >= 128.)
         m1 -= 128.;
     tail = m3 + (m2 + m1 * 256.) * 256.;
     tail = (tail) / 8388608; //   8388608 = 2^23
 
-    float f = sig * pow(2., jie) * (1 + tail);
-
+    f = sig * pow(2., jie) * (1 + tail);
     return f;
 }

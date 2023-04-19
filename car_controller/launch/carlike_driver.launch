@@ -1,13 +1,16 @@
 <launch>  
-	<node pkg="car_controller" name="forklift" type="forklift" output="screen">
-	    <param name="wheel_base" value="0.3" /> <!-- 前輪到後輪中心距離 -->
+	<node pkg="car_controller" name="forklift" type="forklift" output="screen" >
+	<!-- launch-prefix="gdb -ex  args" -->
+	    <!-- Parameter setting -->
+		<param name="Rate" value="25" /> <!-- 執行頻率 -->
+		<param name="wheel_base" value="0.3" /> <!-- 前輪到後輪中心距離 -->
 
 		<!--Subscriber Topic setting/-->
-		<param name="topic_cmd_vel" value="/cmd_vel" />
+		<param name="topic_cmd_vel" value="/cmd_vel" /> <!--速度命令-->
 
 		<!--Publisher Topic setting/-->
-		<param name="topic_odom" value="/wheel_odom" />
-		<param name="topic_forkpose" value="/forkpose" />
-		<param name="topic_imu" value="/imu" />
+		<param name="topic_odom" value="/wheel_odom" /> <!--車輪里程計-->
+		<param name="topic_forkpose" value="/forkpose" /> <!--牙叉位置-->
+		<param name="topic_imu" value="/imu" /> <!--IMU數值-->
 	</node>
 </launch>
