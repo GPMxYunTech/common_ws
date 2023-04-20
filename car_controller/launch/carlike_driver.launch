@@ -2,7 +2,8 @@
 	<node pkg="car_controller" name="forklift" type="forklift" output="screen" >
 	<!-- launch-prefix="gdb -ex  args" -->
 	    <!-- Parameter setting -->
-		<param name="Rate" value="25" /> <!-- 執行頻率 -->
+		<param name="rate" value="25" /> <!-- 執行頻率 -->
+		<param name="timeout" value="1.5" /> <!-- 距離最後一次收到cmd_vel幾秒後停止 -->
 		<param name="wheel_base" value="0.3" /> <!-- 前輪到後輪中心距離 -->
 
 		<!--Subscriber Topic setting/-->

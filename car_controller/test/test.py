@@ -26,7 +26,7 @@ class TestNode(object):
 if __name__ == '__main__':
     rospy.init_node('test_node')
     node = TestNode()
-    rospy.spin()
+    # rospy.spin()
 
 
     # 驗證angular.z的值是否為設定值
