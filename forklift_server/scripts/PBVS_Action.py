@@ -123,11 +123,33 @@ class Action():
             self.check_wait_time =0
             return False
         
-    def fnSeqChangingtheta(self, desired_angle):
+    def fnSeqChangingtheta(self, threshod):
         self.SpinOnce()
         desired_angle_turn = -self.marker_2d_theta
 
-        if abs(desired_angle_turn) < desired_angle  :
+        if abs(desired_angle_turn) < threshod  :
+            self.cmd_vel.fnStop()
+            rospy.sleep(0.1)
+            if self.check_wait_time > 10 :
+                self.check_wait_time = 0
+                return True
+            else:
+                self.check_wait_time =self.check_wait_time  +1
+                return False
+        else:
+            self.cmd_vel.fnTurn(desired_angle_turn)
+            self.check_wait_time =0
+            return False
+        
+    def fnseqturn(self, threshod):#旋轉到後退所需角度
+        self.SpinOnce()
+        if(self.marker_2d_pose_y > 0):
+            self.marker_2d_theta = self.marker_2d_theta + 0.15
+        else:
+            self.marker_2d_theta = self.marker_2d_theta - 0.15
+
+        desired_angle_turn = -self.marker_2d_theta
+        if abs(desired_angle_turn) < threshod  :
             self.cmd_vel.fnStop()
             rospy.sleep(0.1)
             if self.check_wait_time > 10 :
@@ -282,35 +304,6 @@ class Action():
             return True
         else:
             return False
-
-    def fnseqturn(self, back_distance, turn_threshod):#旋轉到後退所需角度
-        self.SpinOnce()
-        if self.is_triggered == False:
-            self.is_triggered = True
-            self.theta_pass = 0.0
-            self.last_theta = self.robot_2d_theta
-            desired_angle_turn = math.atan2(self.marker_2d_pose_y, back_distance)
-        
-        if(abs(self.robot_2d_theta - self.last_theta) > 1):
-            self.theta_pass = self.theta_pass
-        else:
-            self.theta_pass = self.theta_pass + abs(self.robot_2d_theta - self.last_theta)
-        
-        self.cmd_vel.fnTurn(math.copysign(1, self.marker_2d_pose_y) * (desired_angle_turn - self.theta_pass))
-
-        if abs(desired_angle_turn - self.theta_pass) < turn_threshod:
-            self.cmd_vel.fnStop()
-            if self.check_wait_time >10:
-                self.check_wait_time = 0
-                self.is_triggered = False
-                return True
-            else:
-                self.check_wait_time =self.check_wait_time +1
-        else:
-            self.check_wait_time =0    
-            return False
-                     
-
 
     def fnseqdead_reckoning(self, dead_reckoning_dist):#(使用里程紀計算)移動到離現在位置dead_reckoning_dist公尺的地方
         self.SpinOnce()
