@@ -9,6 +9,7 @@
 #include <stm32.h>
 #include <string>
 #include <cmath> //using isinf(), isnan()
+#include <forklift_msg/forklift.h>
 #define Sign(A) ((A) >= 0 ? 1 : -1)
 using namespace std;
 class SubscribeAndPublish
@@ -16,13 +17,14 @@ class SubscribeAndPublish
 private:
     // publisher & subscriber declare
     string topic_odom, topic_imu, topic_forkpose, topic_cmdvel;
-    ros::Publisher *pub_odom, *pub_imu, *pub_forkpose;
+    ros::Publisher *pub_odom, *pub_imu, *pub_forklift;
     ros::Subscriber *sub_cmdvel;
     tf::TransformBroadcaster odom_tfbroadcaster;
 
     // forklift variable declare
     float wheel_base, wheel_angle, wheel_speed, motor_fork, timeout, theta_bias;
-    ros::Time last_cmdvelcb_time, last_publistodom_time;
+    bool use_imu_flag;
+    ros::Time last_time, current_time, last_cmdvelcb_time;
     ros::Rate *r;
     int rate;
     STM32 *stm32;
@@ -31,16 +33,37 @@ private:
     void CmdVelCB(const geometry_msgs::Twist &msg);
     void PublishOdom();
     void PublishImu();
-    void PublishForkPose();
+    void PublishForklift();
 
 public:
-    SubscribeAndPublish(ros::NodeHandle* , ros::NodeHandle* , STM32&);
-    ~SubscribeAndPublish();                                 
+    // SubscribeAndPublish(ros::NodeHandle* , ros::NodeHandle* );
+    SubscribeAndPublish(ros::NodeHandle *, ros::NodeHandle *, STM32 &); // SubscribeAndPublish建構子，當成main function
+    ~SubscribeAndPublish();                                             // SubscribeAndPublish destructor 釋放new出來的記憶體
 };
-
+// SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *priv_nh){
+//     priv_nh->param<string>("topic_odom", topic_odom, "/odom");
+//     priv_nh->param<string>("topic_imu", topic_imu, "/imu");
+//     priv_nh->param<string>("topic_forkpose", topic_forkpose, "/forkpose");
+//     priv_nh->param<string>("topic_cmdvel", topic_cmdvel, "/cmd_vel");
+//     priv_nh->param<float>("wheel_base", wheel_base, 0.3);
+//     priv_nh->param<int>("rate", rate, 20);
+//     priv_nh->param<float>("timeout", timeout, 1.0);
+//     priv_nh->param<float>("theta_bias", theta_bias, 0.0);
+//     priv_nh->param<bool>("use_imu_flag", use_imu_flag, true);
+//     ROS_WARN("SubscribeAndPublish");
+//     printf("topic_odom: %s\n", topic_odom.c_str());
+//     printf("topic_imu: %s\n", topic_imu.c_str());
+//     printf("topic_forkpose: %s\n", topic_forkpose.c_str());
+//     printf("topic_cmdvel: %s\n", topic_cmdvel.c_str());
+//     printf("wheel_base: %f\n", wheel_base);
+//     printf("rate: %d\n", rate);
+//     printf("timeout: %f\n", timeout);
+//     printf("theta_bias: %f\n", theta_bias);
+//     printf("use_imu_flag: %d\n", use_imu_flag);
+// }
 SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *priv_nh, STM32 &stm32_) : stm32(&stm32_)
 {
-    // get variable 
+    // get variable
     priv_nh->param<string>("topic_odom", topic_odom, "/odom");
     priv_nh->param<string>("topic_imu", topic_imu, "/imu");
     priv_nh->param<string>("topic_forkpose", topic_forkpose, "/forkpose");
@@ -53,28 +76,31 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
     // definition publisher & subscriber
     pub_odom = new ros::Publisher(nh->advertise<nav_msgs::Odometry>(topic_odom, 10));
     pub_imu = new ros::Publisher(nh->advertise<sensor_msgs::Imu>(topic_imu, 10));
-    pub_forkpose = new ros::Publisher(nh->advertise<std_msgs::Float32>(topic_forkpose, 10));
+    pub_forklift = new ros::Publisher(nh->advertise<forklift_msg::forklift>(topic_forkpose, 10));
     sub_cmdvel = new ros::Subscriber(nh->subscribe(topic_cmdvel, 1, &SubscribeAndPublish::CmdVelCB, this));
-    
-    // Initialize variable
-    wheel_angle = wheel_speed = motor_fork = 0.0f;// :TODO float wheel_speed(0.0)會出現錯誤
-    r = new ros::Rate(rate);
 
-    //main loop
+    // Initialize variable
+    wheel_angle = wheel_speed = motor_fork = 0.0f; // :TODO float wheel_speed(0.0)會出現錯誤
+    r = new ros::Rate(rate);
+    last_time = current_time = last_cmdvelcb_time = ros::Time::now();
+
+    // main loop
     while (ros::ok())
     {
+        current_time = ros::Time::now();
         ros::spinOnce();
-        if ((ros::Time::now() - last_cmdvelcb_time).toSec() > timeout)   wheel_speed = wheel_angle = 0.0;
+        if ((last_cmdvelcb_time - current_time).toSec() > timeout)
+            wheel_speed = wheel_angle = 0.0;
         stm32->read_data();
         stm32->send_data(1, wheel_speed, 0, wheel_angle + theta_bias, motor_fork, 0, 0, 0, 0, 0, 0, 0); // 电机(启动/停止)(1/0)，前轮速度 m/s，0，前轮转角 °/s . 起重电机PWM，范围-3600 ~ +3600 （PWM值）
         r->sleep();
+        last_time = current_time;
     }
-    
 };
 
 SubscribeAndPublish::~SubscribeAndPublish()
 {
-    delete pub_odom, pub_imu, pub_forkpose, sub_cmdvel, r, stm32;
+    delete pub_odom, pub_imu, pub_forklift, sub_cmdvel, r, stm32;
     ROS_WARN("forklift close");
 };
 
@@ -82,44 +108,50 @@ void SubscribeAndPublish::CmdVelCB(const geometry_msgs::Twist &msg) // 參考cmd
 {
     static float r; // r = 旋轉半徑
     last_cmdvelcb_time = ros::Time::now();
-    wheel_speed = msg.linear.x; // 速度v = 圓周運動速度
+    wheel_speed = msg.linear.x;                  // 速度v = 圓周運動速度
     if (isnan(r = msg.linear.x / msg.angular.z)) // 判斷旋轉半徑是否為無限大(直走)
         r = INFINITY;
     else if (abs(r) < wheel_base) // 判斷旋轉半徑是否小於wheel_base(自轉)
-    { 
+    {
         wheel_speed = msg.angular.z * wheel_base;
         r = 0.0;
     }
     else
         r = wheel_speed / msg.angular.z; // 旋轉半徑r = 速度v / 角速度w
     wheel_angle = atan(wheel_base / r);  // theta = arctan(前輪到兩後輪中心軸距wheel_base / 旋轉半徑r)
-    wheel_angle *= 180 / M_PI; // 轉換為角度
+    wheel_angle *= 180 / M_PI;           // 轉換為角度
 };
 
-void PublishOdom()
+void SubscribeAndPublish::PublishOdom()
 {
+    // :TODO
     static nav_msgs::Odometry odom;
-    static double vx, vth, vth_imu, delta_th, delta_x, delta_y;
-    static ros::Time last_publistodom_time:
-    
-    dt = last_publistodom_time-ros::Time::now()
-    vx = stm32.Data2 * cos(stm32.Data3 * M_PI / 180);
-    vth = stm32.Data2 * sin(stm32.Data3 * M_PI / 180) / wheel_base;
+    geometry_msgs::Quaternion odom_quat;
+    static geometry_msgs::Quaternion odom_quat;
+    static double x, y, th, vx, vth, vth_imu, delta_th, delta_x, delta_y, dt;
+
+    vx = stm32->Data2 * cos(stm32->Data3 * M_PI / 180);
+    vth = stm32->Data2 * sin(stm32->Data3 * M_PI / 180) / wheel_base;
     vth_imu = stm32.angular_velocity_z;
+
+    dt = (current_time - last_time).toSec();
     delta_th = vth * dt;
     delta_x = (vx * cos(th + delta_th / 2) - vy * sin(th + delta_th / 2)) * dt;
     delta_y = (vx * sin(th + delta_th / 2) + vy * cos(th + delta_th / 2)) * dt;
-    odom.header.stamp = ros::Time::now();
-    odom.header.frame_id = "wheel_odom";
-    //设置位置
+
+    x += delta_x;
+    y += delta_y;
+    th += delta_th;
+
+    odom.header.stamp = current_time;
+    odom.header.frame_id = topic_odom;
     odom.pose.pose.position.x = x;
     odom.pose.pose.position.y = y;
-    odom.pose.pose.position.z = 0;
+    odom.pose.pose.position.z = 0.0f;
     odom.pose.pose.orientation = odom_quat;
-    //设定速度
     odom.child_frame_id = "base_link";
     odom.twist.twist.linear.x = vx;
-    odom.twist.twist.linear.y = vy;
+    odom.twist.twist.linear.y = 0.0f;
     odom.twist.twist.angular.z = vth;
     odom.pose.covariance = {1e-3, 0, 0, 0, 0, 0,
                             0, 1e-3, 0, 0, 0, 0,
@@ -128,33 +160,46 @@ void PublishOdom()
                             0, 0, 0, 0, 1e6, 0,
                             0, 0, 0, 0, 0, 1e3};
     odom.twist.covariance = {1e-3, 0, 0, 0, 0, 0,
-                                0, 1e-3, 0, 0, 0, 0,
-                                0, 0, 1e6, 0, 0, 0,
-                                0, 0, 0, 1e6, 0, 0,
-                                0, 0, 0, 0, 1e6, 0,
-                                0, 0, 0, 0, 0, 1e3};
-    // printf("th = %f",th);
-    //发布消息
+                             0, 1e-3, 0, 0, 0, 0,
+                             0, 0, 1e6, 0, 0, 0,
+                             0, 0, 0, 1e6, 0, 0,
+                             0, 0, 0, 0, 1e6, 0,
+                             0, 0, 0, 0, 0, 1e3};
     odom_pub.publish(odom);
-    last_publistodom_time = ros::Time::now();
+
+    odom_quat = tf::createQuaternionMsgFromYaw(th);
+    odom_trans.header.stamp = current_time;
+
+    odom_trans.header.frame_id = "wheel_odom";
+    odom_trans.child_frame_id = "base_link";
+    odom_trans.transform.translation.x = x;
+    odom_trans.transform.translation.y = y;
+    odom_trans.transform.translation.z = 0.0;
+    odom_trans.transform.rotation = odom_quat;
 };
 
-void PublishImu()
-{
+void SubscribeAndPublish::PublishImu(){
     // :TODO
 };
 
-void PublishForkPose()
-{
-    // :TODO
+void SubscribeAndPublish::PublishForklift(){
+    // static folat V_fork;
+    // static forklift_msg::forklift forklift_msg;
+    // forklift_msg.wheel_velocity = stm32->Data2;
+    // forklift_msg.wheel_angle = stm32->Data3;
+    // (Data14 == 1) ? forklift_msg.fork_position = 0.0 : forklift_msg.fork_position = stm32->Data4;
+
+    // V_fork = stm32->Data13 / 30 / 60 * 2;
+
 };
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "forklift");          // 先初始化ROS node，在ROS Master上註冊node
-    ros::NodeHandle nh, priv_nh("~");           // 接下來建立ROS node的handle，用來與ROS Master溝通
-    STM32 stm32;                                // 再建立與stm32溝通的物件，建構式會初始化串口，解構式會關閉串口，
-    SubscribeAndPublish SAP_object(&nh, &priv_nh, stm32); // 最後再初始ROS subccriber&publisher這些與其他node的接口，並將stm32與nh物件傳入
+    ros::init(argc, argv, "forklift"); // 先初始化ROS node，在ROS Master上註冊node
+    ros::NodeHandle nh, priv_nh("~");  // 接下來建立ROS node的handle，用來與ROS Master溝通
+    STM32 stm32;                       // 再建立與stm32溝通的物件，建構式會初始化串口，解構式會關閉串口，
+    // SubscribeAndPublish SAP_object(&nh, &priv_nh);
+    SubscribeAndPublish SAP_object(&nh, &priv_nh, stm32); // 最後再初始ROS subccriber&publisher這些與其他node的接口，並使用call by address, reference將stm32與nh物件傳入
     return 0;
 }
 

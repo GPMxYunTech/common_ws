@@ -1,7 +1,16 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(car_controller)
 
-find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg serial tf nav_msgs)
+find_package(catkin REQUIRED COMPONENTS 
+roscpp 
+rospy 
+std_msgs 
+genmsg 
+serial 
+tf 
+nav_msgs 
+forklift_msg
+)
 
 generate_messages(DEPENDENCIES std_msgs)
 ## Declare a catkin package

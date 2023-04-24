@@ -126,18 +126,20 @@ class Action():
         self.SpinOnce()
         desired_angle_turn = -self.marker_2d_theta
 
-        self.cmd_vel.fnTurn(desired_angle_turn)
         if abs(desired_angle_turn) < desired_angle  :
             self.cmd_vel.fnStop()
             rospy.sleep(0.1)
-            if self.check_wait_time > 5 :
+            if self.check_wait_time > 10 :
                 self.check_wait_time = 0
                 return True
             else:
                 self.check_wait_time =self.check_wait_time  +1
+                return False
         else:
+            self.cmd_vel.fnTurn(desired_angle_turn)
             self.check_wait_time =0
             return False
+        
     def fnSeqMovingNearbyParkingLot(self):
         self.SpinOnce()
         if self.current_nearby_sequence == self.NearbySequence.initial_turn.value:
