@@ -82,7 +82,7 @@ class PBVS():
                 self.init_fork = rospy.get_param(rospy.get_name() + "/bodycamera_parking_fork_init", 0.392)
                 self.ChangingDirection_threshold = rospy.get_param(rospy.get_name() + "/bodycamera_ChangingDirection_threshold", 0.01)
                 self.Parking_distance = rospy.get_param(rospy.get_name() + "/bodycamera_parking_stop", 1.8)
-                self.Changingtheta_threshod = rospy.get_param(rospy.get_name() + "/bodycamera_Changingtheta_threshod", 0.1)
+                self.Changingtheta_threshod = rospy.get_param(rospy.get_name() + "/bodycamera_Changingtheta_threshold", 0.1)
                 self.decide_distance = rospy.get_param(rospy.get_name() + "/bodycamera_decide_distance", 0.04)
                 self.back_distance = rospy.get_param(rospy.get_name() + "/bodycamera_back_distance", 3.0)
                 self.current_parking_sequence = self.ParkingSequence.init_fork.value #for 大車
@@ -95,7 +95,7 @@ class PBVS():
                 self.init_fork = rospy.get_param(rospy.get_name() + "/forkcamera_parking_fork_init", 0.211)
                 self.ChangingDirection_threshold = rospy.get_param(rospy.get_name() + "/forkcamera_ChangingDirection_threshold", 0.01)
                 self.Parking_distance = rospy.get_param(rospy.get_name() + "/forkcamera_parking_stop", 1.43)
-                self.Changingtheta_threshod = rospy.get_param(rospy.get_name() + "/forkcamera_Changingtheta_threshod", 0.1)
+                self.Changingtheta_threshod = rospy.get_param(rospy.get_name() + "/forkcamera_Changingtheta_threshold", 0.1)
                 self.decide_distance = rospy.get_param(rospy.get_name() + "/forkcamera_decide_distance", 0.04)
                 self.back_distance = rospy.get_param(rospy.get_name() + "/forkcamera_back_distance", 3.0)
                 self.current_parking_sequence = self.ParkingSequence.init_fork.value #for 大車

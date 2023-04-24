@@ -118,6 +118,7 @@ class Action():
                 return True
             else:
                 self.check_wait_time =self.check_wait_time  +1
+                return False
         else:
             self.check_wait_time =0
             return False
@@ -196,7 +197,7 @@ class Action():
             desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
             # HACK: self spin error correct
             
-            desired_dist = desired_dist + 0.1
+            desired_dist = desired_dist
 
             remained_dist = desired_dist - dist_from_start 
             if remained_dist < 0  :remained_dist =0
@@ -402,10 +403,10 @@ class cmd_vel():
             twist.linear.x =0.2
         elif twist.linear.x < -0.2:
             twist.linear.x =-0.2                     
-        if twist.angular.z > 0 and twist.angular.z < 0.015:
-            twist.angular.z =0.015
-        elif twist.angular.z < 0 and twist.angular.z > -0.015:
-            twist.angular.z =-0.015
+        if twist.angular.z > 0 and twist.angular.z < 0.01:
+            twist.angular.z =0.01
+        elif twist.angular.z < 0 and twist.angular.z > -0.01:
+            twist.angular.z =-0.01
         self.pub_cmd_vel.publish(twist)
 
     def fnStop(self):
@@ -470,7 +471,7 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 4.5 #6.5
+        Kp = 5.5 #6.5
 
         twist = Twist()
         twist.linear.x = 0.1
