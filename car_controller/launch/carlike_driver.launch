@@ -7,6 +7,7 @@
 		<param name="wheel_base" value="0.3" /> <!-- 前輪到後輪中心距離 -->
 		<param name="theta_bias" value="0" /> <!-- 前輪偏移，需要修正的角度 -->
 		<param name="use_imu_flag" value="True" /> <!-- 使用imu角速度計算里程計 -->
+		<param name="odom_tf_flag" value="False" /> <!-- 使用imu角速度計算里程計 -->
 
 		<!--Subscriber Topic setting/-->
 		<param name="topic_cmd_vel" value="/cmd_vel" /> <!--速度命令-->

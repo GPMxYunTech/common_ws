@@ -23,7 +23,7 @@ private:
 
     // forklift variable declare
     float wheel_base, wheel_angle, wheel_speed, motor_fork, timeout, theta_bias;
-    bool use_imu_flag;
+    bool use_imu_flag, odom_tf_flag;
     ros::Time last_time, current_time, last_cmdvelcb_time;
     ros::Rate *r;
     int rate;
@@ -40,27 +40,28 @@ public:
     SubscribeAndPublish(ros::NodeHandle *, ros::NodeHandle *, STM32 &); // SubscribeAndPublish建構子，當成main function
     ~SubscribeAndPublish();                                             // SubscribeAndPublish destructor 釋放new出來的記憶體
 };
-// SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *priv_nh){
-//     priv_nh->param<string>("topic_odom", topic_odom, "/odom");
-//     priv_nh->param<string>("topic_imu", topic_imu, "/imu");
-//     priv_nh->param<string>("topic_forkpose", topic_forkpose, "/forkpose");
-//     priv_nh->param<string>("topic_cmdvel", topic_cmdvel, "/cmd_vel");
-//     priv_nh->param<float>("wheel_base", wheel_base, 0.3);
-//     priv_nh->param<int>("rate", rate, 20);
-//     priv_nh->param<float>("timeout", timeout, 1.0);
-//     priv_nh->param<float>("theta_bias", theta_bias, 0.0);
-//     priv_nh->param<bool>("use_imu_flag", use_imu_flag, true);
-//     ROS_WARN("SubscribeAndPublish");
-//     printf("topic_odom: %s\n", topic_odom.c_str());
-//     printf("topic_imu: %s\n", topic_imu.c_str());
-//     printf("topic_forkpose: %s\n", topic_forkpose.c_str());
-//     printf("topic_cmdvel: %s\n", topic_cmdvel.c_str());
-//     printf("wheel_base: %f\n", wheel_base);
-//     printf("rate: %d\n", rate);
-//     printf("timeout: %f\n", timeout);
-//     printf("theta_bias: %f\n", theta_bias);
-//     printf("use_imu_flag: %d\n", use_imu_flag);
-// }
+SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *priv_nh){
+    priv_nh->param<string>("topic_odom", topic_odom, "/odom");
+    priv_nh->param<string>("topic_imu", topic_imu, "/imu");
+    priv_nh->param<string>("topic_forkpose", topic_forkpose, "/forkpose");
+    priv_nh->param<string>("topic_cmdvel", topic_cmdvel, "/cmd_vel");
+    priv_nh->param<float>("wheel_base", wheel_base, 0.3);
+    priv_nh->param<int>("rate", rate, 20);
+    priv_nh->param<float>("timeout", timeout, 1.0);
+    priv_nh->param<float>("theta_bias", theta_bias, 0.0);
+    priv_nh->param<bool>("use_imu_flag", use_imu_flag, true);
+    priv_nh->param<bool>("odom_tf_flag", odom_tf_flag, true);
+    ROS_WARN("SubscribeAndPublish");
+    printf("topic_odom: %s\n", topic_odom.c_str());
+    printf("topic_imu: %s\n", topic_imu.c_str());
+    printf("topic_forkpose: %s\n", topic_forkpose.c_str());
+    printf("topic_cmdvel: %s\n", topic_cmdvel.c_str());
+    printf("wheel_base: %f\n", wheel_base);
+    printf("rate: %d\n", rate);
+    printf("timeout: %f\n", timeout);
+    printf("theta_bias: %f\n", theta_bias);
+    printf("use_imu_flag: %d\n", use_imu_flag);
+}
 SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *priv_nh, STM32 &stm32_) : stm32(&stm32_)
 {
     // get variable
@@ -126,33 +127,35 @@ void SubscribeAndPublish::PublishOdom()
 {
     // :TODO
     static nav_msgs::Odometry odom;
-    geometry_msgs::Quaternion odom_quat;
-    static geometry_msgs::Quaternion odom_quat;
-    static double x, y, th, vx, vth, vth_imu, delta_th, delta_x, delta_y, dt;
-
-    vx = stm32->Data2 * cos(stm32->Data3 * M_PI / 180);
-    vth = stm32->Data2 * sin(stm32->Data3 * M_PI / 180) / wheel_base;
-    vth_imu = stm32.angular_velocity_z;
+    static geometry_msgs::Quaternion th_quat;
+    static geometry_msgs::TransformStamped odom_trans;
+    static tf::TransformBroadcaster odom_broadcaster;
+    static double x, y, th, linear_x, angular_z, delta_th, delta_x, delta_y, dt;
+    
+    linear_x = this->stm32->Data2 * cos(this->stm32->Data3 * M_PI / 180);
+    (use_imu_flag) ? angular_z = stm32.angular_velocity_z : angular_z = this->stm32->Data2 * sin(this->stm32->Data3 * M_PI / 180) / wheel_base;
 
     dt = (current_time - last_time).toSec();
-    delta_th = vth * dt;
-    delta_x = (vx * cos(th + delta_th / 2) - vy * sin(th + delta_th / 2)) * dt;
-    delta_y = (vx * sin(th + delta_th / 2) + vy * cos(th + delta_th / 2)) * dt;
+    delta_th = angular_z * dt;
+    delta_x = (linear_x * cos(th + delta_th / 2) - vy * sin(th + delta_th / 2)) * dt;
+    delta_y = (linear_x * sin(th + delta_th / 2) + vy * cos(th + delta_th / 2)) * dt;
 
     x += delta_x;
     y += delta_y;
     th += delta_th;
 
-    odom.header.stamp = current_time;
-    odom.header.frame_id = topic_odom;
+    th_quat = tf::createQuaternionMsgFromYaw(th); // 歐拉腳轉換為四元數
+
+    odom.header.stamp = this->current_time;
+    odom.header.frame_id = this->topic_odom;
     odom.pose.pose.position.x = x;
     odom.pose.pose.position.y = y;
     odom.pose.pose.position.z = 0.0f;
-    odom.pose.pose.orientation = odom_quat;
+    odom.pose.pose.orientation = th_quat;
     odom.child_frame_id = "base_link";
-    odom.twist.twist.linear.x = vx;
+    odom.twist.twist.linear.x = linear_x;
     odom.twist.twist.linear.y = 0.0f;
-    odom.twist.twist.angular.z = vth;
+    odom.twist.twist.angular.z = angular_z;
     odom.pose.covariance = {1e-3, 0, 0, 0, 0, 0,
                             0, 1e-3, 0, 0, 0, 0,
                             0, 0, 1e6, 0, 0, 0,
@@ -167,15 +170,16 @@ void SubscribeAndPublish::PublishOdom()
                              0, 0, 0, 0, 0, 1e3};
     odom_pub.publish(odom);
 
-    odom_quat = tf::createQuaternionMsgFromYaw(th);
-    odom_trans.header.stamp = current_time;
 
-    odom_trans.header.frame_id = "wheel_odom";
+    odom_trans.header.stamp = current_time;
+    odom_trans.header.frame_id = this->topic_odom;
     odom_trans.child_frame_id = "base_link";
     odom_trans.transform.translation.x = x;
     odom_trans.transform.translation.y = y;
     odom_trans.transform.translation.z = 0.0;
-    odom_trans.transform.rotation = odom_quat;
+    odom_trans.transform.rotation = th_quat;
+    if(this->odom_tf_flag) odom_broadcaster.sendTransform(odom_trans);
+    
 };
 
 void SubscribeAndPublish::PublishImu(){
@@ -198,8 +202,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "forklift"); // 先初始化ROS node，在ROS Master上註冊node
     ros::NodeHandle nh, priv_nh("~");  // 接下來建立ROS node的handle，用來與ROS Master溝通
     STM32 stm32;                       // 再建立與stm32溝通的物件，建構式會初始化串口，解構式會關閉串口，
-    // SubscribeAndPublish SAP_object(&nh, &priv_nh);
-    SubscribeAndPublish SAP_object(&nh, &priv_nh, stm32); // 最後再初始ROS subccriber&publisher這些與其他node的接口，並使用call by address, reference將stm32與nh物件傳入
+    SubscribeAndPublish SAP_object(&nh, &priv_nh);
+    // SubscribeAndPublish SAP_object(&nh, &priv_nh, stm32); // 最後再初始ROS subccriber&publisher這些與其他node的接口，並使用call by address, reference將stm32與nh物件傳入
     return 0;
 }
 
