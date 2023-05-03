@@ -12,7 +12,7 @@ TebLocalPlannerROS:
   costmap_converter_plugin: "costmap_converter::CostmapToLinesDBSRANSAC"
   #costmap_converter_plugin: "costmap_converter::CostmapToLinesDBSMCCH"
   #costmap_converter_plugin: "costmap_converter::CostmapToPolygonsDBSConcaveHull"
-  costmap_converter_plugin: "costmap_converter::CostmapToDynamicObstacles" 
+  # costmap_converter_plugin: "costmap_converter::CostmapToDynamicObstacles" 
 
   costmap_converter_spin_thread: True
   costmap_converter_rate: 5

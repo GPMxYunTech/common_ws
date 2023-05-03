@@ -1,7 +1,7 @@
 <launch>
 <node pkg="forklift_server" type="Topology_map_server.py" name="TopologyMap_server" output="screen">
     <param name="odom" value="/odom" /><!--里程計 Topic（map -> base_link, 是tf相對關係, 非輪式里程計）/-->
-    <param name="start_node" value="LD4" />
+    <param name="start_node" value="LoopPlace" />
     <rosparam param= "graph">
     {
         "LD1":{"LD2":4},

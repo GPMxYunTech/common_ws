@@ -1,6 +1,6 @@
 TebLocalPlannerROS:
 
- odom_topic: /odom
+ odom_topic: odom
  map_frame: odom
 
  # Trajectory
@@ -19,14 +19,16 @@ TebLocalPlannerROS:
  max_vel_y:  0.0 
  max_vel_x_backwards: 0.3
  max_vel_theta: 0.5 #0.3
- acc_lim_x: 0.2
+ acc_lim_x: 0.15
  acc_lim_y: 0.0
- acc_lim_theta: 0.2
+ acc_lim_theta: 0.15
  min_turning_radius: 1.75
  wheelbase: 1.75
- footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
-   vertices: [ [-0.185, -0.12], [-0.20, 0.02], [-0.10, 0.38], [0.10, 0.38], [0.20, 0.02], [0.185, -0.12] ] # for type "polygon"
-
+ footprint_model:  #types: "point", "circular", "two_circles", "line", "polygon"
+    type: "polygon"
+    #radius: 0.20 # for type "circular"
+    vertices: [[1.75,-0.575],[1.75,0.575],[-0.25,0.575],[-0.25,0.3],[-0.75,0.3],[-0.75,-0.3],[-0.25,-0.3],[-0.25,-0.575]]
+ 
  # GoalTolerance
 
  xy_goal_tolerance: 0.2
@@ -35,7 +37,7 @@ TebLocalPlannerROS:
 
  # Obstacles
 
- min_obstacle_dist: 0.7 #0.3
+#  min_obstacle_dist: 0.7 #0.3
  include_costmap_obstacles: False
  costmap_obstacles_behind_robot_dist: 1.0
  obstacle_poses_affected: 7
