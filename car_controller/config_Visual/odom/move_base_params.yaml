@@ -25,7 +25,7 @@ recovery_behaviors:
     type: 'rotate_recovery/RotateRecovery'
     
 conservative_reset:
-  reset_distance: 0.5
+  reset_distance: 1.0
   layer_names: [obstacle_layer]
 
 aggressive_reset:
