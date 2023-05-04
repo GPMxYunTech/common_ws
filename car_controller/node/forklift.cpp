@@ -78,7 +78,7 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
         current_time = ros::Time::now();
         ros::spinOnce();
         if ((current_time - last_cmdvelcb_time).toSec() > timeout)
-            wheel_speed = wheel_angle = 0.0f;
+            wheel_speed = 0.0f;
         if ((current_time - last_cmdforkcb_time).toSec() > timeout)
             fork_velocity = 0.0f;
 
@@ -222,7 +222,7 @@ void SubscribeAndPublish::PublishForklift()
     forklift_msg.wheel_angle = stm32->Data3;
 
     dt = (current_time - last_time).toSec();
-    fork_velocity = stm32->Data13 / 30 / 60 * 2;
+    forklift_msg.fork_velocity = stm32->Data13 / 30 / 60 * 2;
     fork_position -= fork_velocity * dt;
 
     (stm32->Data14 == true /*限位開關被壓住*/) ? forklift_msg.fork_position = 0.0 : forklift_msg.fork_position = fork_position;
