@@ -185,7 +185,7 @@ void STM32::read_data()
             if (Data11 / 100 < 5)
             {
                 ROS_ERROR("PLEASE OPEN \"POWER SUPPLY\" before CONNECT USB!!!");
-                ROS_ERROR("先接電源再連接USB!!!");
+                ROS_ERROR("Restart this program");
             }
         }
     }

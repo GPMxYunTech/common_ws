@@ -7,6 +7,8 @@
         "array": "cpp",
         "tuple": "cpp",
         "utility": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "condition_variable": "cpp",
+        "iomanip": "cpp"
     }
 }

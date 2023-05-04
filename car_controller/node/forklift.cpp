@@ -23,7 +23,8 @@ private:
     tf::TransformBroadcaster odom_tfbroadcaster;
 
     // forklift variable declare
-    float wheel_base, wheel_angle, wheel_speed, fork_velocity, timeout, theta_bias;
+    float wheel_base, wheel_angle, wheel_speed, fork_velocity, theta_bias;
+    double timeout;
     bool use_imu_flag, odom_tf_flag;
     ros::Time last_time, current_time, last_cmdvelcb_time, last_cmdforkcb_time;
     ros::Rate *r;
@@ -46,7 +47,7 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
 {
     // get variable
     priv_nh->param<int>("rate", rate, 20);
-    priv_nh->param<float>("timeout", timeout, 1.0);
+    priv_nh->param<double>("timeout", timeout, 1.0);
     priv_nh->param<float>("wheel_base", wheel_base, 0.3);
     priv_nh->param<float>("theta_bias", theta_bias, 0.0);
     priv_nh->param<bool>("use_imu_flag", use_imu_flag, false);
@@ -75,20 +76,17 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
     while (ros::ok())
     {
         current_time = ros::Time::now();
-
         ros::spinOnce();
-        if ((last_cmdvelcb_time - current_time).toSec() > timeout)
+        if ((current_time - last_cmdvelcb_time).toSec() > timeout)
             wheel_speed = wheel_angle = 0.0f;
-        if ((last_cmdforkcb_time - current_time).toSec() > timeout)
+        if ((current_time - last_cmdforkcb_time).toSec() > timeout)
             fork_velocity = 0.0f;
 
         stm32->read_data();
         PublishOdom();
         PublishImu();
         PublishForklift();
-        // cout << "wheel_speed = " << wheel_speed << ", wheel_angle = " << wheel_angle << ", fork_velocity = " << fork_velocity << endl;
         stm32->send_data(1, wheel_speed, 0, wheel_angle + theta_bias, fork_velocity, 0, 0, 0, 0, 0, 0, 0); // 电机(启动/停止)(1/0)，前轮速度 m/s，0，前轮转角 °/s . 起重电机PWM，范围-3600 ~ +3600 （PWM值）
-        
         last_time = current_time;
         r->sleep();
     }
@@ -120,13 +118,15 @@ void SubscribeAndPublish::CmdVelCB(const geometry_msgs::Twist &msg) // 參考cmd
 
 void SubscribeAndPublish::CmdForkCB(const forklift_msg::forklift &msg)// pwm range -3600 ~ +3600
 {
-    last_cmdforkcb_time = ros::Time::now();
+    last_cmdforkcb_time = current_time;
     fork_velocity = -msg.fork_velocity; //fork_velocity上升為負，下降為正，因為stm32的起重電機PWM是負值上升，正值下降
     // 上限3600，下限1000
     if(abs(fork_velocity) > 3600)
         fork_velocity = 3600 * Sign(fork_velocity);
-    else if (abs(fork_velocity) < 1000)
+    else if (abs(fork_velocity) < 1000 && abs(fork_velocity) > 1)
         fork_velocity = 1000 * Sign(fork_velocity);
+    else if (abs(fork_velocity) < 1)
+        fork_velocity = 0;
 };
 
 void SubscribeAndPublish::PublishOdom()
@@ -224,6 +224,7 @@ void SubscribeAndPublish::PublishForklift()
     dt = (current_time - last_time).toSec();
     fork_velocity = stm32->Data13 / 30 / 60 * 2;
     fork_position -= fork_velocity * dt;
+
     (stm32->Data14 == true /*限位開關被壓住*/) ? forklift_msg.fork_position = 0.0 : forklift_msg.fork_position = fork_position;
 
     pub_forklift->publish(forklift_msg);
