@@ -60,12 +60,16 @@ class PBVS():
     def init_PBVS_parame(self):
         self.is_sequence_finished = False
         if self.ActionCode==20:
+            self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
             self.windows()
         elif self.ActionCode==21:
+            self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
             self.windows()
         elif self.ActionCode==22:
+            self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
             self.windows()
         elif self.ActionCode==30:
+            self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
             self.windows()
         else:
             if self.ActionCode==10:
@@ -149,15 +153,13 @@ class PBVS():
         if self.ActionCode==20:
             self.is_sequence_finished = self.Action.fork_updown(self.UpDownPosition)
             if self.is_sequence_finished==True:
-                pass #結束
-            else:
-                self.is_sequence_finished=False #countinue
+                rospy.sleep(1)
+                return True
         elif self.ActionCode==21:
             self.is_sequence_finished = self.Action.fork_forwardback(self.ForrwardBackwardPosition)
             if self.is_sequence_finished==True:
-                pass #結束
-            else:
-                self.is_sequence_finished=False #countinue
+                rospy.sleep(1)
+                return True
         elif self.ActionCode==22:
             pass # TODO Tile function
         elif self.ActionCode==30:
@@ -371,9 +373,7 @@ class PBVS():
 
             return False
             
-            
-            
-
+   
     def windows(self):
         while(not rospy.is_shutdown()):
             if(self.PBVS()):

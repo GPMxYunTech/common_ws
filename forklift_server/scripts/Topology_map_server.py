@@ -6,7 +6,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 import forklift_server.msg
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Pose
 from visualization_msgs.msg import Marker
 import tf2_ros
 import heapq
@@ -187,11 +187,12 @@ class TopologyMapAction():
         self.start_node = rospy.get_param(rospy.get_name() + "/start_node", "LD3")
         waypoints = rospy.get_param(rospy.get_name() + "/waypoints")
         graph = rospy.get_param(rospy.get_name() + "/graph")
+        self.last_target_pose = None
         
 
     def execute_cb(self, msg):
         rospy.loginfo('TopologyMap receive command : %s' % (msg))
-        if msg.goal != "" or msg.target_name != "":
+        if msg.goal != "" or (msg.target_name != "" and msg.target_pose == None):
             if msg.goal != "":
                 path = self.TopologyMap.path(msg.goal)
                 print(path)
@@ -214,22 +215,24 @@ class TopologyMapAction():
                         waypoints[path[i]][0], waypoints[path[i]][1], waypoints[path[i]][2], waypoints[path[i]][3])
         elif msg.target_pose != None:
 
-            posix = msg.target_pose.pose.position.x
-            posity = msg.target_pose.pose.position.y
-            orienz = msg.target_pose.pose.orientation.z
-            orienw = msg.target_pose.pose.orientation.w
+            posix = msg.target_pose.position.x
+            posity = msg.target_pose.position.y
+            orienz = msg.target_pose.orientation.z
+            orienw = msg.target_pose.orientation.w
 
-            if self.last_target_pose != None and self.last_target_pose.pose.position.x == msg.target_pose.pose.position.x and self.last_target_pose.pose.position.y == msg.target_pose.pose.position.y:
+            if self.last_target_pose != None and self.last_target_pose.position.x == msg.target_pose.position.x and self.last_target_pose.position.y == msg.target_pose.position.y:
                 self.Navigation.self_spin(orienz, orienw)
             else:
                 self.Navigation.move(posix, posity, orienz, orienw)
+            if self.last_target_pose==None:
+                self.last_target_pose=Pose()
                 
-            self.last_target_pose.pose.position.x = posix
-            self.last_target_pose.target_pose.pose.position.y = posity
-            self.last_target_pose.target_pose.pose.orientation.z = orienz
-            self.last_target_pose.target_pose.pose.orientation.w = orienw
+            self.last_target_pose.position.x = posix
+            self.last_target_pose.position.y = posity
+            self.last_target_pose.orientation.z = orienz
+            self.last_target_pose.orientation.w = orienw
         
-        rospy.logwarn('PBVS Succeeded')
+        rospy.logwarn('TopologyMap Succeeded')
         self._result.result = 'success'
         self._as.set_succeeded(self._result)
 
