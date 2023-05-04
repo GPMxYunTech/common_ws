@@ -7,8 +7,6 @@ class STM32
 {
     private:
         serial::Serial sp; // serial port
-        uint8_t tbuf[53];  //send data buffer
-        size_t n;          //緩衝區內字節數
         float b2f(byte m0, byte m1, byte m2, byte m3);// decode received data function
     public:
         //從read_data讀出的數據

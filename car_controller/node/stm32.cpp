@@ -37,6 +37,7 @@ STM32::~STM32()
 
 void STM32::send_data(float data1, float data2, float data3, float data4, float data5, float data6, float data7, float data8, float data9, float data10, float data11, float data12)
 {
+    static uint8_t tbuf[53]{0};  //send data buffer
     // printf("%f, %f, %f, %f, %f\n", data1, data2, data3, data4, data5);
     isnan(data4) ? data4 = 0.0 : data4 = data4;
     unsigned char *p;

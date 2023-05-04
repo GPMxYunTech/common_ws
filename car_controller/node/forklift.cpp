@@ -215,7 +215,7 @@ void SubscribeAndPublish::PublishImu()
 
 void SubscribeAndPublish::PublishForklift()
 {
-    static float fork_velocity, fork_position, dt;
+    static float dt;
     static forklift_msg::forklift forklift_msg;
 
     forklift_msg.wheel_velocity = stm32->Data2;
@@ -223,9 +223,9 @@ void SubscribeAndPublish::PublishForklift()
 
     dt = (current_time - last_time).toSec();
     forklift_msg.fork_velocity = stm32->Data13 / 30 / 60 * 2;
-    fork_position -= fork_velocity * dt;
+    forklift_msg.fork_position -= forklift_msg.fork_velocity * dt;
 
-    (stm32->Data14 == true /*限位開關被壓住*/) ? forklift_msg.fork_position = 0.0 : forklift_msg.fork_position = fork_position;
+    (stm32->Data14 == true /*限位開關被壓住*/) ? forklift_msg.fork_position = 0.0 : forklift_msg.fork_position = forklift_msg.fork_position;
 
     pub_forklift->publish(forklift_msg);
 };
