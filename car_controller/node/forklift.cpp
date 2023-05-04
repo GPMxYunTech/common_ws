@@ -86,6 +86,7 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
         PublishOdom();
         PublishImu();
         PublishForklift();
+        // cout << "wheel_speed = " << wheel_speed << ", wheel_angle = " << wheel_angle << ", fork_velocity = " << fork_velocity << endl;
         stm32->send_data(1, wheel_speed, 0, wheel_angle + theta_bias, fork_velocity, 0, 0, 0, 0, 0, 0, 0); // 电机(启动/停止)(1/0)，前轮速度 m/s，0，前轮转角 °/s . 起重电机PWM，范围-3600 ~ +3600 （PWM值）
         
         last_time = current_time;
@@ -117,15 +118,19 @@ void SubscribeAndPublish::CmdVelCB(const geometry_msgs::Twist &msg) // 參考cmd
     wheel_angle *= 180 / M_PI;           // 轉換為角度
 };
 
-void SubscribeAndPublish::CmdForkCB(const forklift_msg::forklift &msg)
+void SubscribeAndPublish::CmdForkCB(const forklift_msg::forklift &msg)// pwm range -3600 ~ +3600
 {
     last_cmdforkcb_time = ros::Time::now();
     fork_velocity = -msg.fork_velocity; //fork_velocity上升為負，下降為正，因為stm32的起重電機PWM是負值上升，正值下降
+    // 上限3600，下限1000
+    if(abs(fork_velocity) > 3600)
+        fork_velocity = 3600 * Sign(fork_velocity);
+    else if (abs(fork_velocity) < 1000)
+        fork_velocity = 1000 * Sign(fork_velocity);
 };
 
 void SubscribeAndPublish::PublishOdom()
 {
-    // :TODO
     static nav_msgs::Odometry odom;
     static geometry_msgs::Quaternion th_quat;
     static geometry_msgs::TransformStamped odom_trans;

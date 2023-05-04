@@ -137,58 +137,58 @@ void STM32::send_data(float data1, float data2, float data3, float data4, float 
 };
 void STM32::read_data()
 {
-    static uint8_t buffer[65];//read data buffer
-    memset(buffer, 0, sizeof(uint8_t) * 65);
+    static size_t n;          //緩衝區內字節數
+    static uint8_t buffer[65]{0};
     n = sp.available(); // 獲取緩衝區內字節數
     if (n > 0)
     {
         sp.read(buffer, n);
-    }
-    if (buffer[0] == 0XAA && buffer[1] == 0XAA && buffer[2] == 0XF1)
-    {
-        uint8_t sum;
-        for (uint8_t j = 0; j < 64; j++)
-            sum += buffer[j]; // 計算校驗和
-        // std::cout << "sum == buffer[64]: " << (sum == buffer[64]) << std::endl;
-        // if (sum == buffer[64]) HACK: 不知道為什麼 sum == buffer[64] 會一直不成立，現在Data數值正確
-        if (true)
+        if (buffer[0] == 0XAA && buffer[1] == 0XAA && buffer[2] == 0XF1)
         {
-            Data1 = b2f(buffer[4], buffer[5], buffer[6], buffer[7]);      // 电机启动停止控制位（1/0 启动/停止）
-            Data2 = b2f(buffer[8], buffer[9], buffer[10], buffer[11]);    // 前轮线速度
-            Data3 = b2f(buffer[12], buffer[13], buffer[14], buffer[15]);  // 前轮转角
-            Data4 = b2f(buffer[16], buffer[17], buffer[18], buffer[19]);  // 绕X轴角速度 gyro_Roll 原始数值
-            Data5 = b2f(buffer[20], buffer[21], buffer[22], buffer[23]);  // 绕Y轴角速度 gyro_Pitch 原始数值
-            Data6 = b2f(buffer[24], buffer[25], buffer[26], buffer[27]);  // 绕Z轴角速度 gyro_Yaw 原始数值
-            Data7 = b2f(buffer[28], buffer[29], buffer[30], buffer[31]);  // X轴加速度 accel_x 原始数值
-            Data8 = b2f(buffer[32], buffer[33], buffer[34], buffer[35]);  // Y轴加速度 accel_y 原始数值
-            Data9 = b2f(buffer[36], buffer[37], buffer[38], buffer[39]);  // Z轴加速度 accel_z 原始数值
-            Data10 = b2f(buffer[40], buffer[41], buffer[42], buffer[43]); // Yaw Z轴角度
-            Data11 = b2f(buffer[44], buffer[45], buffer[46], buffer[47]); // 电池电压              24-25   <24.3  low
-            Data12 = b2f(buffer[48], buffer[49], buffer[50], buffer[51]); // 红色紧急开关位0/1 运行/停止
-            Data13 = b2f(buffer[52], buffer[53], buffer[54], buffer[55]); // 起重电机编码器原始数据（未转换） 如果有需要可以添加发送指令去清0，上面的发送命令还有剩余   gearrate 30  dt 5 ms
-            Data14 = b2f(buffer[56], buffer[57], buffer[58], buffer[59]); // 起重电机下行限位开关（用于校准） 1代表开关被压住
-            Data15 = b2f(buffer[60], buffer[61], buffer[62], buffer[63]); // 起重电机上行限位开关（用于校准） 1代表开关被压住
+            uint8_t sum{0};
+            for (uint8_t j = 0; j < 64; j++)
+                sum += buffer[j]; // 計算校驗和
+            if (sum == buffer[64])
+            {
+                Data1 = b2f(buffer[4], buffer[5], buffer[6], buffer[7]);      // 电机启动停止控制位（1/0 启动/停止）
+                Data2 = b2f(buffer[8], buffer[9], buffer[10], buffer[11]);    // 前轮线速度
+                Data3 = b2f(buffer[12], buffer[13], buffer[14], buffer[15]);  // 前轮转角
+                Data4 = b2f(buffer[16], buffer[17], buffer[18], buffer[19]);  // 绕X轴角速度 gyro_Roll 原始数值
+                Data5 = b2f(buffer[20], buffer[21], buffer[22], buffer[23]);  // 绕Y轴角速度 gyro_Pitch 原始数值
+                Data6 = b2f(buffer[24], buffer[25], buffer[26], buffer[27]);  // 绕Z轴角速度 gyro_Yaw 原始数值
+                Data7 = b2f(buffer[28], buffer[29], buffer[30], buffer[31]);  // X轴加速度 accel_x 原始数值
+                Data8 = b2f(buffer[32], buffer[33], buffer[34], buffer[35]);  // Y轴加速度 accel_y 原始数值
+                Data9 = b2f(buffer[36], buffer[37], buffer[38], buffer[39]);  // Z轴加速度 accel_z 原始数值
+                Data10 = b2f(buffer[40], buffer[41], buffer[42], buffer[43]); // Yaw Z轴角度
+                Data11 = b2f(buffer[44], buffer[45], buffer[46], buffer[47]); // 电池电压              24-25   <24.3  low
+                Data12 = b2f(buffer[48], buffer[49], buffer[50], buffer[51]); // 红色紧急开关位0/1 运行/停止
+                Data13 = b2f(buffer[52], buffer[53], buffer[54], buffer[55]); // 起重电机编码器原始数据（未转换） 如果有需要可以添加发送指令去清0，上面的发送命令还有剩余   gearrate 30  dt 5 ms
+                Data14 = b2f(buffer[56], buffer[57], buffer[58], buffer[59]); // 起重电机下行限位开关（用于校准） 1代表开关被压住
+                Data15 = b2f(buffer[60], buffer[61], buffer[62], buffer[63]); // 起重电机上行限位开关（用于校准） 1代表开关被压住
+            }
+            sum = 0;
+            memset(buffer, 0, sizeof(uint8_t) * n);
         }
-        sum = 0;
-        memset(buffer, 0, sizeof(uint8_t) * 65);
-    }
 
-    angular_velocity_x = Data4 * 0.001064;  //转换成 rad/s
-    angular_velocity_y = Data5 * 0.001064;  //转换成 rad/s
-    angular_velocity_z = Data6 * 0.001064;  //转换成 rad/s
-    accelerated_wheel_speed = Data7 / 2048; //转换成 g	,重力加速度定义为1g, 等于9.8米每平方秒
-    accelerated_speed_y = Data8 / 2048;     //转换成 g	,重力加速度定义为1g, 等于9.8米每平方秒
-    accelerated_speed_z = Data9 / 2048;     //转换成 g	,重力加速度定义为1g, 等于9.8米每平方秒
-    
-    if (Data11 / 100 < 23.5 && Data11 != 0.0)
-    {
-        ROS_WARN("low voltage  %f vol", Data11 / 100);
-        if (Data11 / 100 < 5)
+        angular_velocity_x = Data4 * 0.001064;  //转换成 rad/s
+        angular_velocity_y = Data5 * 0.001064;  //转换成 rad/s
+        angular_velocity_z = Data6 * 0.001064;  //转换成 rad/s
+        accelerated_wheel_speed = Data7 / 2048; //转换成 g	,重力加速度定义为1g, 等于9.8米每平方秒
+        accelerated_speed_y = Data8 / 2048;     //转换成 g	,重力加速度定义为1g, 等于9.8米每平方秒
+        accelerated_speed_z = Data9 / 2048;     //转换成 g	,重力加速度定义为1g, 等于9.8米每平方秒
+
+        static bool once_flag = true;        
+        if (Data11 / 100 < 23.5 && Data11 != 0.0 and once_flag == true)
         {
-            ROS_ERROR("PLEASE OPEN \"POWER SUPPLY\" before CONNECT USB!!!");
+            once_flag = false;
+            ROS_WARN("low voltage  %f vol", Data11 / 100);
+            if (Data11 / 100 < 5)
+            {
+                ROS_ERROR("PLEASE OPEN \"POWER SUPPLY\" before CONNECT USB!!!");
+                ROS_ERROR("先接電源再連接USB!!!");
+            }
         }
     }
-    
 }
 
 float STM32::b2f(byte m0, byte m1, byte m2, byte m3)
