@@ -271,23 +271,23 @@ class MarkerViewer():
         marker.color.g = 255 / 255
         marker.color.b = 255 / 255
         marker.color.a = 1.0
-        rospy.sleep(0.2)
+        rospy.sleep(0.4)
         self.Marker_Pub.publish(marker)
         
         rospy.loginfo("PublishMarker %s",GoalName)
         
-        marker.type = Marker.TEXT_VIEW_FACING
-        marker.text = GoalName
-        marker.pose.position.x = waypoints[GoalName][0] - 0.3
-        marker.pose.position.y = waypoints[GoalName][1] - 0.3
-        marker.pose.position.z = 0.0
-        marker.pose.orientation.x = 0.0
-        marker.pose.orientation.y = 0.0
-        marker.pose.orientation.z = waypoints[GoalName][2]
-        marker.pose.orientation.w = waypoints[GoalName][3]
+        # marker.type = Marker.TEXT_VIEW_FACING
+        # marker.text = GoalName
+        # marker.pose.position.x = waypoints[GoalName][0] - 0.3
+        # marker.pose.position.y = waypoints[GoalName][1] - 0.3
+        # marker.pose.position.z = 0.0
+        # marker.pose.orientation.x = 0.0
+        # marker.pose.orientation.y = 0.0
+        # marker.pose.orientation.z = waypoints[GoalName][2]
+        # marker.pose.orientation.w = waypoints[GoalName][3]
         
-        rospy.sleep(0.2)
-        self.TextMarker_Pub.publish(marker)
+        # rospy.sleep(0.4)
+        # self.TextMarker_Pub.publish(marker)
         
         
 

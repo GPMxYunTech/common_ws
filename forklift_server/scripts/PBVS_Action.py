@@ -152,7 +152,7 @@ class Action():
         if abs(desired_angle_turn) < threshod  :
             self.cmd_vel.fnStop()
             rospy.sleep(0.1)
-            if self.check_wait_time > 10 :
+            if self.check_wait_time > 5 :
                 self.check_wait_time = 0
                 return True
             else:
@@ -160,6 +160,7 @@ class Action():
                 return False
         else:
             self.cmd_vel.fnTurn(desired_angle_turn)
+            rospy.sleep(0.3)
             self.check_wait_time =0
             return False
         
@@ -464,10 +465,10 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 5.5 #6.5
+        Kp = 6.2 #6.5
 
         twist = Twist()
-        twist.linear.x = 0.1
+        twist.linear.x = 0.15
         twist.linear.y = 0
         twist.linear.z = 0
         twist.angular.x = 0
