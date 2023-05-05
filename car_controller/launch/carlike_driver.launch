@@ -1,13 +1,14 @@
 <launch>  
 	<node pkg="car_controller" name="forklift" type="forklift" output="screen" >
-	<!-- launch-prefix="gdb -ex  args" -->
+	<!-- launch-prefix="gdb -ex  args" --><!-- Debug option -->
 	    <!-- Parameter setting -->
 		<param name="rate" value="25" /> <!-- 執行頻率 -->
 		<param name="timeout" value="1.5" /> <!-- 距離最後一次收到cmd_vel or cmd_fork幾秒後停止 -->
 		<param name="wheel_base" value="0.3" /> <!-- 前輪到後輪中心距離 -->
 		<param name="theta_bias" value="0" /> <!-- 前輪偏移，需要修正的角度 -->
 		<param name="use_imu_flag" value="True" /> <!-- 是(True)否(False)使用imu角速度計算里程計 -->
-		<param name="odom_tf_flag" value="False" /> <!-- 是否發布odom tf -->
+		<param name="odom_tf_flag" value="False" /> <!-- 是(True)否(False)發布odom tf -->
+		<param name="init_fork_flag" value="True" /> <!-- 是(True)否(False)讓牙叉降到底 -->
 
 		<!--Subscriber Topic setting/-->
 		<param name="topic_cmd_vel" value="/cmd_vel" /> <!--速度命令-->

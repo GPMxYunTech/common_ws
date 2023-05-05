@@ -187,6 +187,7 @@ void STM32::read_data()
             {
                 ROS_ERROR("PLEASE OPEN \"POWER SUPPLY\" before CONNECT USB!!!");
                 ROS_ERROR("Restart this program");
+                exit(0);
             }
         }
     }
