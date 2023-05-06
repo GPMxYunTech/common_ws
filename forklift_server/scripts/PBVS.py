@@ -61,16 +61,16 @@ class PBVS():
         self.is_sequence_finished = False
         if self.ActionCode==20:
             self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
-            self.windows()
+            self.main_loop()
         elif self.ActionCode==21:
             self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
-            self.windows()
+            self.main_loop()
         elif self.ActionCode==22:
             self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
-            self.windows()
+            self.main_loop()
         elif self.ActionCode==30:
             self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
-            self.windows()
+            self.main_loop()
         else:
             if self.ActionCode==10:
                 if self.ShelfParameter==0:
@@ -91,7 +91,7 @@ class PBVS():
                 self.back_distance = rospy.get_param(rospy.get_name() + "/bodycamera_back_distance", 3.0)
                 self.current_parking_sequence = self.ParkingSequence.init_fork.value #for 大車
                 # self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value # for 小車
-                self.windows()
+                self.main_loop()
 
             elif self.mode == "parking_forkcamera":
                 self.subscriber.updown = False
@@ -105,7 +105,7 @@ class PBVS():
                 self.current_parking_sequence = self.ParkingSequence.Changingtheta.value #test
                 # self.current_parking_sequence = self.ParkingSequence.init_fork.value #for 大車
                 # self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value // for 小車
-                self.windows()
+                self.main_loop()
                 return
 
             elif self.mode == "raise_pallet":
@@ -117,7 +117,7 @@ class PBVS():
                 self.back_distance = rospy.get_param(rospy.get_name() + "/raise_pallet_back_distance", 1.0)
                 self.navigation_helght = rospy.get_param(rospy.get_name() + "/raise_pallet_navigation_helght", 0.392)
                 self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
-                self.windows()
+                self.main_loop()
                 return
 
             elif self.mode == "drop_pallet":
@@ -129,7 +129,7 @@ class PBVS():
                 self.back_distance = rospy.get_param(rospy.get_name() + "/drop_pallet_back_distance", 1.0)
                 self.navigation_helght = rospy.get_param(rospy.get_name() + "/drop_pallet_navigation_helght", 0.07)
                 self.current_parking_sequence = self.ParkingSequence.down_fork_init.value
-                self.windows()
+                self.main_loop()
                 return
 
             else:
@@ -137,6 +137,14 @@ class PBVS():
                 self._result.result = 'fail'
                 self._as.set_succeeded(self._result)
                 return
+
+   
+    def main_loop(self):
+        r = rospy.Rate(10)
+        while(not rospy.is_shutdown()):
+            if(self.PBVS()):
+                break
+            r.sleep()
 
     def __del__(self):
         rospy.logwarn('delet PBVS')
@@ -373,85 +381,4 @@ class PBVS():
 
             return False
             
-   
-    def windows(self):
-        while(not rospy.is_shutdown()):
-            if(self.PBVS()):
-                break
-            rospy.sleep(0.09)
-    #     self.window = tk.Tk()
-    #     self.window.geometry('250x200+1700+560') 
 
-    #     self.labelParkingSequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_ParkingSequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='#19CAAD') 
-
-    #     self.labelNearbySequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_NearbySequence = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
-
-    #     self.labelrobot_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_robot_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
-
-    #     self.labelrobot_2d_pose_y= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_robot_2d_pose_y = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')  
-
-    #     self.labelrobot_2d_theta= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_robot_2d_theta = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')   
-
-    #     self.labelmarker_2d_pose_x= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_marker_2d_pose_x = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')        
-
-    #     self.labelmarker_2d_pose_y= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_marker_2d_pose_y = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')     
-
-    #     self.labelmarker_2d_theta= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_marker_2d_theta = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
-
-    #     self.labelfork_pose= tk.Label(self.window, text="", font=('Helvetica', 12), fg='black')
-    #     self.label_fork_pose = tk.Label(self.window, text="", font=('Helvetica', 12), fg='black') 
-        
-    #     self.update_window()
-    #     self.window.mainloop()
-
-    # def update_window(self):
-    #     self.PBVS()
-    #     (robot_2d_pose_x, robot_2d_pose_y, robot_2d_theta, marker_2d_pose_x, marker_2d_pose_y, marker_2d_theta) = self.subscriber.SpinOnce()
-    #     base = 0
-
-    #     try:
-    #         base1 = base
-    #         self.labelrobot_2d_pose_x.configure(text='Robot 2d Pose x: ')
-    #         self.labelrobot_2d_pose_x.place(x=0, y=base1)        
-    #         self.label_robot_2d_pose_x.configure(text=robot_2d_pose_x)
-    #         self.label_robot_2d_pose_x.place(x=200, y=base1)
-
-    #         self.labelrobot_2d_pose_y.configure(text="Robot 2d Pose y: ")
-    #         self.labelrobot_2d_pose_y.place(x=0, y=base1+30)
-    #         self.label_robot_2d_pose_y.place(x=200, y=base1+30)
-    #         self.label_robot_2d_pose_y.configure(text=robot_2d_pose_y)
-
-    #         self.labelrobot_2d_theta.configure(text="Robot 2d theta: ")
-    #         self.labelrobot_2d_theta.place(x=0, y=base1+60)
-    #         self.label_robot_2d_theta.place(x=200, y=base1+60)
-    #         self.label_robot_2d_theta.configure(text=math.degrees(robot_2d_theta))
-
-    #         base2 = base1+100
-    #         self.labelmarker_2d_pose_x.configure(text="Marker 2d Pose x: ")
-    #         self.labelmarker_2d_pose_x.place(x=0, y=base2)
-    #         self.label_marker_2d_pose_x.place(x=200, y=base2)
-    #         self.label_marker_2d_pose_x.configure(text=marker_2d_pose_x)
-
-    #         self.labelmarker_2d_pose_y.configure(text="Marker 2d Pose y: ")
-    #         self.labelmarker_2d_pose_y.place(x=0, y=base2+30)
-    #         self.label_marker_2d_pose_y.place(x=200, y=base2+30)
-    #         self.label_marker_2d_pose_y.configure(text=marker_2d_pose_y)
-
-    #         self.labelmarker_2d_theta.configure(text="Marker 2d theta: ")
-    #         self.labelmarker_2d_theta.place(x=0, y=base2+60)
-    #         self.label_marker_2d_theta.place(x=200, y=base2+60)
-    #         self.label_marker_2d_theta.configure(text=marker_2d_theta)
-    #         # self.label_marker_2d_theta.configure(text=math.degrees(marker_2d_theta))
-
-    #     except:
-    #         pass
-
-    #     self.window.after(50, self.update_window)

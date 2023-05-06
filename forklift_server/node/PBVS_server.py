@@ -2,15 +2,20 @@
 # -*- coding: utf-8 -*-
 import rospy
 import actionlib
-from PBVS import PBVS
 import forklift_server.msg
 import tf
 from apriltag_ros.msg import AprilTagDetectionArray
 from nav_msgs.msg import Odometry
 import math
 from gpm_msg.msg import forkposition
+
+import sys
+import os
+script_dir = os.path.dirname( __file__ )
+mymodule_dir = os.path.join( script_dir, '..', 'scripts' )
+sys.path.append( mymodule_dir )
+from PBVS import PBVS
 from ekf import KalmanFilter
-import tkinter as tk
 
 class Subscriber():
     def __init__(self):
