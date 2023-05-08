@@ -17,7 +17,7 @@ STM32::STM32()
 
     if (sp.isOpen()) // 判斷串口是否打開
     {
-        ROS_INFO_STREAM("/dev/ttyUSB0 is opened.");
+        ROS_INFO_STREAM("\x1B[0;32m""/dev/ttyUSB0 is opened.""\x1B[0m");
     }
     else
     {
@@ -168,7 +168,7 @@ void STM32::read_data()
                 Data15 = b2f(buffer[60], buffer[61], buffer[62], buffer[63]); // 起重电机上行限位开关（用于校准） 1代表开关被压住
             }
             sum = 0;
-            memset(buffer, 0, sizeof(uint8_t) * n);
+            memset(buffer, 0, sizeof(uint8_t) * 65);
         }
 
         angular_velocity_x = Data4 * 0.001064;  //转换成 rad/s
@@ -182,11 +182,10 @@ void STM32::read_data()
         if (Data11 / 100 < 23.5 && Data11 != 0.0 and once_flag == true)
         {
             once_flag = false;
-            ROS_WARN("low voltage  %f vol", Data11 / 100);
+            ROS_WARN("low voltage  %f vol", Data11 / 100.0f);
             if (Data11 / 100 < 5)
             {
                 ROS_ERROR("PLEASE OPEN \"POWER SUPPLY\" before CONNECT USB!!!");
-                ROS_ERROR("Restart this program");
             }
         }
     }

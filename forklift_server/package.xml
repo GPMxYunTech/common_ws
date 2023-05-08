@@ -66,6 +66,9 @@
   <build_depend>gpm_msg</build_depend>
   <exec_depend>gpm_msg</exec_depend>
 
+  <build_depend>forklift_msg</build_depend>
+  <exec_depend>forklift_msg</exec_depend>
+
   <!-- The export tag contains other, unspecified, tags -->
   <export>
     <!-- Other tools can request additional information be placed here -->

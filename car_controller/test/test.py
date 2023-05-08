@@ -14,19 +14,20 @@ class TestNode(object):
         self.last_time = rospy.Time.now()
 
     def callback(self, msg):
-        print("x ", msg.pose.pose.position.x, self.last_x)
-        print("y ", msg.pose.pose.position.y, self.last_y)
-        print("time ", (rospy.Time.now() - self.last_time).to_sec())
+        print(self.last_x, ",", self.last_y)
+        # print("x ", msg.pose.pose.position.x, self.last_x)
+        # print("y ", msg.pose.pose.position.y, self.last_y)
+        # print("time ", (rospy.Time.now() - self.last_time).to_sec())
         v = math.sqrt((msg.pose.pose.position.x - self.last_x)**2 + (msg.pose.pose.position.y - self.last_y)**2) / (rospy.Time.now() - self.last_time).to_sec()
         self.last_x = msg.pose.pose.position.x
         self.last_y = msg.pose.pose.position.y
         self.last_time = rospy.Time.now()
-        print("v ", v)
+        # print("v ", v)
 
 if __name__ == '__main__':
     rospy.init_node('test_node')
     node = TestNode()
-    # rospy.spin()
+    rospy.spin()
 
 
     # 驗證angular.z的值是否為設定值

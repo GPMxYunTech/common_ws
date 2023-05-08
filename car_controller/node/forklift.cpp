@@ -25,7 +25,7 @@ private:
     // forklift variable declare
     float wheel_base, wheel_angle, wheel_speed, fork_velocity, theta_bias;
     double timeout;
-    bool use_imu_flag, odom_tf_flag;
+    bool use_imu_flag, odom_tf_flag, init_fork_flag;
     ros::Time last_time, current_time, last_cmdvelcb_time, last_cmdforkcb_time;
     ros::Rate *r;
     int rate;
@@ -52,6 +52,7 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
     priv_nh->param<float>("theta_bias", theta_bias, 0.0);
     priv_nh->param<bool>("use_imu_flag", use_imu_flag, false);
     priv_nh->param<bool>("odom_tf_flag", odom_tf_flag, false);
+    priv_nh->param<bool>("init_fork_flag", init_fork_flag, false);
 
     priv_nh->param<string>("topic_cmd_vel", topic_cmd_vel, "/cmd_vel");
     priv_nh->param<string>("topic_cmd_fork", topic_cmd_fork, "/cmd_fork");
@@ -71,6 +72,18 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
     wheel_angle = wheel_speed = fork_velocity = 0.0f; // :TODO float wheel_speed(0.0)會出現錯誤
     r = new ros::Rate(rate);
     last_time = current_time = last_cmdvelcb_time = last_cmdforkcb_time = ros::Time::now();
+
+    //initialize fork
+    
+    while (ros::ok() && init_fork_flag && stm32->Data14 < 1.0f)
+    {
+        stm32->read_data();
+        stm32->send_data(1, 0, 0, 0, 2500, 0, 0, 0, 0, 0, 0, 0); // 电机(启动/停止)(1/0)，前轮速度 m/s，0，前轮转角 °/s . 起重电机PWM，范围-3600 ~ +3600 （PWM值）
+        r->sleep();
+    }
+    (init_fork_flag) 
+    ? printf("\x1B[0;32m""Forklift fork initialization complete. Forklift is now ready to be activated.\n""\x1B[0m")
+    : printf("\x1B[0;32m""Forklift is already active.\n""\x1B[0m");
 
     // main loop
     while (ros::ok())
