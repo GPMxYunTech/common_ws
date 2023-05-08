@@ -19,9 +19,9 @@ TebLocalPlannerROS:
  max_vel_y:  0.0 
  max_vel_x_backwards: 0.3
  max_vel_theta: 0.5 #0.3
- acc_lim_x: 0.15
+ acc_lim_x: 0.1
  acc_lim_y: 0.0
- acc_lim_theta: 0.15
+ acc_lim_theta: 0.1
  min_turning_radius: 1.75
  wheelbase: 1.75
  footprint_model:  #types: "point", "circular", "two_circles", "line", "polygon"
@@ -58,7 +58,7 @@ TebLocalPlannerROS:
  weight_acc_lim_x: 1
  weight_acc_lim_theta: 1
  weight_kinematics_nh: 1000
- weight_kinematics_forward_drive: 1000
+ weight_kinematics_forward_drive: 1
  weight_kinematics_turning_radius: 1
  weight_optimaltime: 1
  weight_obstacle: 100

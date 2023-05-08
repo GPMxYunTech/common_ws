@@ -9,5 +9,5 @@ def image_callback(msg):
 
 if __name__ == '__main__':
     rospy.init_node('image_subscriber')
-    rospy.Subscriber('/cameraDOWN/color/image_raw', Image, image_callback)
+    rospy.Subscriber('/cameraUP/color/image_raw', Image, image_callback)
     rospy.spin()

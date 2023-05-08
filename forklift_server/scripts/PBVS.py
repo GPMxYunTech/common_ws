@@ -102,8 +102,8 @@ class PBVS():
                 self.Changingtheta_threshod = rospy.get_param(rospy.get_name() + "/forkcamera_Changingtheta_threshold", 0.1)
                 self.decide_distance = rospy.get_param(rospy.get_name() + "/forkcamera_decide_distance", 0.04)
                 self.back_distance = rospy.get_param(rospy.get_name() + "/forkcamera_back_distance", 3.0)
-                self.current_parking_sequence = self.ParkingSequence.Changingtheta.value #test
-                # self.current_parking_sequence = self.ParkingSequence.init_fork.value #for 大車
+                # self.current_parking_sequence = self.ParkingSequence.Changingtheta.value #test
+                self.current_parking_sequence = self.ParkingSequence.init_fork.value #for 大車
                 # self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value // for 小車
                 self.main_loop()
                 return
