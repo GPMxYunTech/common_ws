@@ -60,26 +60,26 @@ class PBVS():
     def init_PBVS_parame(self):
         self.is_sequence_finished = False
         if self.ActionCode==20:
-            self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
+            self.current_parking_sequence = self.ParkingSequence.stop.value
             self.windows()
         elif self.ActionCode==21:
-            self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
+            self.current_parking_sequence = self.ParkingSequence.stop.value
             self.windows()
         elif self.ActionCode==22:
-            self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
+            self.current_parking_sequence = self.ParkingSequence.stop.value
             self.windows()
         elif self.ActionCode==30:
-            self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
+            self.current_parking_sequence = self.ParkingSequence.stop.value
             self.windows()
         else:
             if self.ActionCode==10:
                 if self.ShelfParameter==0:
                     self.mode="parking_forkcamera"
                 else:
-                    self.mode == "parking_bodycamera"
+                    self.mode = "parking_bodycamera"
             else: #[0]:未附值, [other]:給錯值 走舊流程
                 pass
-            
+
             if self.mode == "parking_bodycamera":
                 self.subscriber.updown = True
                 self.subscriber.offset_x = rospy.get_param(rospy.get_name() + "/bodycamera_tag_offset_x", 0.325)
@@ -163,15 +163,19 @@ class PBVS():
         elif self.ActionCode==22:
             pass # TODO Tile function
         elif self.ActionCode==30:
-            pass # TODO Move function
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(1)
+            if self.is_sequence_finished==True:
+                rospy.sleep(1)
+                return True
         else:
             if self.ActionCode==10:
                 if self.ShelfParameter==0:
                     self.mode="parking_forkcamera"
                 else:
-                    self.mode == "parking_bodycamera"
+                    self.mode == "parking_bodycamera",
             else: #[0]:未附值, [other]:給錯值 走舊流程
                 pass
+
             # ============parking============
             if self.current_parking_sequence == self.ParkingSequence.init_fork.value:
                 self.is_sequence_finished = self.Action.fork_updown(self.init_fork)
