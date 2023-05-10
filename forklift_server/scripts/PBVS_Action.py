@@ -178,7 +178,7 @@ class Action():
                 print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
                 # decide doing fnSeqMovingNearbyParkingLot or not
                 desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-                if abs(desired_dist) < 0.25:
+                if abs(desired_dist) < 0.4:
                     return True
             
             if self.initial_marker_pose_theta < 0.0:

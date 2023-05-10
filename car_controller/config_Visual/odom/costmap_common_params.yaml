@@ -16,7 +16,7 @@ obstacle_layer:
   raytrace_range: 3.5
 
   # 控制距離障礙物有多遠，數值越大離障礙物越遠
-  inflation_radius: 0.1
+  inflation_radius: 0.05
 
   combination_method: 1
   # observation_sources: laser_scan_sensor sonar_scan_sensor
@@ -53,10 +53,10 @@ inflation_layer:
   enabled:              true
 
   # 數值越大，膨脹點越寬，使其越靠中間遠離牆壁及障礙物
-  cost_scaling_factor:  10.0 #10.0  
+  cost_scaling_factor:  6.0 #10.0  
 
   # 控制距離障礙物有多遠，數值越大離障礙物越遠
-  inflation_radius:     0.6 #0.25 
+  inflation_radius:     0.5 #0.25 
 
 static_layer:
   enabled:              true

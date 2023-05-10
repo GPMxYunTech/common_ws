@@ -4,8 +4,8 @@
     <param name="start_node" value="LoopPlace" />
     <rosparam param= "graph">
     {
-        "LoopPlace": {"Pick1":1, "LoopPlaceCorrect":4},
-        "LoopPlaceCorrect": {"Place0":16},
+        "LoopPlace": {"Pick1":1, "Place0":16},
+        <!-- "LoopPlaceCorrect": {"Place0":16}, -->
         "Pick1": {"Pick2":2},
         "Pick2": {"Pick3":1},
         "Pick3": {"Pick4":1},
@@ -23,14 +23,14 @@
     </rosparam>
     <rosparam param= "waypoints">
     {
-        "LoopPlace":[5.3, -0.545, 0.000, 1.000],
-        "Pick0":[5.3, -0.545 , 1.000, 0.000],
-        "Pick1":[5.3, -0.545, -0.707, 0.707],
+        "LoopPlace":[5.3, -0.200, 0.000, 1.000],
+        "Pick0":[5.3, -0.200 , 1.000, 0.000],
+        "Pick1":[5.3, -0.200, -0.707, 0.707],
         "Pick2":[5.3, -2.4, -0.707, 0.707],
         "Pick3":[5.3, -2.4, 1.000, 0.000],
         "Pick4":[5.3, -2.4, 0.707, 0.707],
-        "Pick5":[5.3, -0.545, 0.707,0.707],
-        "LoopPlaceCorrect":[9.400, -0.399, 0.000, 1.000],
+        "Pick5":[5.3, -0.200, 0.707,0.707],
+        "LoopPlaceCorrect":[8.000, 0.000, 0.000, 1.000],
         "Place0":[20.0, 0.0, 0.000, 1.000],
         "Place1":[20.0, 0.0, -0.707, 0.707],
         "Place2":[20.0, -2.0, -0.707, 0.707],

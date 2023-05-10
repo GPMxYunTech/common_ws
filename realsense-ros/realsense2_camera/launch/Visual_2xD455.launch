@@ -5,7 +5,7 @@
     <arg name="camera"          value="camera" />
     <arg name="serial_no"       value="215122255946" />
     <arg name="align_depth"     value="true" />
-    <arg name="filters"         value="pointcloud,decimation" />
+    <!-- <arg name="filters"         value="pointcloud,decimation" /> -->
     <arg name="publish_odom_tf" value="false"/>
     <arg name="depth_width"         default="848"/>
     <arg name="depth_height"        default="480"/>
@@ -22,7 +22,7 @@
     <arg name="camera"          value="cameraUP" />
     <arg name="serial_no"       value="215122256371" />
     <arg name="align_depth"     value="true" />
-    <arg name="filters"         value="pointcloud,decimation" />
+    <!-- <arg name="filters"         value="pointcloud,decimation" /> -->
     <arg name="publish_odom_tf" value="false"/>
     <arg name="depth_width"         default="848"/>
     <arg name="depth_height"        default="480"/>
@@ -35,7 +35,7 @@
   </include>
 
 
-  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+  <!-- <include file="$(find realsense2_camera)/launch/rs_camera.launch">
     <arg name="camera"          value="cameraDOWN" />
     <arg name="serial_no"       value="153122076971" />
     <arg name="align_depth"     value="true" />
@@ -49,17 +49,7 @@
     <arg name="enable_color"        default="true"/>
     <arg name="depth_fps"           default="15"/>
     <arg name="color_fps"           default="15"/>
-  </include>
-
-
-  <!-- <include file="$(find realsense2_camera)/launch/rs_camera.launch">
-    <arg name="camera"          value="cameraDOWN" />
-    <arg name="serial_no"       value="153122076971" />
-    <arg name="align_depth"     value="true" />
-    <arg name="filters"         value="pointcloud,decimation" />
-    <arg name="publish_odom_tf" value="false"/>
   </include> -->
-
 
    <!-- sync rgb/depth images per camera -->
    <group ns="camera">
@@ -68,7 +58,7 @@
       <remap from="rgb/image"       to="color/image_raw"/>
       <remap from="depth/image"     to="aligned_depth_to_color/image_raw"/>
       <remap from="rgb/camera_info" to="color/camera_info"/>
-      <param name="approx"          value="true"/>
+      <param name="approx"          value="false"/>
     </node>
    </group>
    <group ns="cameraUP">
@@ -77,7 +67,7 @@
       <remap from="rgb/image"       to="color/image_raw"/>
       <remap from="depth/image"     to="aligned_depth_to_color/image_raw"/>
       <remap from="rgb/camera_info" to="color/camera_info"/>
-      <param name="approx"          value="true"/>
+      <param name="approx"          value="false"/>
     </node>
    </group>
 

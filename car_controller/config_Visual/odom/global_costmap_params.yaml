@@ -14,5 +14,5 @@ GlobalPlanner:
 
 plugins:
      - {name: static_layer,            type: "costmap_2d::StaticLayer"}
-   #   - {name: voxel_layer,             type: "costmap_2d::VoxelLayer"}
-   #   - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
+     - {name: voxel_layer,             type: "costmap_2d::VoxelLayer"}
+     - {name: inflation_layer,         type: "costmap_2d::InflationLayer"}
