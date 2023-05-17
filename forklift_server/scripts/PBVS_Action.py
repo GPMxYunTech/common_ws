@@ -130,15 +130,9 @@ class Action():
         if abs(desired_angle_turn) < threshod  :
             self.cmd_vel.fnStop()
             rospy.sleep(0.1)
-            if self.check_wait_time > 10 :
-                self.check_wait_time = 0
-                return True
-            else:
-                self.check_wait_time =self.check_wait_time  +1
-                return False
+            return True
         else:
             self.TurnByTime(desired_angle_turn, 1.5)
-            self.check_wait_time =0
             return False
         
     def TurnByTime(self, desired_angle_turn, time):
