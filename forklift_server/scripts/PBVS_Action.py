@@ -125,8 +125,8 @@ class Action():
         
     def fnSeqChangingtheta(self, threshod):
         self.SpinOnce()
+        self.marker_2d_theta= self.TrustworthyMarker2DTheta(1)
         desired_angle_turn = -self.marker_2d_theta
-
         if abs(desired_angle_turn) < threshod  :
             self.cmd_vel.fnStop()
             rospy.sleep(0.1)
@@ -137,10 +137,18 @@ class Action():
                 self.check_wait_time =self.check_wait_time  +1
                 return False
         else:
-            self.cmd_vel.fnTurn(desired_angle_turn)
+            self.TurnByTime(desired_angle_turn, 1.5)
             self.check_wait_time =0
             return False
         
+    def TurnByTime(self, desired_angle_turn, time):
+        initial_time = rospy.Time.now().secs
+        while(abs(initial_time - rospy.Time.now().secs) < time):
+            self.cmd_vel.fnTurn(desired_angle_turn)
+            rospy.sleep(0.1)
+        self.cmd_vel.fnStop()
+        
+
     def fnseqturn(self, threshod):#旋轉到後退所需角度
         self.SpinOnce()
         if(self.marker_2d_pose_y > 0):
@@ -360,9 +368,9 @@ class Action():
         while(abs(initial_time - rospy.Time.now().secs) < time):
             self.SpinOnce()
             marker_2d_theta_list.append(self.marker_2d_theta)
-            print("self.marker_2d_theta", self.marker_2d_theta)
+            # print("self.marker_2d_theta", self.marker_2d_theta)
             rospy.sleep(0.05)
-        print("marker_2d_theta_list", marker_2d_theta_list)
+        # print("marker_2d_theta_list", marker_2d_theta_list)
         threshold = 0.5
         mean = statistics.mean(marker_2d_theta_list)
         stdev = statistics.stdev(marker_2d_theta_list)
