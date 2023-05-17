@@ -13,7 +13,7 @@
         ['PBVS', 'raise_pallet']<!--叉起棧板/-->
         ['TopologyMap', 'Place3Before'],<!--導航到Place3Before/-->
         ['PBVS', 'parking_bodycamera'], <!--使用牙叉相機對位貨價/-->
-        ['PBVS', 'drop_pallet'],<!--放下棧板/-->   
+        ['PBVS', 'drop_pallet']<!--放下棧板/-->   
     ]
     </rosparam>
 </node>

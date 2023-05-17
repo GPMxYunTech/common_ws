@@ -125,8 +125,8 @@ class Action():
         
     def fnSeqChangingtheta(self, threshod):
         self.SpinOnce()
-        desired_angle_turn = -self.TrustworthyMarker2DTheta(1)
-
+        self.marker_2d_theta= self.TrustworthyMarker2DTheta(1)
+        desired_angle_turn = -self.marker_2d_theta
         if abs(desired_angle_turn) < threshod  :
             self.cmd_vel.fnStop()
             rospy.sleep(0.1)
