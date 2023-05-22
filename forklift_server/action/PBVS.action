@@ -1,6 +1,6 @@
 #goal definition
 string command
-# ActionCode-->[10]:shelf, [20]:up/down, [21]:forward/backward, [22]:tile, [30]:move
+# ActionCode-->[10]:shelf, [20]:up/down, [21]:forward/backward, [22]:tile, [30]:move [90]:test loadunload
 int64 ActionCode
 int64 ShelfParameter
 float64 UpDownPosition
