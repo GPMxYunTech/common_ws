@@ -4,7 +4,7 @@ import numpy as np
 import math
 from geometry_msgs.msg import Twist
 from enum import Enum
-from forklift_msg.msg import forklift
+from forklift_msg.msg import meteorcar
 import statistics
 class Action():
     def __init__(self, Subscriber):
@@ -14,8 +14,8 @@ class Action():
         self.NearbySequence = Enum('NearbySequence', 'initial_turn go_straight turn_right parking ')
         self.current_nearby_sequence = self.NearbySequence.initial_turn.value
         # fork_cmd
-        self.pub_fork = rospy.Publisher('/cmd_fork', forklift, queue_size = 1)
-        self.fork_msg = forklift()
+        self.pub_fork = rospy.Publisher('/cmd_fork', meteorcar, queue_size = 1)
+        self.fork_msg = meteorcar()
         # Odometry_param
         self.is_odom_received = False
         self.robot_2d_pose_x = 0.0
@@ -32,8 +32,9 @@ class Action():
         self.initial_marker_pose_y = 0.0
         self.initial_marker_pose_theta = 0.0
         # Fork_param
+        self.forwardbackpostion = 0.0
         self.updownposition = 0.0
-        self.fork_threshold = 0.01
+        self.fork_threshold = 0.005
         # other
         self.check_wait_time = 0
         self.is_triggered = False
@@ -44,7 +45,7 @@ class Action():
     
     
     def update_fork(self):
-        self.updownposition = self.Subscriber.SpinOnce_fork()
+        self.forwardbackpostion, self.updownposition = self.Subscriber.SpinOnce_fork()
     
     def fork_updown_finetune(self, desired_updownposition, fork_threshold):
         self.update_fork()
@@ -66,6 +67,9 @@ class Action():
 
 
     def fork_updown(self, desired_updownposition):#0~2.7
+        if(desired_updownposition < 0):
+            return True
+        
         self.update_fork()
         if self.updownposition < desired_updownposition - self.fork_threshold:
             self.fork_msg.fork_velocity = 2000.0
@@ -118,22 +122,24 @@ class Action():
         
     def fnSeqChangingtheta(self, threshod):
         self.SpinOnce()
+        self.marker_2d_theta= self.TrustworthyMarker2DTheta(1)
         desired_angle_turn = -self.marker_2d_theta
-
         if abs(desired_angle_turn) < threshod  :
             self.cmd_vel.fnStop()
             rospy.sleep(0.1)
-            if self.check_wait_time > 10 :
-                self.check_wait_time = 0
-                return True
-            else:
-                self.check_wait_time =self.check_wait_time  +1
-                return False
+            return True
         else:
-            self.cmd_vel.fnTurn(desired_angle_turn)
-            self.check_wait_time =0
+            self.TurnByTime(desired_angle_turn, 1.5)
             return False
         
+    def TurnByTime(self, desired_angle_turn, time):
+        initial_time = rospy.Time.now().secs
+        while(abs(initial_time - rospy.Time.now().secs) < time):
+            self.cmd_vel.fnTurn(desired_angle_turn)
+            rospy.sleep(0.1)
+        self.cmd_vel.fnStop()
+        
+
     def fnseqturn(self, threshod):#旋轉到後退所需角度
         self.SpinOnce()
         if(self.marker_2d_pose_y > 0):
@@ -171,7 +177,7 @@ class Action():
                 print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
                 # decide doing fnSeqMovingNearbyParkingLot or not
                 desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-                if abs(desired_dist) < 0.25:
+                if abs(desired_dist) < 0.15:
                     return True
             
             if self.initial_marker_pose_theta < 0.0:
@@ -353,9 +359,9 @@ class Action():
         while(abs(initial_time - rospy.Time.now().secs) < time):
             self.SpinOnce()
             marker_2d_theta_list.append(self.marker_2d_theta)
-            print("self.marker_2d_theta", self.marker_2d_theta)
+            # print("self.marker_2d_theta", self.marker_2d_theta)
             rospy.sleep(0.05)
-        print("marker_2d_theta_list", marker_2d_theta_list)
+        # print("marker_2d_theta_list", marker_2d_theta_list)
         threshold = 0.5
         mean = statistics.mean(marker_2d_theta_list)
         stdev = statistics.stdev(marker_2d_theta_list)
@@ -458,10 +464,10 @@ class cmd_vel():
 
 
     def fnTrackMarker(self, theta):
-        Kp = 6.2 #6.5
+        Kp = 4.0 #6.5
 
         twist = Twist()
-        twist.linear.x = 0.15
+        twist.linear.x = 0.05
         twist.linear.y = 0
         twist.linear.z = 0
         twist.angular.x = 0

@@ -7,7 +7,7 @@ import tf
 from apriltag_ros.msg import AprilTagDetectionArray
 from nav_msgs.msg import Odometry
 import math
-from forklift_msg.msg import forklift
+from forklift_msg.msg import meteorcar
 
 import sys
 import os
@@ -26,7 +26,7 @@ class Subscriber():
         self.sub_info_marker = rospy.Subscriber(tag_detections_up, AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
         self.sub_info_marker = rospy.Subscriber(tag_detections_down, AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
         self.sub_odom_robot = rospy.Subscriber(odom, Odometry, self.cbGetRobotOdom, queue_size = 1)
-        self.sub_forwardbackpostion = rospy.Subscriber(forkpos, forklift, self.cbGetforkpos, queue_size = 1)
+        self.sub_forwardbackpostion = rospy.Subscriber(forkpos, meteorcar, self.cbGetforkpos, queue_size = 1)
         self.ekf_theta = KalmanFilter()
         self.init_parame()
 
@@ -64,7 +64,7 @@ class Subscriber():
                 marker_msg = msg.detections[0].pose.pose.pose
                 quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
-                theta = self.ekf_theta.update(theta)
+                # theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
                 self.marker_2d_pose_y = marker_msg.position.x + self.offset_x
                 self.marker_2d_theta = -theta
@@ -145,3 +145,4 @@ if __name__ == '__main__':
     rospy.logwarn(rospy.get_name() + 'start')
     server = PBVSAction(rospy.get_name())
     rospy.spin()
+    

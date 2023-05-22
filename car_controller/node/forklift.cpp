@@ -9,7 +9,7 @@
 #include <stm32.h>
 #include <string>
 #include <cmath> //using isinf(), isnan()
-#include <forklift_msg/forklift.h>
+#include <forklift_msg/meteorcar.h>
 #define Sign(A) ((A) >= 0 ? 1 : -1)
 using namespace std;
 
@@ -33,7 +33,7 @@ private:
 
     // function declare
     void CmdVelCB(const geometry_msgs::Twist &msg);
-    void CmdForkCB(const forklift_msg::forklift &msg);
+    void CmdForkCB(const forklift_msg::meteorcar &msg);
     void PublishOdom();
     void PublishImu();
     void PublishForklift();
@@ -64,7 +64,7 @@ SubscribeAndPublish::SubscribeAndPublish(ros::NodeHandle *nh, ros::NodeHandle *p
     // definition publisher & subscriber
     pub_odom = new ros::Publisher(nh->advertise<nav_msgs::Odometry>(topic_odom, 10));
     pub_imu = new ros::Publisher(nh->advertise<sensor_msgs::Imu>(topic_imu, 10));
-    pub_forklift = new ros::Publisher(nh->advertise<forklift_msg::forklift>(topic_forklift_pose, 10));
+    pub_forklift = new ros::Publisher(nh->advertise<forklift_msg::meteorcar>(topic_forklift_pose, 10));
     sub_cmd_vel = new ros::Subscriber(nh->subscribe(topic_cmd_vel, 1, &SubscribeAndPublish::CmdVelCB, this));
     sub_cmd_fork = new ros::Subscriber(nh->subscribe(topic_cmd_fork, 1, &SubscribeAndPublish::CmdForkCB, this));
     
@@ -129,7 +129,7 @@ void SubscribeAndPublish::CmdVelCB(const geometry_msgs::Twist &msg) // 參考cmd
     wheel_angle *= 180 / M_PI;           // 轉換為角度
 };
 
-void SubscribeAndPublish::CmdForkCB(const forklift_msg::forklift &msg)// pwm range -3600 ~ +3600
+void SubscribeAndPublish::CmdForkCB(const forklift_msg::meteorcar &msg)// pwm range -3600 ~ +3600
 {
     last_cmdforkcb_time = current_time;
     fork_velocity = -msg.fork_velocity; //fork_velocity上升為負，下降為正，因為stm32的起重電機PWM是負值上升，正值下降
@@ -229,7 +229,7 @@ void SubscribeAndPublish::PublishImu()
 void SubscribeAndPublish::PublishForklift()
 {
     static float dt;
-    static forklift_msg::forklift forklift_msg;
+    static forklift_msg::meteorcar forklift_msg;
 
     forklift_msg.wheel_velocity = stm32->Data2;
     forklift_msg.wheel_angle = stm32->Data3;

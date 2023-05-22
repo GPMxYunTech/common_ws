@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
   FILES
-  forklift.msg
+  meteorcar.msg
 )
 
 generate_messages(
