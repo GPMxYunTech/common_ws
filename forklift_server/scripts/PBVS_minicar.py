@@ -82,12 +82,16 @@ class PBVS():
 
             elif self.mode == "parking_forkcamera":
                 self.subscriber.updown = False
-                if(self.layer==1):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/forkcamera_parking_fork_layer1", 0.211)
-                elif(self.layer==2):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/forkcamera_parking_fork_layer2", 0.211)
-                else:
-                    return
+                # :HACK: 因為script/ctrl_server.py那邊尚未支援設定層數
+                # if(self.layer==1):
+                #     self.init_fork = rospy.get_param(rospy.get_name() + "/forkcamera_parking_fork_layer1", 0.211)
+                # elif(self.layer==2):
+                #     self.init_fork = rospy.get_param(rospy.get_name() + "/forkcamera_parking_fork_layer2", 0.211)
+                # else:
+                #     return
+                self.init_fork = rospy.get_param(rospy.get_name() + "/forkcamera_parking_fork_layer1", 0.211)
+                # :HACK: 因為ctrl_server.py那邊尚未支援設定層數
+                
                 self.subscriber.offset_x = rospy.get_param(rospy.get_name() + "/forkcamera_tag_offset_x", 0.03)
                 self.ChangingDirection_threshold = rospy.get_param(rospy.get_name() + "/forkcamera_ChangingDirection_threshold", 0.01)
                 self.Parking_distance = rospy.get_param(rospy.get_name() + "/forkcamera_parking_stop", 1.43)
@@ -101,15 +105,18 @@ class PBVS():
 
             elif self.mode == "raise_pallet":
                 self.subscriber.updown = False
-                if(self.layer==1):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init_layer1", 0.211)
-                    self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height_layer1", 0.57)
-                elif(self.layer==2):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init_layer2", 0.211)
-                    self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height_layer2", 0.57)
-                else:
-                    return
-                
+                # :HACK: 因為ctrl_server.py那邊尚未支援設定層數
+                # if(self.layer==1):
+                #     self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init_layer1", 0.211)
+                #     self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height_layer1", 0.57)
+                # elif(self.layer==2):
+                #     self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init_layer2", 0.211)
+                #     self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height_layer2", 0.57)
+                # else:
+                #     return
+                self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init_layer1", 0.211)
+                self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height_layer1", 0.57)
+                # :HACK: 因為ctrl_server.py那邊尚未支援設定層數
                 self.dead_reckoning_dist = rospy.get_param(rospy.get_name() + "/raise_pallet_dead_reckoning_dist", 0.9)
                 self.fork_forward_distance = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_forward_distance", 0.7)
                 
@@ -121,15 +128,19 @@ class PBVS():
 
             elif self.mode == "drop_pallet":
                 self.subscriber.updown = True
-                if(self.layer==1):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_init_layer1", 0.211)
-                    self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height_layer1", 0.67)
-                elif(self.layer==2):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_init_layer2", 0.211)
-                    self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height_layer2", 0.67)
-                else:
-                    return
-                
+                # :HACK: 因為ctrl_server.py那邊尚未支援設定層數
+                # if(self.layer==1):
+                #     self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_init_layer1", 0.211)
+                #     self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height_layer1", 0.67)
+                # elif(self.layer==2):
+                #     self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_init_layer2", 0.211)
+                #     self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height_layer2", 0.67)
+                # else:
+                #     return
+                self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_init_layer2", 0.211)
+                self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height_layer2", 0.67)
+                # :HACK: 這邊要改
+
                 self.dead_reckoning_dist = rospy.get_param(rospy.get_name() + "/drop_pallet_dead_reckoning_dist", -0.85)
                 self.fork_forward_distance = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_forward_distance", 0.7)
                 self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height", 0.67)
