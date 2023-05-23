@@ -1,16 +1,4 @@
 {
-    "files.associations": {
-        "ostream": "cpp",
-        "cmath": "cpp",
-        "iostream": "cpp",
-        "string": "cpp",
-        "array": "cpp",
-        "tuple": "cpp",
-        "utility": "cpp",
-        "random": "cpp",
-        "condition_variable": "cpp",
-        "iomanip": "cpp"
-    },
     "python.autoComplete.extraPaths": [
         "/home/ericlai/common_ws/devel/lib/python3/dist-packages",
         "/home/ericlai/gpm_project/devel/lib/python3/dist-packages",

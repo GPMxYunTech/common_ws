@@ -1,0 +1,12 @@
+<launch>
+<node pkg="forklift_server" type="ctrl_server.py" name="ctrl_server" output="screen">
+    <rosparam param="command">
+    [
+        ['TopologyMap', 'P2'],
+        ['TopologyMap', 'P6'],
+        ['TopologyMap', 'P2'],
+        ['TopologyMap', 'P6']
+    ]
+    </rosparam>
+</node>
+</launch>
