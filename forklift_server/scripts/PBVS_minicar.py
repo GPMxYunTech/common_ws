@@ -143,7 +143,7 @@ class PBVS():
 
                 self.dead_reckoning_dist = rospy.get_param(rospy.get_name() + "/drop_pallet_dead_reckoning_dist", -0.85)
                 self.fork_forward_distance = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_forward_distance", 0.7)
-                self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height", 0.67)
+                
                 self.back_distance = rospy.get_param(rospy.get_name() + "/drop_pallet_back_distance", 1.0)
                 self.navigation_helght = rospy.get_param(rospy.get_name() + "/drop_pallet_navigation_helght", 0.07)
                 self.current_parking_sequence = self.ParkingSequence.down_fork_init.value
