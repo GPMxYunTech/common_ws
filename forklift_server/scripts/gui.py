@@ -5,7 +5,7 @@ import tf
 from apriltag_ros.msg import AprilTagDetectionArray
 from nav_msgs.msg import Odometry
 import math
-from gpm_msg.msg import forkposition
+from forklift_msg.msg import meteorcar
 from ekf import KalmanFilter
 import tkinter as tk
 
@@ -18,7 +18,7 @@ class Subscriber():
         self.sub_info_marker = rospy.Subscriber(tag_detections_up, AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
         self.sub_info_marker = rospy.Subscriber(tag_detections_down, AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
         self.sub_odom_robot = rospy.Subscriber(odom, Odometry, self.cbGetRobotOdom, queue_size = 1)
-        self.sub_forwardbackpostion = rospy.Subscriber(forkpos, forkposition, self.cbGetforkpos, queue_size = 1)
+        self.sub_forwardbackpostion = rospy.Subscriber(forkpos, meteorcar, self.cbGetforkpos, queue_size = 1)
         self.ekf_theta = KalmanFilter()
         self.init_parame()
         self.windows()
@@ -97,8 +97,8 @@ class Subscriber():
         self.robot_2d_theta = self.total_robot_2d_theta
 
     def cbGetforkpos(self, msg):
-        self.forwardbackpostion = msg.forwardbackpostion
-        self.updownposition = msg.updownposition
+        # self.forwardbackpostion = msg.forwardbackpostion
+        self.updownposition = msg.fork_position
 
 
     def windows(self):

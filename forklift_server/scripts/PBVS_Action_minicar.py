@@ -45,7 +45,7 @@ class Action():
     
     
     def update_fork(self):
-        self.forwardbackpostion, self.updownposition = self.Subscriber.SpinOnce_fork()
+        self.updownposition = self.Subscriber.SpinOnce_fork()
     
     def fork_updown_finetune(self, desired_updownposition, fork_threshold):
         self.update_fork()
@@ -76,7 +76,7 @@ class Action():
             self.pub_fork.publish(self.fork_msg)
             return False
         elif self.updownposition > desired_updownposition + self.fork_threshold:
-            self.fork_msg.fork_velocity = 2000.0
+            self.fork_msg.fork_velocity = -2000.0
             self.pub_fork.publish(self.fork_msg)
             return False
         else:
@@ -129,7 +129,7 @@ class Action():
             rospy.sleep(0.1)
             return True
         else:
-            self.TurnByTime(desired_angle_turn, 1.5)
+            self.TurnByTime(desired_angle_turn*2, 1)
             return False
         
     def TurnByTime(self, desired_angle_turn, time):
@@ -174,7 +174,7 @@ class Action():
 
                 self.initial_marker_pose_theta = self.TrustworthyMarker2DTheta(3)
                 self.initial_marker_pose_x = self.marker_2d_pose_x
-                print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
+                # print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
                 # decide doing fnSeqMovingNearbyParkingLot or not
                 desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
                 if abs(desired_dist) < 0.15:
@@ -312,7 +312,6 @@ class Action():
             self.initial_robot_pose_x = self.robot_2d_pose_x
             self.initial_robot_pose_y = self.robot_2d_pose_y
         dist = math.copysign(1, dead_reckoning_dist) * self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
-        # print("dist", dist)
         if math.copysign(1, dead_reckoning_dist) > 0.0:
             if  dead_reckoning_dist - dist < 0.0:
                 self.cmd_vel.fnStop()
@@ -355,7 +354,7 @@ class Action():
     def TrustworthyMarker2DTheta(self, time):
         marker_2d_theta_list = [0.0]
         initial_time = rospy.Time.now().secs
-        print("self.marker_2d_theta_1", self.marker_2d_theta)
+        
         while(abs(initial_time - rospy.Time.now().secs) < time):
             self.SpinOnce()
             marker_2d_theta_list.append(self.marker_2d_theta)
@@ -396,10 +395,10 @@ class cmd_vel():
             twist.linear.x =0.2
         elif twist.linear.x < -0.2:
             twist.linear.x =-0.2                     
-        if twist.angular.z > 0 and twist.angular.z < 0.01:
-            twist.angular.z =0.01
-        elif twist.angular.z < 0 and twist.angular.z > -0.01:
-            twist.angular.z =-0.01
+        if twist.angular.z > 0 and twist.angular.z < 0.05:
+            twist.angular.z =0.05
+        elif twist.angular.z < 0 and twist.angular.z > -0.05:
+            twist.angular.z =-0.05
         self.pub_cmd_vel.publish(twist)
 
     def fnStop(self):

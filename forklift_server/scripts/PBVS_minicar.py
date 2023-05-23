@@ -3,7 +3,7 @@ import rospy
 import forklift_server.msg
 from enum import Enum
 from PBVS_Action_minicar import Action
-from forklift_msg.msg import meteorcar
+# from forklift_msg.msg import meteorcar
 class PBVS():
     ParkingSequence = Enum( 'ParkingSequence', \
                             'init_fork \
@@ -28,8 +28,6 @@ class PBVS():
     
 
     def __init__(self, _as, subscriber, mode):
-        print("PBVS init")
-        print (mode)
         self._as = _as
         self._feedback = forklift_server.msg.PBVSFeedback()
         self._result = forklift_server.msg.PBVSResult()
@@ -97,17 +95,17 @@ class PBVS():
                 self.decide_distance = rospy.get_param(rospy.get_name() + "/forkcamera_decide_distance", 0.04)
                 self.back_distance = rospy.get_param(rospy.get_name() + "/forkcamera_back_distance", 3.0)
                 # self.current_parking_sequence = self.ParkingSequence.Changingtheta.value #test
-                self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value # for 小車
+                self.current_parking_sequence = self.ParkingSequence.init_fork.value # for 小車
                 self.main_loop()
                 return
 
             elif self.mode == "raise_pallet":
                 self.subscriber.updown = False
                 if(self.layer==1):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_layer1", 0.211)
+                    self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init_layer1", 0.211)
                     self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height_layer1", 0.57)
                 elif(self.layer==2):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_layer2", 0.211)
+                    self.init_fork = rospy.get_param(rospy.get_name() + "/raise_pallet_fork_init_layer2", 0.211)
                     self.raise_height = rospy.get_param(rospy.get_name() + "/raise_pallet_raise_height_layer2", 0.57)
                 else:
                     return
@@ -124,10 +122,10 @@ class PBVS():
             elif self.mode == "drop_pallet":
                 self.subscriber.updown = True
                 if(self.layer==1):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_layer1", 0.211)
+                    self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_init_layer1", 0.211)
                     self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height_layer1", 0.67)
                 elif(self.layer==2):
-                    self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_layer2", 0.211)
+                    self.init_fork = rospy.get_param(rospy.get_name() + "/drop_pallet_fork_init_layer2", 0.211)
                     self.drop_height = rospy.get_param(rospy.get_name() + "/drop_pallet_drop_height_layer2", 0.67)
                 else:
                     return
@@ -196,6 +194,7 @@ class PBVS():
             # ============parking============
             if self.current_parking_sequence == self.ParkingSequence.init_fork.value:
                 self.is_sequence_finished = self.Action.fork_updown(self.init_fork)
+                print("self.init_fork", self.init_fork)
                 
                 if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value
@@ -280,7 +279,7 @@ class PBVS():
                     
             elif self.current_parking_sequence == self.ParkingSequence.up_fork_back.value:
                 self.is_sequence_finished = self.Action.fnseqdead_reckoning(self.back_distance)
-                
+
                 if self.is_sequence_finished == True:
                     rospy.sleep(0.05)
                     self.current_parking_sequence = self.ParkingSequence.up_fork_going.value
