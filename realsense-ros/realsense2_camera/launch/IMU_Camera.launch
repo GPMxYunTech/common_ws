@@ -1,5 +1,5 @@
 <launch>
-  <arg name="serial_no"           default="141222072898"/>
+  <arg name="serial_no"           default="215122255946"/>
   <arg name="usb_port_id"         default=""/>
   <arg name="device_type"         default=""/>
   <arg name="json_file_path"      default=""/>
@@ -23,8 +23,8 @@
   <arg name="enable_confidence"   default="true"/>
   <arg name="confidence_fps"      default="-1"/>
 
-  <arg name="infra_width"         default="-1"/>
-  <arg name="infra_height"        default="-1"/>
+  <arg name="infra_width"         default="848"/>
+  <arg name="infra_height"        default="480"/>
   <arg name="enable_infra"        default="false"/>
   <arg name="enable_infra1"       default="false"/>
   <arg name="enable_infra2"       default="false"/>
@@ -32,14 +32,14 @@
 
   <arg name="color_width"         default="-1"/>
   <arg name="color_height"        default="-1"/>
-  <arg name="enable_color"        default="false"/>
+  <arg name="enable_color"        default="true"/>
 
   <arg name="fisheye_fps"         default="-1"/>
   <arg name="depth_fps"           default="-1"/>
-  <arg name="infra_fps"           default="-1"/>
+  <arg name="infra_fps"           default="30"/>
   <arg name="color_fps"           default="-1"/>
   <arg name="gyro_fps"            default="200"/>
-  <arg name="accel_fps"           default="200"/>
+  <arg name="accel_fps"           default="63"/>
   <arg name="enable_gyro"         default="true"/>
   <arg name="enable_accel"        default="true"/>
 
@@ -61,7 +61,7 @@
   <arg name="initial_reset"             default="false"/>
   <arg name="reconnect_timeout"         default="6.0"/>
   <arg name="wait_for_device_timeout"   default="-1.0"/>
-  <arg name="unite_imu_method"          default="copy"/>
+  <arg name="unite_imu_method"          default="linear_interpolation"/>
   <arg name="topic_odom_in"             default="odom_in"/>
   <arg name="calib_odom_file"           default=""/>
   <arg name="publish_odom_tf"           default="true"/>
