@@ -24,11 +24,11 @@ TebLocalPlannerROS:
  max_vel_y:  0.0 
  max_vel_x_backwards: 0.3
  max_vel_theta: 0.5
- acc_lim_x: 0.15
+ acc_lim_x: 0.3
  acc_lim_y: 0.0 ##0.2
- acc_lim_theta: 0.15
- min_turning_radius: 0.3
- wheelbase: 0.3
+ acc_lim_theta: 0.3
+ min_turning_radius: 0.4
+ wheelbase: 0.4
  footprint_model:  #types: "point", "circular", "two_circles", "line", "polygon"
     type: "polygon"
     #radius: 0.20 # for type "circular"
