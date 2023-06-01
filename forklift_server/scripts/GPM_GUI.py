@@ -41,7 +41,7 @@ class ScriptExecutor():
         subprocess.call(['/home/user/shellscript/VisualProject.sh'])
 
     def execute_script_3(self):
-        subprocess.call(['/home/user/shellscript/AntiRolloverMonitoring.sh'])
+        subprocess.call(['/home/user/shellscript/AntiRolloverControl.sh'])
 
     
     def update_window_once(self):
