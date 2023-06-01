@@ -32,7 +32,7 @@ class ScriptExecutor():
         self.test = 0.0
     
     def execute_script_1_1(self):
-        subprocess.call(['/home/ericlai/shellscript/3DLiDARProject.sh'])
+        subprocess.call(['/home/user/shellscript/3DLiDARProject.sh'])
 
     def execute_script_1_2(self):
         subprocess.call(['/home/user/shellscript/3DLiDARProject_Demo.sh'])
