@@ -111,6 +111,7 @@ class SubProject4:
         self.temp = 0
          
         # Set IMU, Controller Subscriber
+        # self.IMUSubscriber = rospy.Subscriber("/camera/imu", Imu, self.imu_callback)
         self.IMUSubscriber = rospy.Subscriber("/cameraUP/imu", Imu, self.imu_callback)
         self.OdometrySubscriber = rospy.Subscriber("/odom", Odometry, self.odometry_callback)
         self.AGVMotionSubscriber = rospy.Subscriber("/agvmotion", agvmotion, self.agvmotion_callback)
