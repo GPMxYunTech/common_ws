@@ -8,7 +8,7 @@
     <param name="forkpos" value="/forkpos" /><!--牙叉編碼器回傳Topic/-->
 
     <!--bodycamera parking setting-->
-    <param name="bodycamera_tag_offset_x" type="double" value = "0.08" /><!--對位目標點與tag的左右偏移量/-->
+    <param name="bodycamera_tag_offset_x" type="double" value = "0.085" /><!--對位目標點與tag的左右偏移量/-->
     <param name="bodycamera_parking_fork_init" type="double" value = "0.54" /><!--車體相機對位初始牙叉高度-->
     <param name="bodycamera_ChangingDirection_threshold" type="double" value = "0.01" />  <!--正對Tag(atan2(y, x) <= threshold)/-->
     <param name="bodycamera_parking_stop" type="double" value = "1.9" />  <!--車體相機對位停止距離/-->
@@ -26,7 +26,7 @@
     <param name="forkcamera_back_distance" type="double" value = "3.5" />  <!--重新對位時後退的距離/-->
 
     <!--Raise the pallet setting/-->
-    <param name="raise_pallet_fork_init" type="double" value = "0.447" /><!--插起棧板的初始牙叉高度/-->
+    <param name="raise_pallet_fork_init" type="double" value = "0.4455" /><!--插起棧板的初始牙叉高度/-->
     <param name="raise_pallet_dead_reckoning_dist" type="double" value = "-0.53" /><!--直線移動到距離Tag多少公尺的地方/-->
     <param name="raise_pallet_fork_forward_distance" type="double" value = "0.695" /><!--牙叉前伸的距離/-->
     <param name="raise_pallet_raise_height" type="double" value = "0.6" /><!--牙叉叉起棧板的高度/-->

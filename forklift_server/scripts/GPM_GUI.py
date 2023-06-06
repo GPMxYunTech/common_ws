@@ -42,7 +42,7 @@ class ScriptExecutor():
     def agvmotion_callback(self,msg):
         self.agv_wheelvelocity = msg.wheelvelocity
         self.agv_wheelangle = msg.wheelangle
-        self.fork_forwardbackwardposition = msg.forwardbackposition
+        self.fork_forwardbackwardposition = msg.forwardbackpostion
         self.fork_updownposition = msg.updownposition  
         
     def cmd_fork_callback(self, msg):
@@ -89,7 +89,7 @@ class ScriptExecutor():
                     text="",
                     font=("Times New Romen", 12))]
             self.labels[key][0].place(x=value[0], y=value[1])
-            self.labels[key][1].place(x=value[0]+250, y=value[1])
+            self.labels[key][1].place(x=value[0]+230, y=value[1])
         while not rospy.is_shutdown():
             self.update_window()
             self.window.update()
@@ -100,14 +100,14 @@ class ScriptExecutor():
 
     def update_window(self):
         update_values = {
-            'Odometry Position X': self.odom_position_x,
-            'Odometry Position Y': self.odom_position_y,
-            'Odometry Orientation W': self.odom_orientation_w,
-            'Odometry Orientation Z': self.odom_orientation_z,
-            'Wheel Velocity': self.agv_wheelvelocity,
-            'Wheel Angle': self.agv_wheelangle,
-            'Fork Horizontal Position': self.fork_forwardbackwardposition,
-            'Fork Vertical Position': self.fork_updownposition
+            'Odometry Position X': "%.3f" % self.odom_position_x,
+            'Odometry Position Y': "%.3f" % self.odom_position_y,
+            'Odometry Orientation W': "%.3f" % self.odom_orientation_w,
+            'Odometry Orientation Z': "%.3f" % self.odom_orientation_z,
+            'Wheel Velocity': "%.3f" % self.agv_wheelvelocity,
+            'Wheel Angle': "%.3f" % self.agv_wheelangle,
+            'Fork Horizontal Position': "%.3f" % self.fork_forwardbackwardposition,
+            'Fork Vertical Position': "%.3f" % self.fork_updownposition
         }
         for key, value in update_values.items():
             self.labels[key][1].configure(text=value)
@@ -169,7 +169,7 @@ class ScriptExecutor():
             text="Status", 
             font=("Times New Romen", 36, "bold"), 
             padx=5, 
-            pady=5, 
+            pady=70, 
             fg="black")
         self.title2.pack()        
         

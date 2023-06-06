@@ -114,6 +114,7 @@ class SubProject4:
         # self.IMUSubscriber = rospy.Subscriber("/camera/imu", Imu, self.imu_callback)
         self.IMUSubscriber = rospy.Subscriber("/cameraUP/imu", Imu, self.imu_callback)
         self.OdometrySubscriber = rospy.Subscriber("/odom", Odometry, self.odometry_callback)
+        # self.OdometrySubscriber = rospy.Subscriber("/rtabmap/odom", Odometry, self.odometry_callback)
         self.AGVMotionSubscriber = rospy.Subscriber("/agvmotion", agvmotion, self.agvmotion_callback)
         
         self.MQTTClient = MQTTClient
@@ -153,7 +154,7 @@ class SubProject4:
         # self.IMUPitchAngle = self.IMUAngularVelocityX * self.deltatime * 180 / math.pi
         # self.IMUYawAngle = self.IMUAngularVelocityY * self.deltatime * 180 / math.pi
         
-        self.IMURollAngle = math.asin(self.IMULinearAccelerationX / 9.705) * 180 / math.pi
+        self.IMURollAngle = (math.asin(self.IMULinearAccelerationX / 9.705) * 180 / math.pi) * -1
         
         if(abs(self.IMULinearAccelerationY / 9.705) > 1):
             self.IMUPitchAngle = 0.0
@@ -320,44 +321,44 @@ class SubProject4:
             self.AGVTime.pop(0)
             self.SteeringAngleData.pop(0)
         
-        plt.clf()
-        plt.suptitle('SubProject4')
+        # plt.clf()
+        # plt.suptitle('SubProject4')
 
-        plt.subplot(4,1,1)
-        plt.title("Roll Angle")
-        plt.plot(self.IMUTime, self.RollAngleData, 'mediumspringgreen')
-        plt.axhline(y=self.RollAngleUpperLimitThreshold, color='r', linestyle='--')
-        plt.axhline(y=self.RollAngleLowerLimitThreshold, color='r', linestyle='--')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Angle (Degree)')
+        # plt.subplot(4,1,1)
+        # plt.title("Roll Angle")
+        # plt.plot(self.IMUTime, self.RollAngleData, 'mediumspringgreen')
+        # plt.axhline(y=self.RollAngleUpperLimitThreshold, color='r', linestyle='--')
+        # plt.axhline(y=self.RollAngleLowerLimitThreshold, color='r', linestyle='--')
+        # plt.xlabel('Time (s)')
+        # plt.ylabel('Angle (Degree)')
         
-        plt.subplot(4,1,2)
-        plt.title("Gravity Center")
-        plt.plot(self.IMUTime, self.GravityCenterData, 'lightsalmon')
-        plt.axhline(y=self.GravityCenterUpperLimitThreshold, color='r', linestyle='--')
-        # plt.axhline(y=self.GravityCenterLowerLimitThreshold, color='r', linestyle='--')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Height (m)')
+        # plt.subplot(4,1,2)
+        # plt.title("Gravity Center")
+        # plt.plot(self.IMUTime, self.GravityCenterData, 'lightsalmon')
+        # plt.axhline(y=self.GravityCenterUpperLimitThreshold, color='r', linestyle='--')
+        # # plt.axhline(y=self.GravityCenterLowerLimitThreshold, color='r', linestyle='--')
+        # plt.xlabel('Time (s)')
+        # plt.ylabel('Height (m)')
 
-        plt.subplot(4,1,3)
-        plt.title("Longitudinal Velocity")
-        plt.plot(self.OdomTime, self.LongitudinalVelocityData, 'deepskyblue')
-        # plt.axhline(y=self.LongitudinalVelocityUpperLimitThreshold, color='r', linestyle='--')
-        # plt.axhline(y=self.LongitudinalVelocityLowerLimitThreshold, color='r', linestyle='--')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Velocity (m/s)')
+        # plt.subplot(4,1,3)
+        # plt.title("Longitudinal Velocity")
+        # plt.plot(self.OdomTime, self.LongitudinalVelocityData, 'deepskyblue')
+        # # plt.axhline(y=self.LongitudinalVelocityUpperLimitThreshold, color='r', linestyle='--')
+        # # plt.axhline(y=self.LongitudinalVelocityLowerLimitThreshold, color='r', linestyle='--')
+        # plt.xlabel('Time (s)')
+        # plt.ylabel('Velocity (m/s)')
 
-        plt.subplot(4,1,4)
-        plt.title("Steering Angle")
-        plt.plot(self.AGVTime, self.SteeringAngleData, 'gray')
-        # plt.axhline(y=self.SteeringAngleUpperLimitThreshold, color='r', linestyle='--')
-        # plt.axhline(y=self.SteeringAngleLowerLimitThreshold, color='r', linestyle='--')
-        plt.xlabel('Time (s)')
-        plt.ylabel('Angle (Degree)')
+        # plt.subplot(4,1,4)
+        # plt.title("Steering Angle")
+        # plt.plot(self.AGVTime, self.SteeringAngleData, 'gray')
+        # # plt.axhline(y=self.SteeringAngleUpperLimitThreshold, color='r', linestyle='--')
+        # # plt.axhline(y=self.SteeringAngleLowerLimitThreshold, color='r', linestyle='--')
+        # plt.xlabel('Time (s)')
+        # plt.ylabel('Angle (Degree)')
 
-        plt.subplots_adjust(hspace=0.6)
-        plt.draw()
-        plt.pause(0.001)        
+        # plt.subplots_adjust(hspace=0.6)
+        # plt.draw()
+        # plt.pause(0.001)        
 
 if __name__ == '__main__':
 
