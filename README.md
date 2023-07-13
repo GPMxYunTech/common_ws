@@ -1,20 +1,20 @@
-# common_ws
+# Common Project Installation
+```
+sudo apt-get install ros-noetic-move-base ros-noetic-global-planner ros-noetic-teb-local-planner ros-noetic-map-server ros-noetic-hector-trajectory-server
 
-安裝所有依賴
-> $ rosdep install --from-paths src --ignore-src -r -y
+mkdir -p ~/common_ws/src 
 
-先編譯 msg 檔案
-> $ catkin_make -DCATKIN_WHITELIST_PACKAGES="ar_track_alvar_msgs"
+cd ~/common_ws/src
 
-還原原本設定
-> $ catkin_make -DCATKIN_WHITELIST_PACKAGES=""
+git clone https://github.com/GPMxYunTech/common_ws.git
 
+cd ..
 
-> $ sudo apt-get install ros-melodic-serial
+rosdep install --from-paths src --ignore-src -r -y
 
+catkin_make
 
-> $ sudo apt-get install ros-melodic-ddynamic-reconfigure
+echo "source ~/common_ws/devel/setup.bash" >> ~/.bashrc
 
-
-install realsense SDk
-https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md
+source ~/.bashrc
+```

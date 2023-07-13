@@ -1,0 +1,15 @@
+<launch>
+  <node name="pointcloud_to_2dmap_node" pkg="pointcloud_to_2dmap" type="pointcloud_to_2dmap_ros" output="screen">
+    <param name="resolution" value="0.1" type="double" />
+    <param name="map_width" value="10240" type="int" />
+    <param name="map_height" value="10240" type="int" />
+    <param name="min_points_in_pix" value="1" type="int" />
+    <param name="max_points_in_pix" value="2" type="int" />
+    <param name="min_height" value="0.5" type="double" />
+    <param name="max_height" value="3.0" type="double" />
+    <param name="dest_directory" value="$(find hdl_graph_slam)/mapfile/"/>
+    <param name="input_pcd" value="$(find hdl_graph_slam)/mapfile/MeteorDemo.pcd"/>
+    <param name="map_name" value="MeteorDemo"/>
+  </node>
+</launch>
+

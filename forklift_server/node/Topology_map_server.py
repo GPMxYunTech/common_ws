@@ -204,6 +204,8 @@ class TopologyMapAction():
                 if (i > 0 and (waypoints[path[i]][0] == waypoints[path[i-1]][0] and waypoints[path[i]][1] == waypoints[path[i-1]][1])):
                     rospy.loginfo('self_spin from %s to %s' %
                                   (path[i-1], path[i]))
+                    self._feedback.feedback = str('self_spin from %s to %s' %(path[i-1], path[i]))
+                    self._as.publish_feedback(self._feedback)
                     # rospy.loginfo('self_spin from %s to %s' % (path[i-1], path[i]))
                     self.Navigation.self_spin(
                         waypoints[path[i]][2], waypoints[path[i]][3])
@@ -211,8 +213,12 @@ class TopologyMapAction():
                     continue
                 else:
                     rospy.loginfo('Navigation to %s' % path[i])
+                    self._feedback.feedback = str('Navigation to %s' % path[i])
+                    self._as.publish_feedback(self._feedback)
                     self.Navigation.move(
                         waypoints[path[i]][0], waypoints[path[i]][1], waypoints[path[i]][2], waypoints[path[i]][3])
+                
+
         elif msg.target_pose != None:
 
             posix = msg.target_pose.position.x
