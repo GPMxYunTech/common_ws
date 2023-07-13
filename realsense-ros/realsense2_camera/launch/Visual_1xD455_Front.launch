@@ -3,7 +3,7 @@
   <!-- Cameras -->
   <include file="$(find realsense2_camera)/launch/rs_camera.launch">
     <arg name="camera"          value="camera" />
-    <arg name="serial_no"       value="215122255946" />
+    <arg name="serial_no"       value="215122253792" />
     <arg name="align_depth"     value="true" />
     <!-- <arg name="filters"         value="pointcloud,decimation" /> -->
     <arg name="publish_odom_tf" value="false"/>
