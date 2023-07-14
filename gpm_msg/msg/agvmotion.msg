@@ -1,4 +1,0 @@
-float64 wheelvelocity
-float64 wheelangle
-float64 updownposition
-float64 forwardbackpostion
