@@ -5,6 +5,8 @@ geometry_msgs/Pose target_pose
 ---
 #result definition
 string result
+int64 returncode
 ---
 #feedback
 string feedback
+geometry_msgs/Pose base_position
