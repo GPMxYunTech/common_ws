@@ -13,6 +13,7 @@ class PBVS():
                            'init_fork \
                             changing_direction_1 \
                             Changingtheta \
+                            Changingtheta_before_park \
                             decide \
                             back_turn \
                             back \
@@ -190,7 +191,7 @@ class PBVS():
         # ActionCode-->[10]:shelf, [20]:up/down, [21]:forward/backward, [22]:tile, [30]:move
         if self.ActionCode == 20:
             self.is_sequence_finished = self.Action.fork_updown(
-                self.UpDownPosition)
+                self.init_fork)
             if self.is_sequence_finished == True:
                 rospy.sleep(1)
                 return True
@@ -223,8 +224,18 @@ class PBVS():
                     self.init_fork)
 
                 if self.is_sequence_finished == True:
+                    self.current_parking_sequence = self.ParkingSequence.Changingtheta_before_park.value
+                    self.is_sequence_finished = False
+
+            # 車體先轉正方便讀tag左右偏差
+            elif self.current_parking_sequence == self.ParkingSequence.Changingtheta_before_park.value:
+                self.is_sequence_finished = self.Action.fnSeqChangingtheta(
+                        0.035)#這邊角度threshold先寫死，角度誤差如果過大距離會歪，調的機率不高
+
+                if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value
                     self.is_sequence_finished = False
+            
             #車體轉到正對tag
             elif self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
                 self.is_sequence_finished = self.Action.fnSeqChangingDirection(

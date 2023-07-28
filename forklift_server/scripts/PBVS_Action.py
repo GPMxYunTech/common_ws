@@ -75,16 +75,22 @@ class Action():
 
     def fork_updown(self, desired_updownposition):#0~2.7
         self.update_fork()
-        if self.updownposition < desired_updownposition - self.fork_threshold:
-            self.pub_fork.publish(self.forkmotion.up.value)
+        # if self.updownposition < desired_updownposition - self.fork_threshold:
+        #     self.pub_fork.publish(self.forkmotion.up.value)
+        #     return False
+        # elif self.updownposition > desired_updownposition + self.fork_threshold:
+        #     self.pub_fork.publish(self.forkmotion.down.value)
+        #     return False
+        if abs(self.updownposition-desired_updownposition)>0.005:
+            _forklift=forklift()
+            _forklift.controlmode=1
+            _forklift.motionaxis=1
+            _forklift.updownposition=desired_updownposition
+            self.pub_fork.publish(_forklift)
             return False
-        elif self.updownposition > desired_updownposition + self.fork_threshold:
-            self.pub_fork.publish(self.forkmotion.down.value)
-            return False
-        else:
-            
-            self.fork_updown_finetune(desired_updownposition, 0.005)
-            self.pub_fork.publish(self.forkmotion.stop.value)
+        else:            
+            # self.fork_updown_finetune(desired_updownposition, 0.005)
+            # self.pub_fork.publish(self.forkmotion.stop.value)
             return True
     
 
@@ -129,6 +135,9 @@ class Action():
         desired_angle_turn = -self.marker_2d_theta
         if abs(desired_angle_turn) < threshod  :
             self.cmd_vel.fnStop()
+            #確定有轉正後更新左右偏差
+            self.initial_marker_pose_y=self.marker_2d_pose_y
+            print(self.initial_marker_pose_y)
             rospy.sleep(0.1)
             return True
         else:
@@ -180,17 +189,21 @@ class Action():
                 self.initial_marker_pose_x = self.marker_2d_pose_x
                 print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
                 # decide doing fnSeqMovingNearbyParkingLot or not
+                
                 #用角度計算左右偏差
-                desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-                if abs(desired_dist) < 0.4:
+                #desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
+
+                # 直接用之前紀錄的左右偏差
+                desired_dist = self.initial_marker_pose_y
+                
+                if abs(desired_dist) < 0.3:
                     return True
             
+            #轉90度
             if self.initial_marker_pose_theta < 0.0:
                 desired_angle_turn = (math.pi / 2.0) + self.initial_marker_pose_theta - (self.robot_2d_theta - self.initial_robot_pose_theta)
             elif self.initial_marker_pose_theta > 0.0:
                 desired_angle_turn = -(math.pi / 2.0) + self.initial_marker_pose_theta - (self.robot_2d_theta - self.initial_robot_pose_theta)
-            
-
             
             desired_angle_turn = -1. * desired_angle_turn
             self.cmd_vel.fnTurn(desired_angle_turn)
@@ -214,6 +227,7 @@ class Action():
             else:
                 self.check_wait_time =0    
 
+        #轉90度後直走
         elif self.current_nearby_sequence == self.NearbySequence.go_straight.value:
             if self.is_triggered == False:
                 self.is_triggered = True
@@ -221,10 +235,16 @@ class Action():
                 self.initial_robot_pose_y = self.robot_2d_pose_y
 
             dist_from_start = self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
-            desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
+            
+            # 用角度計算左右偏差
+            # desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
+
+            # 直接用之前紀錄的左右偏差
+            desired_dist = self.initial_marker_pose_y
+            
             # HACK: self spin error correct
             
-            desired_dist = desired_dist
+            #desired_dist = desired_dist
 
             remained_dist = desired_dist - dist_from_start 
             if remained_dist < 0  :remained_dist =0
