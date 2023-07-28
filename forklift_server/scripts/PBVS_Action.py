@@ -166,6 +166,7 @@ class Action():
             self.check_wait_time =0
             return False
         
+    #決定要不要直角轉彎挪位置
     def fnSeqMovingNearbyParkingLot(self):
         self.SpinOnce()
         if self.current_nearby_sequence == self.NearbySequence.initial_turn.value:
@@ -179,6 +180,7 @@ class Action():
                 self.initial_marker_pose_x = self.marker_2d_pose_x
                 print("initial_marker_pose_theta ", self.initial_marker_pose_theta)
                 # decide doing fnSeqMovingNearbyParkingLot or not
+                #用角度計算左右偏差
                 desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
                 if abs(desired_dist) < 0.4:
                     return True

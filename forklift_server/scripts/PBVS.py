@@ -217,6 +217,7 @@ class PBVS():
                 pass
 
             # ============parking============
+            #枒杈升到tag高度
             if self.current_parking_sequence == self.ParkingSequence.init_fork.value:
                 self.is_sequence_finished = self.Action.fork_updown(
                     self.init_fork)
@@ -224,6 +225,7 @@ class PBVS():
                 if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value
                     self.is_sequence_finished = False
+            #車體轉到正對tag
             elif self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
                 self.is_sequence_finished = self.Action.fnSeqChangingDirection(
                     self.ChangingDirection_threshold)
@@ -232,12 +234,14 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.moving_nearby_parking_lot.value
                     self.is_sequence_finished = False
 
+            #決定要不要直角轉彎挪位置
             elif self.current_parking_sequence == self.ParkingSequence.moving_nearby_parking_lot.value:
                 self.is_sequence_finished = self.Action.fnSeqMovingNearbyParkingLot()
                 if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.parking.value
                     self.is_sequence_finished = False
 
+            #對位
             elif self.current_parking_sequence == self.ParkingSequence.parking.value:
                 self.is_sequence_finished = self.Action.fnSeqParking(
                     self.Parking_distance)
@@ -246,6 +250,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.Changingtheta.value
                     self.is_sequence_finished = False
 
+            #車體角度調正
             elif self.current_parking_sequence == self.ParkingSequence.Changingtheta.value:
                 self.is_sequence_finished = self.Action.fnSeqChangingtheta(
                     self.Changingtheta_threshod)
@@ -254,6 +259,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.decide.value
                     self.is_sequence_finished = False
 
+            #決定要不要重新對位
             elif self.current_parking_sequence == self.ParkingSequence.decide.value:
                 self.is_sequence_finished = self.Action.fnSeqdecide(
                     self.decide_distance)
@@ -274,6 +280,7 @@ class PBVS():
             #         self.current_parking_sequence = self.ParkingSequence.back.value
             #         self.is_sequence_finished = False
 
+            #倒車
             elif self.current_parking_sequence == self.ParkingSequence.back.value:
                 self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(
                     self.back_distance)
