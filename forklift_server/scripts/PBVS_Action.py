@@ -196,7 +196,7 @@ class Action():
                 # 直接用之前紀錄的左右偏差
                 desired_dist = self.initial_marker_pose_y
                 
-                if abs(desired_dist) < 0.2:
+                if abs(desired_dist) < 0.3:
                     return True
             
             #轉90度
@@ -240,7 +240,7 @@ class Action():
             # desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
 
             # 直接用之前紀錄的左右偏差
-            desired_dist = abs(self.initial_marker_pose_y)
+            desired_dist = self.initial_marker_pose_y
             
             # HACK: self spin error correct
             
