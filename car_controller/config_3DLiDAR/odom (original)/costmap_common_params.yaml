@@ -9,11 +9,13 @@ map_type: costmap
 
 obstacle_layer:
   enabled: true
-  max_obstacle_height: 5.0 #max_obstacle_height必須比機器人還高
+  max_obstacle_height: 5.0
+#max_obstacle_height必須比機器人還高
+
   min_obstacle_height: 0.05
-  obstacle_range: 10.0 # 更新以機器人為中心,按此數值為半徑的障礙物訊息?
-  raytrace_range: 15.0 # 更新以機器人為中心,按此數值為半徑的自由空間?
-  inflation_radius: 0.2 # 設置代價地圖膨脹半徑,可以理解為以機器人為中心膨脹半徑微此數值內不能有障礙物出現
+  obstacle_range: 3.0
+  raytrace_range: 3.5
+  inflation_radius: 0.1
   combination_method: 1
   observation_sources: scan
   track_unknown_space: true
@@ -26,6 +28,7 @@ obstacle_layer:
   publish_voxel_map: false
   footprint_clearing_enabled: true
 
+
   scan:
     data_type: LaserScan
     topic: /scan
@@ -33,18 +36,30 @@ obstacle_layer:
     clearing: true
     expected_update_rate: 0
     min_obstacle_height: 0.20
-    max_obstacle_height: 2.7
+    max_obstacle_height: 2.0
 
+  # 3dlidar_sensor:
+  #   data_type: PointCloud2
+  #   topic: /velodyne_points
+  #   marking: true
+  #   clearing: true
+  #   min_obstacle_height: 0.05
+  #   max_obstacle_height: 3.0
+  #   observation_persistence: 0.0
 
 inflation_layer:
   enabled:              true
   cost_scaling_factor:  10.0  #10.0
-  inflation_radius:     1.5  #0.25
+  inflation_radius:     0.7  #0.25
 
 static_layer:
   enabled:              true
   map_topic:            "/map"
 
-
-
+#sonar_layer:
+#  enabled:            true
+#  clear_threshold:    0.6
+#  mark_threshold:     0.8
+#  topics: ["/sonar0", "/sonar1", "/sonar2", "/sonar3"]
+#  clear_on_max_reading: true
 
