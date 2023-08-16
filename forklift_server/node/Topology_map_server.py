@@ -12,6 +12,9 @@ import tf2_ros
 import heapq
 import math
 from threading import Thread
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
+import copy
+import time
 
 
 class TopologyMap():
@@ -84,13 +87,17 @@ class Navigation():
         self.sub_odom_robot = rospy.Subscriber(
             odom, Odometry, self.cbGetRobotOdom, queue_size=1)
         self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-        self.upperas = None
         self.init_param()
 
     def init_param(self):
         self.trigger = True
         self.pre_odom = 0.0
         self.odom_pass = 0.0
+        self.manual_fucntion_cancel = False
+
+    def cancel_handler(self):
+        self.client.cancel_all_goals()
+        self.manual_fucntion_cancel = True
 
     def feedbackEventDef(self, handler):
         self.feedbackeventhandler = handler
@@ -99,8 +106,7 @@ class Navigation():
         rospy.loginfo("move_base is processing the goal")
 
     def feedback_cb(self, feedback):
-        rospy.loginfo("move_base feedback:%s" % feedback)
-        # self.upperas.publish_feedback(feedback)
+        # rospy.loginfo("move_base feedback:%s" % feedback)
         if self.feedbackeventhandler != None:
             self.feedbackeventhandler(feedback)
 
@@ -109,8 +115,6 @@ class Navigation():
             str(state), str(result)))
 
     def move(self, x, y, z, w, _as=None):
-        if _as != None:
-            self.upperas = _as
         b = self.client.wait_for_server(rospy.Duration(5))
         if b:
             goal = MoveBaseGoal()
@@ -127,18 +131,13 @@ class Navigation():
             wait = self.client.wait_for_result()
             result = self.client.get_result()
             state = self.client.get_state()
-            if state == 3:
-                return 0
-            elif state == 9:
-                return 3
-            else:
-                return 2
+            return state
         else:
             rospy.loginfo("[move] move_base connnect fail")
-            return 1
+            return -1
 
     def cbGetRobotOdom(self, msg):
-        self.rz, self.rw = msg.pose.pose.orientation.z, msg.pose.pose.orientation.w
+        self.position_x, self.position_y, self.rz, self.rw = msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w
         yaw_r = math.atan2(2 * self.rw * self.rz, self.rw *
                            self.rw - self.rz * self.rz)
         if (yaw_r < 0):
@@ -199,6 +198,64 @@ class Navigation():
         self.cmd_pub.publish(Twist())
         self.trigger = True
 
+    def odom_move(self, movems):
+        return -1
+
+    def odom_spin(self, spinrad):
+        temp = euler_from_quaternion([0, 0, self.rz, self.rw])[2]
+        startrad = copy.copy(temp)
+
+        twist = Twist()
+        diff = 999
+        while abs(diff) >= 0.001 and not self.manual_fucntion_cancel:
+            curtrad = euler_from_quaternion([0, 0, self.rz, self.rw])[2]
+
+            if startrad > 0 and curtrad > 0 or startrad < 0 and curtrad < 0:
+                spined = curtrad-startrad
+            elif spinrad < 0:
+                if startrad > 0 and curtrad < 0:
+                    spined = curtrad-startrad
+                else:
+                    spined = (curtrad-startrad)-2*math.pi
+            else:
+                if startrad > 0 and curtrad < 0:
+                    spined = (curtrad-startrad)+2*math.pi
+                else:
+                    spined = (curtrad-startrad)
+
+            diff = spinrad-spined
+            print("spin diff %f" % diff)
+            if diff > 0.758:  # 45
+                twist.angular.z = 0.5
+            elif diff > 0.1:
+                twist.angular.z = 0.3
+            elif diff > 0.001:
+                twist.angular.z = 0.05
+            elif diff < -0.785:
+                twist.angular.z = -0.5
+            elif diff < -0.1:
+                twist.angular.z = -0.3
+            elif diff < -0.001:
+                twist.angular.z = -0.05
+            else:
+                break
+            self.cmd_pub.publish(twist)
+            time.sleep(0.005)
+        
+        twist = Twist()
+        twist.linear.x = 0
+        twist.angular.z = 0
+        for i in range(10):
+            self.cmd_pub.publish(twist)
+        
+        if self.manual_fucntion_cancel:
+            self.manual_fucntion_cancel = False
+            return 4 # CANCEL
+        else:
+            return 3 # SUCCESS     
+
+        
+
 
 class TopologyMapAction():
     _result = forklift_server.msg.TopologyMapResult()
@@ -213,6 +270,8 @@ class TopologyMapAction():
         self._as = actionlib.SimpleActionServer(
             self._action_name, forklift_server.msg.TopologyMapAction, execute_cb=self.execute_cb, auto_start=False)
         self._as.start()
+        self._as.register_preempt_callback(self.preempt_callback)
+        self._as_preempted = False
 
     def init_param(self):
         global waypoints
@@ -222,6 +281,10 @@ class TopologyMapAction():
         waypoints = rospy.get_param(rospy.get_name() + "/waypoints")
         graph = rospy.get_param(rospy.get_name() + "/graph")
         self.lastpoint = None
+
+    def preempt_callback(self):
+        self._as_preempted = True
+        self.Navigation.cancel_handler()
 
     def pub_move_base_feedback(self, feedback):
         self._feedback.base_position = feedback.base_position.pose
@@ -268,19 +331,21 @@ class TopologyMapAction():
                     self.Navigation.move(
                         waypoints[path[i]][0], waypoints[path[i]][1], waypoints[path[i]][2], waypoints[path[i]][3])
 
-        elif msg.target_pose != None:
+        elif msg.target_pose != None and msg.target_pose.position.x != 0 and msg.target_pose.position.y != 0:
 
             posix = msg.target_pose.position.x
             posity = msg.target_pose.position.y
             orienz = msg.target_pose.orientation.z
             orienw = msg.target_pose.orientation.w
 
-            if self.lastpoint != None and (self.lastpoint.position.x == posix and self.lastpoint.position.y == posity and
-                                           self.lastpoint.orientation.z != orienz and self.lastpoint.orientation.w != orienw):
-                self.Navigation.self_spin(orienz, orienw)
-            else:
-                naviret = self.Navigation.move(
-                    posix, posity, orienz, orienw, self._as)
+            # if self.lastpoint != None and (self.lastpoint.position.x == posix and self.lastpoint.position.y == posity and
+            #                                self.lastpoint.orientation.z != orienz and self.lastpoint.orientation.w != orienw):
+            #     self.Navigation.self_spin(orienz, orienw)
+            # else:
+            #     naviret = self.Navigation.move(
+            #         posix, posity, orienz, orienw, self._as)
+            naviret = self.Navigation.move(
+                posix, posity, orienz, orienw, self._as)
 
             if self.lastpoint == None:
                 self.lastpoint = Pose()
@@ -288,17 +353,32 @@ class TopologyMapAction():
             self.lastpoint.position.y = posity
             self.lastpoint.orientation.z = orienz
             self.lastpoint.orientation.w = orienw
+        elif msg.odom_move_ms != 0:
+            print("odom_move")
+            naviret = self.Navigation.odom_move(msg.odom_move_ms)
+        elif msg.odom_spin_rad != 0:
+            print("odom_spin")
+            # spin_degree = msg.odom_spin
+            spin_rad = msg.odom_spin_rad
+            # q = quaternion_from_euler(0, 0, spin_rad)
+            naviret = self.Navigation.odom_spin(spin_rad)
 
-        if naviret == 0:
+        if naviret == 3:  # SUCCEEDED
             rospy.logwarn('[TopologyMap_server] reach goal')
-            self._result.result = 'success'
+            self._result.result = 'SUCCEEDED'
             self._result.returncode = naviret
             self._as.set_succeeded(self._result)
-
         else:
             rospy.logwarn('[TopologyMap_server] not!not! reach goal')
-            self._result.result = 'fail'
             self._result.returncode = naviret
+            if naviret == -1:
+                self._result.result = 'move_base connnect fail'
+            elif naviret == 2:
+                self._result.result = 'PREEMPTED'
+            elif naviret == 4:
+                self._result.result = 'ABORTED'
+            else:
+                self._result.result = 'undefined'
             self._as.set_aborted(self._result)
 
 
