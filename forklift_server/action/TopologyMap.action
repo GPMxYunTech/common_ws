@@ -2,6 +2,8 @@
 string goal
 string target_name
 geometry_msgs/Pose target_pose
+float64 odom_move_ms
+float64 odom_spin_rad
 ---
 #result definition
 string result

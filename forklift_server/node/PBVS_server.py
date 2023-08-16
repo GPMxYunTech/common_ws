@@ -19,7 +19,7 @@ from ekf import KalmanFilter
 
 class Subscriber():
     def __init__(self):
-        odom = rospy.get_param(rospy.get_name() + "/odom", "/odom")
+        odom = rospy.get_param(rospy.get_name() + "/wheel_odom", "/odom")
         tag_detections_up = rospy.get_param(rospy.get_name() + "/tag_detections_up", "/tag_detections_up")
         tag_detections_down = rospy.get_param(rospy.get_name() + "/tag_detections_down", "/tag_detections_down")
         forkpos = rospy.get_param(rospy.get_name() + "/forkpos", "/forkpos")

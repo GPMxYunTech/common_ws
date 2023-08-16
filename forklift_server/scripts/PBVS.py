@@ -191,7 +191,7 @@ class PBVS():
         # ActionCode-->[10]:shelf, [20]:up/down, [21]:forward/backward, [22]:tile, [30]:move
         if self.ActionCode == 20:
             self.is_sequence_finished = self.Action.fork_updown(
-                self.init_fork)
+                self.UpDownPosition)
             if self.is_sequence_finished == True:
                 rospy.sleep(1)
                 return True
@@ -204,7 +204,7 @@ class PBVS():
         elif self.ActionCode == 22:
             pass  # TODO Tile function
         elif self.ActionCode == 30:
-            self.is_sequence_finished = self.Action.fnseqdead_reckoning(1)
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(self.MovePosition)
             if self.is_sequence_finished == True:
                 rospy.sleep(1)
                 return True
