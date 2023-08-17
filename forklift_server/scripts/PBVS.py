@@ -59,6 +59,7 @@ class PBVS():
         self.init_PBVS_parame()
 
     def init_PBVS_parame(self):
+        self.manual_fucntion_cancel = False
         self.is_sequence_finished = False
         if self.ActionCode == 20:
             self.current_parking_sequence = self.ParkingSequence.up_fork_init.value
@@ -204,7 +205,8 @@ class PBVS():
         elif self.ActionCode == 22:
             pass  # TODO Tile function
         elif self.ActionCode == 30:
-            self.is_sequence_finished = self.Action.fnseqdead_reckoning(self.MovePosition)
+            self.is_sequence_finished = self.Action.fnseqdead_reckoning(
+                self.MovePosition)
             if self.is_sequence_finished == True:
                 rospy.sleep(1)
                 return True
@@ -218,7 +220,7 @@ class PBVS():
                 pass
 
             # ============parking============
-            #枒杈升到tag高度
+            # 枒杈升到tag高度
             if self.current_parking_sequence == self.ParkingSequence.init_fork.value:
                 self.is_sequence_finished = self.Action.fork_updown(
                     self.init_fork)
@@ -230,13 +232,13 @@ class PBVS():
             # 車體先轉正方便讀tag左右偏差
             elif self.current_parking_sequence == self.ParkingSequence.Changingtheta_before_park.value:
                 self.is_sequence_finished = self.Action.fnSeqChangingtheta(
-                        0.035)#這邊角度threshold先寫死，角度誤差如果過大距離會歪，調的機率不高
+                    0.035)  # 這邊角度threshold先寫死，角度誤差如果過大距離會歪，調的機率不高
 
                 if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value
                     self.is_sequence_finished = False
-            
-            #車體轉到正對tag
+
+            # 車體轉到正對tag
             elif self.current_parking_sequence == self.ParkingSequence.changing_direction_1.value:
                 self.is_sequence_finished = self.Action.fnSeqChangingDirection(
                     self.ChangingDirection_threshold)
@@ -245,14 +247,14 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.moving_nearby_parking_lot.value
                     self.is_sequence_finished = False
 
-            #決定要不要直角轉彎挪位置
+            # 決定要不要直角轉彎挪位置
             elif self.current_parking_sequence == self.ParkingSequence.moving_nearby_parking_lot.value:
                 self.is_sequence_finished = self.Action.fnSeqMovingNearbyParkingLot()
                 if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.parking.value
                     self.is_sequence_finished = False
 
-            #對位
+            # 對位
             elif self.current_parking_sequence == self.ParkingSequence.parking.value:
                 self.is_sequence_finished = self.Action.fnSeqParking(
                     self.Parking_distance)
@@ -261,7 +263,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.Changingtheta.value
                     self.is_sequence_finished = False
 
-            #車體角度調正
+            # 車體角度調正
             elif self.current_parking_sequence == self.ParkingSequence.Changingtheta.value:
                 self.is_sequence_finished = self.Action.fnSeqChangingtheta(
                     self.Changingtheta_threshod)
@@ -270,7 +272,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.decide.value
                     self.is_sequence_finished = False
 
-            #決定要不要重新對位
+            # 決定要不要重新對位
             elif self.current_parking_sequence == self.ParkingSequence.decide.value:
                 self.is_sequence_finished = self.Action.fnSeqdecide(
                     self.decide_distance)
@@ -291,7 +293,7 @@ class PBVS():
             #         self.current_parking_sequence = self.ParkingSequence.back.value
             #         self.is_sequence_finished = False
 
-            #倒車
+            # 倒車
             elif self.current_parking_sequence == self.ParkingSequence.back.value:
                 self.is_sequence_finished = self.Action.fnseqmove_to_marker_dist(
                     self.back_distance)

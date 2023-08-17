@@ -130,6 +130,11 @@ class PBVSAction():
         self._as = actionlib.SimpleActionServer(self._action_name, forklift_server.msg.PBVSAction, execute_cb=self.execute_cb, auto_start = False)
         self._result = forklift_server.msg.PBVSResult()
         self._as.start()
+        self._as.register_preempt_callback(self.preempt_callback)
+    
+    def preempt_callback(self):
+        self._as_preempted = True
+        self.Navigation.cancel_handler()
 
     def execute_cb(self, msg):
         rospy.loginfo('PBVS receive command : %s' % (msg))

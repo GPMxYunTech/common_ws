@@ -241,20 +241,18 @@ class Navigation():
                 break
             self.cmd_pub.publish(twist)
             time.sleep(0.005)
-        
+
         twist = Twist()
         twist.linear.x = 0
         twist.angular.z = 0
         for i in range(10):
             self.cmd_pub.publish(twist)
-        
+
         if self.manual_fucntion_cancel:
             self.manual_fucntion_cancel = False
-            return 4 # CANCEL
+            return 4  # CANCEL
         else:
-            return 3 # SUCCESS     
-
-        
+            return 3  # SUCCESS
 
 
 class TopologyMapAction():
@@ -303,7 +301,8 @@ class TopologyMapAction():
             str(state), str(result)))
 
     def execute_cb(self, msg):
-        rospy.loginfo('TopologyMap receive command : %s' % (msg))
+        # rospy.loginfo('TopologyMap receive command : %s' % (msg))
+        rospy.loginfo('TopologyMap receive command')
         if msg.goal != "" or (msg.target_name != "" and msg.target_pose == None):
             if msg.goal != "":
                 path = self.TopologyMap.path(msg.goal)
@@ -354,10 +353,10 @@ class TopologyMapAction():
             self.lastpoint.orientation.z = orienz
             self.lastpoint.orientation.w = orienw
         elif msg.odom_move_ms != 0:
-            print("odom_move")
+            # print("odom_move")
             naviret = self.Navigation.odom_move(msg.odom_move_ms)
         elif msg.odom_spin_rad != 0:
-            print("odom_spin")
+            # print("odom_spin")
             # spin_degree = msg.odom_spin
             spin_rad = msg.odom_spin_rad
             # q = quaternion_from_euler(0, 0, spin_rad)
