@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import rospy
 import actionlib
 import forklift_server.msg
@@ -11,22 +12,28 @@ from gpm_msg.msg import forkposition
 
 import sys
 import os
-script_dir = os.path.dirname( __file__ )
-mymodule_dir = os.path.join( script_dir, '..', 'scripts' )
-sys.path.append( mymodule_dir )
-from PBVS import PBVS
+script_dir = os.path.dirname(__file__)
+mymodule_dir = os.path.join(script_dir, '..', 'scripts')
+sys.path.append(mymodule_dir)
 from ekf import KalmanFilter
+from PBVS import PBVS
 
 class Subscriber():
     def __init__(self):
         odom = rospy.get_param(rospy.get_name() + "/wheel_odom", "/odom")
-        tag_detections_up = rospy.get_param(rospy.get_name() + "/tag_detections_up", "/tag_detections_up")
-        tag_detections_down = rospy.get_param(rospy.get_name() + "/tag_detections_down", "/tag_detections_down")
+        tag_detections_up = rospy.get_param(
+            rospy.get_name() + "/tag_detections_up", "/tag_detections_up")
+        tag_detections_down = rospy.get_param(
+            rospy.get_name() + "/tag_detections_down", "/tag_detections_down")
         forkpos = rospy.get_param(rospy.get_name() + "/forkpos", "/forkpos")
-        self.sub_info_marker = rospy.Subscriber(tag_detections_up, AprilTagDetectionArray, self.cbGetMarker_up, queue_size = 1)
-        self.sub_info_marker = rospy.Subscriber(tag_detections_down, AprilTagDetectionArray, self.cbGetMarker_down, queue_size = 1)
-        self.sub_odom_robot = rospy.Subscriber(odom, Odometry, self.cbGetRobotOdom, queue_size = 1)
-        self.sub_forwardbackpostion = rospy.Subscriber(forkpos, forkposition, self.cbGetforkpos, queue_size = 1)
+        self.sub_info_marker = rospy.Subscriber(
+            tag_detections_up, AprilTagDetectionArray, self.cbGetMarker_up, queue_size=1)
+        self.sub_info_marker = rospy.Subscriber(
+            tag_detections_down, AprilTagDetectionArray, self.cbGetMarker_down, queue_size=1)
+        self.sub_odom_robot = rospy.Subscriber(
+            odom, Odometry, self.cbGetRobotOdom, queue_size=1)
+        self.sub_forwardbackpostion = rospy.Subscriber(
+            forkpos, forkposition, self.cbGetforkpos, queue_size=1)
         self.ekf_theta = KalmanFilter()
         self.init_parame()
 
@@ -47,14 +54,16 @@ class Subscriber():
         # Forklift_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
-        #ekf
-        self.ekf_theta.init(1,1,5)
+        # ekf
+        self.ekf_theta.init(1, 1, 5)
+
     def __del__(self):
         self.window.destroy()
 
     def SpinOnce(self):
         return self.robot_2d_pose_x, self.robot_2d_pose_y, self.robot_2d_theta, \
-               self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta
+            self.marker_2d_pose_x, self.marker_2d_pose_y, self.marker_2d_theta
+
     def SpinOnce_fork(self):
         return self.forwardbackpostion, self.updownposition
 
@@ -63,7 +72,8 @@ class Subscriber():
             if self.updown == True:
                 # print("up tag")
                 marker_msg = msg.detections[0].pose.pose.pose
-                quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
+                quaternion = (marker_msg.orientation.x, marker_msg.orientation.y,
+                              marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
                 theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
@@ -79,7 +89,8 @@ class Subscriber():
             if self.updown == False:
                 # print("down tag")
                 marker_msg = msg.detections[0].pose.pose.pose
-                quaternion = (marker_msg.orientation.x, marker_msg.orientation.y, marker_msg.orientation.z, marker_msg.orientation.w)
+                quaternion = (marker_msg.orientation.x, marker_msg.orientation.y,
+                              marker_msg.orientation.z, marker_msg.orientation.w)
                 theta = tf.transformations.euler_from_quaternion(quaternion)[1]
                 theta = self.ekf_theta.update(theta)
                 self.marker_2d_pose_x = -marker_msg.position.z
@@ -93,9 +104,10 @@ class Subscriber():
 
     def cbGetRobotOdom(self, msg):
         if self.is_odom_received == False:
-            self.is_odom_received = True 
+            self.is_odom_received = True
 
-        quaternion = (msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w)
+        quaternion = (msg.pose.pose.orientation.x, msg.pose.pose.orientation.y,
+                      msg.pose.pose.orientation.z, msg.pose.pose.orientation.w)
         theta = tf.transformations.euler_from_quaternion(quaternion)[2]
         if theta < 0:
             theta = theta + math.pi * 2
@@ -107,9 +119,11 @@ class Subscriber():
         self.robot_2d_theta = theta
 
         if (self.robot_2d_theta - self.previous_robot_2d_theta) > 5.:
-            d_theta = (self.robot_2d_theta - self.previous_robot_2d_theta) - 2 * math.pi
+            d_theta = (self.robot_2d_theta -
+                       self.previous_robot_2d_theta) - 2 * math.pi
         elif (self.robot_2d_theta - self.previous_robot_2d_theta) < -5.:
-            d_theta = (self.robot_2d_theta - self.previous_robot_2d_theta) + 2 * math.pi
+            d_theta = (self.robot_2d_theta -
+                       self.previous_robot_2d_theta) + 2 * math.pi
         else:
             d_theta = (self.robot_2d_theta - self.previous_robot_2d_theta)
 
@@ -122,29 +136,36 @@ class Subscriber():
         self.forwardbackpostion = msg.forwardbackpostion
         self.updownposition = msg.updownposition
 
- 
+
 class PBVSAction():
     def __init__(self, name):
         self.subscriber = Subscriber()
         self._action_name = name
-        self._as = actionlib.SimpleActionServer(self._action_name, forklift_server.msg.PBVSAction, execute_cb=self.execute_cb, auto_start = False)
+        self._as = actionlib.SimpleActionServer(
+            self._action_name, forklift_server.msg.PBVSAction, execute_cb=self.execute_cb, auto_start=False)
         self._result = forklift_server.msg.PBVSResult()
+        self.iscanceled = False
         self._as.start()
         self._as.register_preempt_callback(self.preempt_callback)
-    
+
     def preempt_callback(self):
-        self._as_preempted = True
-        self.Navigation.cancel_handler()
+        self.iscanceled = True
+        # self.PBVS.cancel_handler()
 
     def execute_cb(self, msg):
         rospy.loginfo('PBVS receive command : %s' % (msg))
-        
+
         self.PBVS = PBVS(self._as, self.subscriber, msg)
         rospy.logwarn('PBVS Succeeded')
         self._result.result = 'PBVS Succeeded'
         self.subscriber.updown = True
-        self._as.set_succeeded(self._result)
+        if self.iscanceled:
+            self._as.set_aborted(self._result)
+            self.iscanceled=False
+        else:
+            self._as.set_succeeded(self._result)
         self.PBVS = None
+
 
 
 if __name__ == '__main__':

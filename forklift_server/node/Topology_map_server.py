@@ -207,7 +207,7 @@ class Navigation():
 
         twist = Twist()
         diff = 999
-        while abs(diff) >= 0.001 and not self.manual_fucntion_cancel:
+        while abs(diff) >= 0.01 and not self.manual_fucntion_cancel:
             curtrad = euler_from_quaternion([0, 0, self.rz, self.rw])[2]
 
             if startrad > 0 and curtrad > 0 or startrad < 0 and curtrad < 0:
@@ -225,20 +225,31 @@ class Navigation():
 
             diff = spinrad-spined
             print("spin diff %f" % diff)
-            if diff > 0.758:  # 45
+            if abs(diff) > 1.57:  # 90度
                 twist.angular.z = 0.5
-            elif diff > 0.1:
-                twist.angular.z = 0.3
-            elif diff > 0.001:
-                twist.angular.z = 0.05
-            elif diff < -0.785:
-                twist.angular.z = -0.5
-            elif diff < -0.1:
-                twist.angular.z = -0.3
-            elif diff < -0.001:
-                twist.angular.z = -0.05
-            else:
+            elif abs(diff) > 0.01:  # 誤差
+                twist.angular.z = abs(diff)*(0.3-0.035)/1.57+0.035
+            else:  # 小於等於誤差 停止
                 break
+
+            if diff < 0:
+                twist.angular.z = twist.angular.z*-1
+
+            # 參考計算
+            # if diff > 0.758:  # 45
+            #     twist.angular.z = 0.5
+            # elif diff > 0.1:
+            #     twist.angular.z = 0.3
+            # elif diff > 0.001:
+            #     twist.angular.z = 0.05
+            # elif diff < -0.785:
+            #     twist.angular.z = -0.5
+            # elif diff < -0.1:
+            #     twist.angular.z = -0.3
+            # elif diff < -0.001:
+            #     twist.angular.z = -0.05
+            # else:
+            #     break
             self.cmd_pub.publish(twist)
             time.sleep(0.005)
 

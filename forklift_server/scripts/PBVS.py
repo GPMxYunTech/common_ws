@@ -177,6 +177,9 @@ class PBVS():
             if (self.PBVS()):
                 break
             r.sleep()
+    
+    def cancel_handler(self):
+        self.functin_stop=False
 
     def __del__(self):
         rospy.logwarn('delet PBVS')
@@ -185,6 +188,7 @@ class PBVS():
         if self._as.is_preempt_requested():
             rospy.logwarn('PBVS Preempted')
             self.current_parking_sequence = self.ParkingSequence.stop.value
+            return True
 
         self._feedback.feedback = str(
             self.ParkingSequence(self.current_parking_sequence))
