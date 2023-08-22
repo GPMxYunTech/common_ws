@@ -217,7 +217,7 @@ class Action():
                     # 直接用之前紀錄的左右偏差
                     desired_dist = self.initial_marker_pose_y
                 
-                if abs(desired_dist) < 0.2:
+                if abs(desired_dist) < 0.15:
                     return True
 
             if self.initial_marker_pose_theta < 0.0:
@@ -445,10 +445,10 @@ class cmd_vel():
             twist.angular.z = 0.2
         elif twist.angular.z < -0.2:
             twist.angular.z = -0.2
-        if twist.linear.x > 0 and twist.linear.x < 0.02:
-            twist.linear.x = 0.05
-        elif twist.linear.x < 0 and twist.linear.x > -0.02:
-            twist.linear.x = -0.05
+        if twist.linear.x > 0 and twist.linear.x < 0.04:
+            twist.linear.x = 0.04
+        elif twist.linear.x < 0 and twist.linear.x > -0.04:
+            twist.linear.x = -0.04
 
         if twist.linear.x > 0.2:
             twist.linear.x = 0.2
