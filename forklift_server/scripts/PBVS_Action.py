@@ -156,6 +156,9 @@ class Action():
         desired_angle_turn = -self.marker_2d_theta
         if abs(desired_angle_turn) < threshod:
             self.cmd_vel.fnStop()
+            #確定有轉正後更新左右偏差
+            self.initial_marker_pose_y=self.marker_2d_pose_y
+            print(self.initial_marker_pose_y)
             rospy.sleep(0.1)
             return True
         else:
@@ -192,6 +195,7 @@ class Action():
             self.check_wait_time = 0
             return False
 
+    #決定要不要直角轉彎挪位置
     def fnSeqMovingNearbyParkingLot(self):
         self.SpinOnce()
         if self.current_nearby_sequence == self.NearbySequence.initial_turn.value:
@@ -207,19 +211,17 @@ class Action():
                 print("initial_marker_pose_theta ",
                       self.initial_marker_pose_theta)
                 # decide doing fnSeqMovingNearbyParkingLot or not
-                desired_dist = -1 * self.initial_marker_pose_x * \
-                    abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-                if abs(desired_dist) < 0.4:
                 
-                    #用角度計算左右偏差
-                    #desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
+                #用角度計算左右偏差
+                #desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
 
-                    # 直接用之前紀錄的左右偏差
-                    desired_dist = self.initial_marker_pose_y
+                # 直接用之前紀錄的左右偏差
+                desired_dist = self.initial_marker_pose_y
                 
                 if abs(desired_dist) < 0.15:
                     return True
 
+            #轉90度
             if self.initial_marker_pose_theta < 0.0:
                 desired_angle_turn = (math.pi / 2.0) + self.initial_marker_pose_theta - (
                     self.robot_2d_theta - self.initial_robot_pose_theta)
@@ -249,6 +251,7 @@ class Action():
             else:
                 self.check_wait_time = 0
 
+        #轉90度後直走
         elif self.current_nearby_sequence == self.NearbySequence.go_straight.value:
             if self.is_triggered == False:
                 self.is_triggered = True
