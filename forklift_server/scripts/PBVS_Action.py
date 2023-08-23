@@ -207,15 +207,14 @@ class Action():
                 print("initial_marker_pose_theta ",
                       self.initial_marker_pose_theta)
                 # decide doing fnSeqMovingNearbyParkingLot or not
-                desired_dist = -1 * self.initial_marker_pose_x * \
-                    abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-                if abs(desired_dist) < 0.4:
+                #desired_dist = -1 * self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
+                #if abs(desired_dist) < 0.4:
                 
                     #用角度計算左右偏差
                     #desired_dist = -1* self.initial_marker_pose_x * abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
 
-                    # 直接用之前紀錄的左右偏差
-                    desired_dist = self.initial_marker_pose_y
+                # 直接用之前紀錄的左右偏差
+                desired_dist = self.initial_marker_pose_y
                 
                 if abs(desired_dist) < 0.15:
                     return True
