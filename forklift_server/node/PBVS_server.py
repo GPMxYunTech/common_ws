@@ -118,10 +118,10 @@ class Subscriber():
         self.robot_2d_pose_y = msg.pose.pose.position.y
         self.robot_2d_theta = theta
 
-        if (self.robot_2d_theta - self.previous_robot_2d_theta) > 5.:
+        if (self.robot_2d_theta - self.previous_robot_2d_theta) >= 2 * math.pi:
             d_theta = (self.robot_2d_theta -
                        self.previous_robot_2d_theta) - 2 * math.pi
-        elif (self.robot_2d_theta - self.previous_robot_2d_theta) < -5.:
+        elif (self.robot_2d_theta - self.previous_robot_2d_theta) <= -2 * math.pi:
             d_theta = (self.robot_2d_theta -
                        self.previous_robot_2d_theta) + 2 * math.pi
         else:
