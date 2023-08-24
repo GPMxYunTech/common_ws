@@ -258,12 +258,6 @@ class Action():
                 self.initial_robot_pose_x = self.robot_2d_pose_x
                 self.initial_robot_pose_y = self.robot_2d_pose_y
 
-
-            dist_from_start = self.fnCalcDistPoints(
-                self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
-            desired_dist = -1 * self.initial_marker_pose_x * \
-                abs(math.cos((math.pi / 2.) - self.initial_marker_pose_theta))
-
             dist_from_start = self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
             
             # 用角度計算左右偏差
