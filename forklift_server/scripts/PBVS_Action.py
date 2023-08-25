@@ -160,14 +160,15 @@ class Action():
 
         self.SpinOnce()
         self.marker_2d_theta_list.append(self.marker_2d_theta)
+        print("start angle")
 
         #累計超過20筆後才開始處理
         if(len(self.marker_2d_theta_list)>20):
             #幹掉最舊的一筆
             del self.marker_2d_theta_list[0]
 
-            #濾除超過1.5倍4分位數的資料
-            n = 1.5
+            #濾除超過1倍4分位數的資料
+            n = 1
             # IQR = Q3-Q1
             IQR = np.percentile(self.marker_2d_theta_list, 75) - np.percentile(self.marker_2d_theta_list, 25)
             print(IQR)
@@ -182,10 +183,12 @@ class Action():
                 average_theta = statistics.mean(transform_list[-5:])
             else:
                 average_theta = statistics.mean(transform_list)
-            desired_angle_turn = -average_theta
+            desired_angle_turn = - average_theta
+            print("average_theta")
+            print(average_theta)
 
             #根據角度動車
-            if abs(desired_angle_turn) < threshod+0.3:
+            if abs(desired_angle_turn) < threshod:
                 self.cmd_vel.fnStop()
 
                 #等1秒讓車徹底停下來
@@ -194,15 +197,17 @@ class Action():
                 #確定有轉正後更新左右偏差
                 self.SpinOnce()
                 self.initial_marker_pose_y = self.marker_2d_pose_y
-                #print(self.initial_marker_pose_y)
+                print("initial_marker_pose_y")
+                print(self.initial_marker_pose_y)
                 self.is_triggered = False
 
                 return True
             else:
                 self.cmd_vel.fnTurn(desired_angle_turn)
-                rospy.sleep(0.05)
+                rospy.sleep(0.1)
                 return False
         else:
+            rospy.sleep(0.05)
             return False
 
         # # old_version

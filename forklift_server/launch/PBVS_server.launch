@@ -12,7 +12,7 @@
     <param name="bodycamera_parking_fork_init" type="double" value = "0.54" /><!--車體相機對位初始牙叉高度-->
     <param name="bodycamera_ChangingDirection_threshold" type="double" value = "0.01" />  <!--正對Tag(atan2(y, x) <= threshold)/-->
     <param name="bodycamera_parking_stop" type="double" value = "1.9" />  <!--車體相機對位停止距離/-->
-    <param name="bodycamera_Changingtheta_threshold" type="double" value = "0.035" />  <!--平行Tag(theta <= threshold)/-->
+    <param name="bodycamera_Changingtheta_threshold" type="double" value = "0.02" />  <!--平行Tag(theta <= threshold)/-->
     <param name="bodycamera_decide_distance" type="double" value = "0.031" />  <!--將相機平行Tag之後，左右y距離誤差幾公尺內可以將牙叉插進去，如果不行的話就後退重新對位/-->
     <param name="bodycamera_back_distance" type="double" value = "2.5" />  <!--重新對位時後退的距離/-->
 
@@ -21,7 +21,7 @@
     <param name="forkcamera_parking_fork_init" type="double" value = "0.211" /><!--牙叉相機對位初始牙叉高度, 為了將牙叉相機與棧板高度一致/-->
     <param name="forkcamera_ChangingDirection_threshold" type="double" value = "0.01" />  <!--正對Tag(atan2(y, x) <= threshold) threshold/-->
     <param name="forkcamera_parking_stop" type="double" value = "1.43" /><!--牙叉相機對位停止距離/-->
-    <param name="forkcamera_Changingtheta_threshold" type="double" value = "0.035" />  <!--平行Tag(theta <= threshold)/-->
+    <param name="forkcamera_Changingtheta_threshold" type="double" value = "0.02" />  <!--平行Tag(theta <= threshold)/-->
     <param name="forkcamera_decide_distance" type="double" value = "0.026"/>  <!--將相機平行Tag之後，左右y距離誤差幾公尺內可以將牙叉插進去，如果不行的話就後退重新對位/-->
     <param name="forkcamera_back_distance" type="double" value = "1.7" />  <!--重新對位時後退的距離/-->
 
