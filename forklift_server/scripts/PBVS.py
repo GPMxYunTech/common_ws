@@ -236,7 +236,7 @@ class PBVS():
             # 車體先轉正方便讀tag左右偏差
             elif self.current_parking_sequence == self.ParkingSequence.Changingtheta_before_park.value:
                 self.is_sequence_finished = self.Action.fnSeqChangingtheta(
-                    0.035)  # 這邊角度threshold先寫死，角度誤差如果過大距離會歪，調的機率不高
+                    0.02)  # 這邊角度threshold先寫死，角度誤差如果過大距離會歪，調的機率不高
 
                 if self.is_sequence_finished == True:
                     self.current_parking_sequence = self.ParkingSequence.changing_direction_1.value

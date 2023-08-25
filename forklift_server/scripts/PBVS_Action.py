@@ -294,7 +294,7 @@ class Action():
             if abs(desired_angle_turn) < 0.03:
                 self.cmd_vel.fnStop()
                 if self.check_wait_time > 10:
-                    self.check_wait_time = 0
+                    self.check_wait_time = 1
                     self.current_nearby_sequence = self.NearbySequence.go_straight.value
                     self.is_triggered = False
                 else:
@@ -302,7 +302,7 @@ class Action():
             elif abs(desired_angle_turn) < 0.045 and self.check_wait_time:
                 self.cmd_vel.fnStop()
                 if self.check_wait_time > 10:
-                    self.check_wait_time = 0
+                    self.check_wait_time = 1
                     self.current_nearby_sequence = self.NearbySequence.go_straight.value
                     self.is_triggered = False
                 else:
