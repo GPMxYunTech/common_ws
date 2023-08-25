@@ -41,6 +41,7 @@ class Action():
         self.initial_marker_pose_x = 0.0
         self.initial_marker_pose_y = 0.0
         self.initial_marker_pose_theta = 0.0
+        self.marker_2d_theta_list = [0.0]
         # Fork_param
         self.forwardbackpostion = 0.0
         self.updownposition = 0.0
@@ -151,19 +152,73 @@ class Action():
             return False
 
     def fnSeqChangingtheta(self, threshod):
+        #new_version
+        #每次使用前先清掉之前的資料
+        if self.is_triggered == False:
+            self.is_triggered = True
+            self.marker_2d_theta_list.clear()
+
         self.SpinOnce()
-        self.marker_2d_theta = self.TrustworthyMarker2DTheta(1)
-        desired_angle_turn = -self.marker_2d_theta
-        if abs(desired_angle_turn) < threshod:
-            self.cmd_vel.fnStop()
-            #確定有轉正後更新左右偏差
-            self.initial_marker_pose_y=self.marker_2d_pose_y
-            print(self.initial_marker_pose_y)
-            rospy.sleep(0.1)
-            return True
+        self.marker_2d_theta_list.append(self.marker_2d_theta)
+
+        #累計超過20筆後才開始處理
+        if(len(self.marker_2d_theta_list)>20):
+            #幹掉最舊的一筆
+            del self.marker_2d_theta_list[0]
+
+            #濾除超過1.5倍4分位數的資料
+            n = 1.5
+            # IQR = Q3-Q1
+            IQR = np.percentile(self.marker_2d_theta_list, 75) - np.percentile(self.marker_2d_theta_list, 25)
+            print(IQR)
+            # outlier = Q3 + n*IQR
+            transform_list = np.array(self.marker_2d_theta_list)[self.marker_2d_theta_list < np.percentile(self.marker_2d_theta_list, 75) + n * IQR]
+            # outlier = Q1 - n*IQR
+            transform_list = np.array(transform_list)[transform_list > np.percentile(transform_list, 25) - n * IQR]
+
+            #最多只取最後5筆的平均值當角度
+            average_theta = 0
+            if(len(transform_list)>5):
+                average_theta = statistics.mean(transform_list[-5:])
+            else:
+                average_theta = statistics.mean(transform_list)
+            desired_angle_turn = -average_theta
+
+            #根據角度動車
+            if abs(desired_angle_turn) < threshod+0.3:
+                self.cmd_vel.fnStop()
+
+                #等1秒讓車徹底停下來
+                rospy.sleep(1.0)
+
+                #確定有轉正後更新左右偏差
+                self.SpinOnce()
+                self.initial_marker_pose_y = self.marker_2d_pose_y
+                #print(self.initial_marker_pose_y)
+                self.is_triggered = False
+
+                return True
+            else:
+                self.cmd_vel.fnTurn(desired_angle_turn)
+                rospy.sleep(0.05)
+                return False
         else:
-            self.TurnByTime(desired_angle_turn, 1.5)
             return False
+
+        # # old_version
+        # self.SpinOnce()
+        # self.marker_2d_theta = self.TrustworthyMarker2DTheta(1)
+        # desired_angle_turn = -self.marker_2d_theta
+        # if abs(desired_angle_turn) < threshod:
+        #     self.cmd_vel.fnStop()
+        #     #確定有轉正後更新左右偏差
+        #     self.initial_marker_pose_y=self.marker_2d_pose_y
+        #     print(self.initial_marker_pose_y)
+        #     rospy.sleep(0.1)
+        #     return True
+        # else:
+        #     self.TurnByTime(desired_angle_turn, 1.5)
+        #     return False
 
     def TurnByTime(self, desired_angle_turn, time):
         initial_time = rospy.Time.now().secs
@@ -205,8 +260,7 @@ class Action():
                 self.initial_robot_pose_x = self.robot_2d_pose_x
                 self.initial_robot_pose_y = self.robot_2d_pose_y
 
-                self.initial_marker_pose_theta = self.TrustworthyMarker2DTheta(
-                    3)
+                self.initial_marker_pose_theta = self.TrustworthyMarker2DTheta(3)
                 self.initial_marker_pose_x = self.marker_2d_pose_x
                 print("initial_marker_pose_theta ",
                       self.initial_marker_pose_theta)
@@ -407,22 +461,22 @@ class Action():
         return math.sqrt((x1 - x2) ** 2. + (y1 - y2) ** 2.)
 
     def TrustworthyMarker2DTheta(self, time):
-        marker_2d_theta_list = [0.0]
+        marker_2d_theta_list_observe = [0.0]
         initial_time = rospy.Time.now().secs
         print("self.marker_2d_theta_1", self.marker_2d_theta)
         while (abs(initial_time - rospy.Time.now().secs) < time):
             self.SpinOnce()
-            marker_2d_theta_list.append(self.marker_2d_theta)
+            marker_2d_theta_list_observe.append(self.marker_2d_theta)
             # print("self.marker_2d_theta", self.marker_2d_theta)
             rospy.sleep(0.05)
-        # print("marker_2d_theta_list", marker_2d_theta_list)
+        # print("marker_2d_theta_list_observe", marker_2d_theta_list_observe)
         threshold = 0.5
-        mean = statistics.mean(marker_2d_theta_list)
-        stdev = statistics.stdev(marker_2d_theta_list)
+        mean = statistics.mean(marker_2d_theta_list_observe)
+        stdev = statistics.stdev(marker_2d_theta_list_observe)
         upcutoff = mean + threshold * stdev
         downcutoff = mean - threshold * stdev
         clean_list = []
-        for i in marker_2d_theta_list:
+        for i in marker_2d_theta_list_observe:
             if (i > downcutoff and i < upcutoff):
                 clean_list.append(i)
 
