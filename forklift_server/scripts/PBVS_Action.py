@@ -210,21 +210,6 @@ class Action():
             rospy.sleep(0.05)
             return False
 
-        # # old_version
-        # self.SpinOnce()
-        # self.marker_2d_theta = self.TrustworthyMarker2DTheta(1)
-        # desired_angle_turn = -self.marker_2d_theta
-        # if abs(desired_angle_turn) < threshod:
-        #     self.cmd_vel.fnStop()
-        #     #確定有轉正後更新左右偏差
-        #     self.initial_marker_pose_y=self.marker_2d_pose_y
-        #     print(self.initial_marker_pose_y)
-        #     rospy.sleep(0.1)
-        #     return True
-        # else:
-        #     self.TurnByTime(desired_angle_turn, 1.5)
-        #     return False
-
     def TurnByTime(self, desired_angle_turn, time):
         initial_time = rospy.Time.now().secs
         while (abs(initial_time - rospy.Time.now().secs) < time):
