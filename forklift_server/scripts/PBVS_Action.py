@@ -273,27 +273,51 @@ class Action():
                 desired_angle_turn = -(math.pi / 2.0) + self.initial_marker_pose_theta - (
                     self.robot_2d_theta - self.initial_robot_pose_theta)
 
+            #new version
             desired_angle_turn = -1. * desired_angle_turn
-            self.cmd_vel.fnTurn(desired_angle_turn)
+            #角度夠小直接下一動
+            if abs(desired_angle_turn) <= 0.02:
+                self.cmd_vel.fnStop()
+                #切換到直走流程
+                self.current_nearby_sequence = self.NearbySequence.go_straight.value
+                self.is_triggered = False
+            #角度不夠小但轉得有點久也下一動
+            elif 0.2 < abs(desired_angle_turn) < 0.04:
 
-            if abs(desired_angle_turn) < 0.03:
-                self.cmd_vel.fnStop()
-                if self.check_wait_time > 10:
-                    self.check_wait_time = 1
+                if self.check_wait_time>20:
+                    self.cmd_vel.fnStop()
+                    # 切換到直走流程
                     self.current_nearby_sequence = self.NearbySequence.go_straight.value
                     self.is_triggered = False
                 else:
-                    self.check_wait_time = self.check_wait_time + 1
-            elif abs(desired_angle_turn) < 0.045 and self.check_wait_time:
-                self.cmd_vel.fnStop()
-                if self.check_wait_time > 10:
-                    self.check_wait_time = 1
-                    self.current_nearby_sequence = self.NearbySequence.go_straight.value
-                    self.is_triggered = False
-                else:
-                    self.check_wait_time = self.check_wait_time + 1
+                    self.cmd_vel.fnTurn(desired_angle_turn)
+                    self.check_wait_time += 1
             else:
-                self.check_wait_time = 0
+                self.cmd_vel.fnTurn(desired_angle_turn)
+                self.check_wait_time=0
+
+            # #old versiom
+            # desired_angle_turn = -1. * desired_angle_turn
+            # self.cmd_vel.fnTurn(desired_angle_turn)
+            #
+            # if abs(desired_angle_turn) < 0.03:
+            #     self.cmd_vel.fnStop()
+            #     if self.check_wait_time > 10:
+            #         self.check_wait_time = 1
+            #         self.current_nearby_sequence = self.NearbySequence.go_straight.value
+            #         self.is_triggered = False
+            #     else:
+            #         self.check_wait_time = self.check_wait_time + 1
+            # elif abs(desired_angle_turn) < 0.045 and self.check_wait_time:
+            #     self.cmd_vel.fnStop()
+            #     if self.check_wait_time > 10:
+            #         self.check_wait_time = 1
+            #         self.current_nearby_sequence = self.NearbySequence.go_straight.value
+            #         self.is_triggered = False
+            #     else:
+            #         self.check_wait_time = self.check_wait_time + 1
+            # else:
+            #     self.check_wait_time = 0
 
         #轉90度後直走
         elif self.current_nearby_sequence == self.NearbySequence.go_straight.value:
