@@ -291,9 +291,11 @@ class Action():
                     self.is_triggered = False
                 else:
                     self.cmd_vel.fnTurn(desired_angle_turn)
+                    rospy.sleep(0.05)
                     self.check_wait_time += 1
             else:
                 self.cmd_vel.fnTurn(desired_angle_turn)
+                rospy.sleep(0.05)
                 self.check_wait_time=0
 
             # #old versiom
@@ -325,6 +327,8 @@ class Action():
                 self.is_triggered = True
                 self.initial_robot_pose_x = self.robot_2d_pose_x
                 self.initial_robot_pose_y = self.robot_2d_pose_y
+                #加個sleep避免車子甩尾
+                rospy.sleep(0.2)
 
             dist_from_start = self.fnCalcDistPoints(self.initial_robot_pose_x, self.robot_2d_pose_x, self.initial_robot_pose_y, self.robot_2d_pose_y)
             
@@ -350,10 +354,13 @@ class Action():
                 self.current_nearby_sequence = self.NearbySequence.turn_right.value
                 self.is_triggered = False
 
+        #轉回來
         elif self.current_nearby_sequence == self.NearbySequence.turn_right.value:
             if self.is_triggered == False:
                 self.is_triggered = True
                 self.initial_robot_pose_theta = self.robot_2d_theta
+                # 加個sleep避免車子甩尾
+                rospy.sleep(0.2)
 
             if self.initial_marker_pose_theta < 0.0:
                 desired_angle_turn = (
@@ -363,27 +370,54 @@ class Action():
                     (math.pi / 2.0) + (self.robot_2d_theta -
                                        self.initial_robot_pose_theta)
 
-            self.cmd_vel.fnTurn(desired_angle_turn)
-            if abs(desired_angle_turn) < 0.03:
+            # new version
+            # 角度夠小直接下一動
+            if abs(desired_angle_turn) <= 0.02:
                 self.cmd_vel.fnStop()
+                # 結束流程
+                self.current_nearby_sequence = self.NearbySequence.parking.value
+                self.is_triggered = False
+                return True
+            # 角度不夠小但轉得有點久也下一動
+            elif 0.2 < abs(desired_angle_turn) < 0.04:
+
                 if self.check_wait_time > 20:
-                    self.check_wait_time = 0
+                    self.cmd_vel.fnStop()
+                    # 結束流程
                     self.current_nearby_sequence = self.NearbySequence.parking.value
                     self.is_triggered = False
                     return True
                 else:
-                    self.check_wait_time = self.check_wait_time + 1
-            elif abs(desired_angle_turn) < 0.045 and self.check_wait_time:
-                self.cmd_vel.fnStop()
-                if self.check_wait_time > 20:
-                    self.check_wait_time = 0
-                    self.current_nearby_sequence = self.NearbySequence.parking.value
-                    self.is_triggered = False
-                    return True
-                else:
-                    self.check_wait_time = self.check_wait_time + 1
+                    self.cmd_vel.fnTurn(desired_angle_turn)
+                    rospy.sleep(0.05)
+                    self.check_wait_time += 1
             else:
+                self.cmd_vel.fnTurn(desired_angle_turn)
+                rospy.sleep(0.05)
                 self.check_wait_time = 0
+
+            # # old versiom
+            # self.cmd_vel.fnTurn(desired_angle_turn)
+            # if abs(desired_angle_turn) < 0.03:
+            #     self.cmd_vel.fnStop()
+            #     if self.check_wait_time > 20:
+            #         self.check_wait_time = 0
+            #         self.current_nearby_sequence = self.NearbySequence.parking.value
+            #         self.is_triggered = False
+            #         return True
+            #     else:
+            #         self.check_wait_time = self.check_wait_time + 1
+            # elif abs(desired_angle_turn) < 0.045 and self.check_wait_time:
+            #     self.cmd_vel.fnStop()
+            #     if self.check_wait_time > 20:
+            #         self.check_wait_time = 0
+            #         self.current_nearby_sequence = self.NearbySequence.parking.value
+            #         self.is_triggered = False
+            #         return True
+            #     else:
+            #         self.check_wait_time = self.check_wait_time + 1
+            # else:
+            #     self.check_wait_time = 0
         return False
 
     def fnSeqParking(self, parking_dist):
