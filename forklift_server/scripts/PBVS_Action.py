@@ -267,35 +267,37 @@ class Action():
 
             #轉90度
             if self.initial_marker_pose_theta < 0.0:
-                desired_angle_turn = (math.pi / 2.0) + self.initial_marker_pose_theta - (
+                desired_angle_turn = (math.pi / 2.0) + self.initial_marker_pose_theta - abs(
                     self.robot_2d_theta - self.initial_robot_pose_theta)
             elif self.initial_marker_pose_theta > 0.0:
-                desired_angle_turn = -(math.pi / 2.0) + self.initial_marker_pose_theta - (
+                desired_angle_turn = -(math.pi / 2.0) + self.initial_marker_pose_theta + abs(
                     self.robot_2d_theta - self.initial_robot_pose_theta)
 
             #new version
             desired_angle_turn = -1. * desired_angle_turn
             #角度夠小直接下一動
-            if abs(desired_angle_turn) <= 0.02:
+            if abs(desired_angle_turn) <= 0.06:
                 self.cmd_vel.fnStop()
                 #切換到直走流程
                 self.current_nearby_sequence = self.NearbySequence.go_straight.value
                 self.is_triggered = False
             #角度不夠小但轉得有點久也下一動
-            elif 0.2 < abs(desired_angle_turn) < 0.04:
+            elif 0.06 < abs(desired_angle_turn) < 0.08:
 
-                if self.check_wait_time>20:
+                if self.check_wait_time>15:
                     self.cmd_vel.fnStop()
                     # 切換到直走流程
                     self.current_nearby_sequence = self.NearbySequence.go_straight.value
                     self.is_triggered = False
                 else:
                     self.cmd_vel.fnTurn(desired_angle_turn)
-                    rospy.sleep(0.05)
+                    rospy.sleep(0.01)
+                    print(desired_angle_turn)
                     self.check_wait_time += 1
             else:
                 self.cmd_vel.fnTurn(desired_angle_turn)
-                rospy.sleep(0.05)
+                rospy.sleep(0.01)
+                print(desired_angle_turn)
                 self.check_wait_time=0
 
             # #old versiom
@@ -357,6 +359,7 @@ class Action():
         #轉回來
         elif self.current_nearby_sequence == self.NearbySequence.turn_right.value:
             if self.is_triggered == False:
+                self.SpinOnce()
                 self.is_triggered = True
                 self.initial_robot_pose_theta = self.robot_2d_theta
                 # 加個sleep避免車子甩尾
@@ -364,24 +367,24 @@ class Action():
 
             if self.initial_marker_pose_theta < 0.0:
                 desired_angle_turn = (
-                    math.pi / 2.0) + (self.robot_2d_theta - self.initial_robot_pose_theta)
+                    math.pi / 2.0) - abs(self.robot_2d_theta - self.initial_robot_pose_theta)
             elif self.initial_marker_pose_theta > 0.0:
                 desired_angle_turn = - \
-                    (math.pi / 2.0) + (self.robot_2d_theta -
+                    (math.pi / 2.0) + abs(self.robot_2d_theta -
                                        self.initial_robot_pose_theta)
 
             # new version
             # 角度夠小直接下一動
-            if abs(desired_angle_turn) <= 0.02:
+            if abs(desired_angle_turn) <= 0.06:
                 self.cmd_vel.fnStop()
                 # 結束流程
                 self.current_nearby_sequence = self.NearbySequence.parking.value
                 self.is_triggered = False
                 return True
             # 角度不夠小但轉得有點久也下一動
-            elif 0.2 < abs(desired_angle_turn) < 0.04:
+            elif 0.06 < abs(desired_angle_turn) < 0.08:
 
-                if self.check_wait_time > 20:
+                if self.check_wait_time > 15:
                     self.cmd_vel.fnStop()
                     # 結束流程
                     self.current_nearby_sequence = self.NearbySequence.parking.value
@@ -389,11 +392,13 @@ class Action():
                     return True
                 else:
                     self.cmd_vel.fnTurn(desired_angle_turn)
-                    rospy.sleep(0.05)
+                    rospy.sleep(0.01)
+                    print(desired_angle_turn)
                     self.check_wait_time += 1
             else:
                 self.cmd_vel.fnTurn(desired_angle_turn)
-                rospy.sleep(0.05)
+                rospy.sleep(0.01)
+                print(desired_angle_turn)
                 self.check_wait_time = 0
 
             # # old versiom

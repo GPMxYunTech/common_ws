@@ -2,13 +2,13 @@
 <node pkg="forklift_server" type="PBVS_server.py" name="PBVS_server" output="screen">
     
     <!--Subscriber Topic setting/-->
-    <param name="odom" value="/wheel_odom" /><!--里程計 Topic（map -> base_link, 是tf相對關係, 非輪式里程計）/-->
+    <param name="odom" value="/odom" /><!--里程計 Topic（map -> base_link, 是tf相對關係, 非輪式里程計）/-->
     <param name="tag_detections_up" value="/tag_detections_up" /><!--車體相機對位AprilTag Topic/-->
     <param name="tag_detections_down" value="/tag_detections_down" /><!--牙叉相機對位AprilTag Topic/-->
     <param name="forkpos" value="/forkpos" /><!--牙叉編碼器回傳Topic/-->
 
     <!--bodycamera parking setting-->
-    <param name="bodycamera_tag_offset_x" type="double" value = "0.085" /><!--對位目標點與tag的左右偏移量，左正右負/-->
+    <param name="bodycamera_tag_offset_x" type="double" value = "0.015" /><!--對位目標點與tag的左右偏移量，左正右負/-->
     <param name="bodycamera_parking_fork_init" type="double" value = "0.54" /><!--車體相機對位初始牙叉高度-->
     <param name="bodycamera_ChangingDirection_threshold" type="double" value = "0.01" />  <!--正對Tag(atan2(y, x) <= threshold)/-->
     <param name="bodycamera_parking_stop" type="double" value = "1.9" />  <!--車體相機對位停止距離/-->
