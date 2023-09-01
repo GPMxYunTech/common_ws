@@ -276,13 +276,13 @@ class Action():
             #new version
             desired_angle_turn = -1. * desired_angle_turn
             #角度夠小直接下一動
-            if abs(desired_angle_turn) <= 0.06:
+            if abs(desired_angle_turn) <= 0.02:
                 self.cmd_vel.fnStop()
                 #切換到直走流程
                 self.current_nearby_sequence = self.NearbySequence.go_straight.value
                 self.is_triggered = False
             #角度不夠小但轉得有點久也下一動
-            elif 0.06 < abs(desired_angle_turn) < 0.08:
+            elif 0.02 < abs(desired_angle_turn) < 0.06:
 
                 if self.check_wait_time>15:
                     self.cmd_vel.fnStop()
@@ -375,14 +375,14 @@ class Action():
 
             # new version
             # 角度夠小直接下一動
-            if abs(desired_angle_turn) <= 0.06:
+            if abs(desired_angle_turn) <= 0.02:
                 self.cmd_vel.fnStop()
                 # 結束流程
                 self.current_nearby_sequence = self.NearbySequence.parking.value
                 self.is_triggered = False
                 return True
             # 角度不夠小但轉得有點久也下一動
-            elif 0.06 < abs(desired_angle_turn) < 0.08:
+            elif 0.02 < abs(desired_angle_turn) < 0.06:
 
                 if self.check_wait_time > 15:
                     self.cmd_vel.fnStop()

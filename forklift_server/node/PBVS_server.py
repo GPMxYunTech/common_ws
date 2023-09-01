@@ -118,10 +118,11 @@ class Subscriber():
         self.robot_2d_pose_y = msg.pose.pose.position.y
         self.robot_2d_theta = theta
 
-        if (self.robot_2d_theta - self.previous_robot_2d_theta) >= 2 * math.pi:
+        #前後2次的誤差不可能超過pi，超過就表示過一圈了，要補正
+        if (self.robot_2d_theta - self.previous_robot_2d_theta) >= math.pi:
             d_theta = (self.robot_2d_theta -
                        self.previous_robot_2d_theta) - 2 * math.pi
-        elif (self.robot_2d_theta - self.previous_robot_2d_theta) <= -2 * math.pi:
+        elif (self.robot_2d_theta - self.previous_robot_2d_theta) <= -math.pi:
             d_theta = (self.robot_2d_theta -
                        self.previous_robot_2d_theta) + 2 * math.pi
         else:
