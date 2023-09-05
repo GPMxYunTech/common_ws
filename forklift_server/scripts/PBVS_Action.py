@@ -204,7 +204,7 @@ class Action():
                 return True
             else:
                 self.cmd_vel.fnTurn(desired_angle_turn)
-                rospy.sleep(0.1)
+                rospy.sleep(0.05)
                 return False
         else:
             rospy.sleep(0.05)
