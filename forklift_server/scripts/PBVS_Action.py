@@ -263,6 +263,7 @@ class Action():
                 desired_dist = self.initial_marker_pose_y
                 
                 if abs(desired_dist) < 0.15:
+                    self.is_triggered = False
                     return True
 
             #轉90度
@@ -435,6 +436,8 @@ class Action():
         else:
             desired_angle_turn = desired_angle_turn - math.pi
 
+        if abs(desired_angle_turn) <= 0.02:
+            desired_angle_turn=0
         self.cmd_vel.fnTrackMarker(-desired_angle_turn)
 
         if (abs(self.marker_2d_pose_x) < parking_dist):
