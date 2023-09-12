@@ -3,6 +3,7 @@
     <rosparam param="command">
     [
         ['PBVS', 'parking_bodycamera'],<!--使用牙叉相機對位棧板/-->
+        ['PBVS', 'drop_pallet']<!--放下棧板/-->
     ]
     </rosparam>
 </node>
