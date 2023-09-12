@@ -391,6 +391,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.stop.value
                     self.is_sequence_finished = False
             # ============drop_pallet============
+            #枒杈升高
             elif self.current_parking_sequence == self.ParkingSequence.down_fork_init.value:
                 self.is_sequence_finished = self.Action.fork_updown(
                     self.init_fork)
@@ -400,6 +401,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.down_fork_dead_reckoning.value
                     self.is_sequence_finished = False
 
+            #靠里程計前移
             elif self.current_parking_sequence == self.ParkingSequence.down_fork_dead_reckoning.value:
                 self.is_sequence_finished = self.Action.fnseqdead_reckoning(
                     self.dead_reckoning_dist)
@@ -409,6 +411,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.down_fork_forward.value
                     self.is_sequence_finished = False
 
+            #枒杈前伸
             elif self.current_parking_sequence == self.ParkingSequence.down_fork_forward.value:
                 self.is_sequence_finished = self.Action.fork_forwardback(
                     self.fork_forward_distance)
@@ -418,6 +421,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.down_fork_down.value
                     self.is_sequence_finished = False
 
+            #枒杈放下(放貨)
             elif self.current_parking_sequence == self.ParkingSequence.down_fork_down.value:
                 self.is_sequence_finished = self.Action.fork_updown(
                     self.drop_height)
@@ -427,6 +431,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.down_fork_backword.value
                     self.is_sequence_finished = False
 
+            #枒杈縮回
             elif self.current_parking_sequence == self.ParkingSequence.down_fork_backword.value:
                 self.is_sequence_finished = self.Action.fork_forwardback(0.0)
 
@@ -435,6 +440,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.down_fork_back.value
                     self.is_sequence_finished = False
 
+            #靠里程計後退
             elif self.current_parking_sequence == self.ParkingSequence.down_fork_back.value:
                 self.is_sequence_finished = self.Action.fnseqdead_reckoning(
                     self.back_distance)
@@ -444,6 +450,7 @@ class PBVS():
                     self.current_parking_sequence = self.ParkingSequence.down_fork_going.value
                     self.is_sequence_finished = False
 
+            #枒杈放下
             elif self.current_parking_sequence == self.ParkingSequence.down_fork_going.value:
                 self.is_sequence_finished = self.Action.fork_updown(
                     self.navigation_helght)
