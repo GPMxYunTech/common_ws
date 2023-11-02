@@ -579,6 +579,11 @@ class cmd_vel():
         self.cmd_pub(twist)
 
     def fnTurn(self, theta):
+        if abs(theta)<0.17:
+            if theta>0:
+                theta=0.17
+            else:
+                theta=-0.17
         Kp = 0.3  # 1.0
         angular_z = Kp * theta
 
